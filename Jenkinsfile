@@ -1,3 +1,5 @@
+//jenkins
+
 pipeline {
     agent any
 
