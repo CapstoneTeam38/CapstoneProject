@@ -1,16 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const Transaction = require('../models/transactions');
+const axios = require('axios');
 
-// GET transactions
-router.get('/api/transactions', async (req, res) => {
+router.get('/stats', async (req, res) => {
     try {
-        const transactions = await Transaction.find().limit(500);
-        res.json(transactions);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: err.message });
-    }
+        const resp = await axios.get('http://127.0.0.1:5001/api/stats');
+        res.json(resp.data);
+    } catch (e) { res.status(500).json({ error: "AI Engine Offline" }); }
 });
 
 module.exports = router;

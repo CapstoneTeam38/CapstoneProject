@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <title>Transaction History | NeuralGuard AI</title>
     <script src="https://cdn.tailwindcss.com"></script>
+
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
@@ -22,10 +23,12 @@
 
 <body class="p-8">
     <div class="max-w-6xl mx-auto">
+
         <header class="mb-10 flex justify-between items-center">
             <h1 class="text-3xl font-bold">Predictive Modeling History</h1>
-            <button onclick="location.href='/dashboard'" class="px-6 py-2 bg-indigo-600 rounded-xl font-bold">Back to
-                Dashboard</button>
+            <button onclick="location.href='/dashboard'" class="px-6 py-2 bg-indigo-600 rounded-xl font-bold">
+                Back to Dashboard
+            </button>
         </header>
 
         <div class="glass-panel rounded-3xl overflow-hidden">
@@ -37,26 +40,41 @@
                         <th class="p-6">Model Confidence</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     <% transactions.forEach(tx=> { %>
-                        <tr class="border-b border-white/5">
-                            <td class="p-6">ID: <span class="text-slate-400">
-                                    <%= tx._id %>
-                                </span><br>$<%= tx.Amount %>
-                            </td>
+
+                        <tr class="border-b border-white/5 hover:bg-white/5 transition">
+
+                            <!-- Transaction ID + Amount -->
                             <td class="p-6">
-                                <span class="<%= tx.isFraud ? 'text-red-500' : 'text-green-500' %> font-bold">
-                                    <%= tx.isFraud ? 'FRAUD' : 'NORMAL' %>
+                                ID:
+                                <span class="text-slate-400 font-mono text-xs">
+                                    <%= tx._id %>
+                                </span>
+                                <br>
+                                $<%= tx.amount ? tx.amount.toFixed(2) : "0.00" %>
+                            </td>
+
+                            <!-- Classification -->
+                            <td class="p-6">
+                                <span class="<%= tx.is_fraud === 1 ? 'text-red-500' : 'text-green-500' %> font-bold">
+                                    <%= tx.is_fraud===1 ? 'FRAUD' : 'NORMAL' %>
                                 </span>
                             </td>
+
+                            <!-- Confidence -->
                             <td class="p-6 font-mono">
-                                <%= tx.riskScore %>%
+                                <%= tx.riskScore ? tx.riskScore : 0 %>%
                             </td>
+
                         </tr>
+
                         <% }) %>
                 </tbody>
             </table>
         </div>
+
     </div>
 </body>
 
