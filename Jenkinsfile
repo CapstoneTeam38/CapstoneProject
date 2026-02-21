@@ -1,29 +1,52 @@
-// Jenkins Pipeline for NeuralGuard1
+// Jenkins Pipeline for NeuralGuard
 
 pipeline {
     agent any
 
+    environment {
+        IMAGE_NAME = "neuralguard"
+        CONTAINER_NAME = "neuralguard-container"
+    }
+
     stages {
-        stage('Fetch Code') {
+
+        stage('Checkout Code') {
             steps {
                 checkout scm
             }
         }
 
+        stage('Install Dependencies') {
+            steps {
+                bat 'npm install'
+            }
+        }
+
         stage('Docker Build') {
             steps {
-                echo 'Building Docker container for NeuralGuard...'
-                bat 'docker --version'
+                echo 'Building Docker Image...'
+                bat "docker build -t %IMAGE_NAME% ."
+            }
+        }
+
+        stage('Docker Run (Optional)') {
+            steps {
+                echo 'Stopping old container if exists...'
+                bat "docker rm -f %CONTAINER_NAME% || exit 0"
+
+                echo 'Running new container...'
+                bat "docker run -d -p 5000:5000 --name %CONTAINER_NAME% %IMAGE_NAME%"
             }
         }
     }
 
     post {
+
         success {
             emailext(
-                subject: "NeuralGuard CI/CD: SUCCESS",
+                subject: "NeuralGuard CI/CD: SUCCESS ✅",
                 body: """
-                    <h2 style="color:green;">Build Successful ✅</h2>
+                    <h2 style="color:green;">Build Successful</h2>
                     <b>Project:</b> NeuralGuard<br>
                     <b>Build Number:</b> ${env.BUILD_NUMBER}<br>
                     <b>Status:</b> ${currentBuild.currentResult}<br>
@@ -39,10 +62,8 @@ pipeline {
             emailext(
                 subject: "NeuralGuard CI/CD: FAILURE ❌",
                 body: """
-                    <h2 style="color:red;">Build Failed 🚨</h2>
-                    <b>Project:</b> NeuralGuard<br>
+                    <h2 style="color:red;">Build Failed</h2>
                     <b>Build Number:</b> ${env.BUILD_NUMBER}<br>
-                    <b>Status:</b> ${currentBuild.currentResult}<br>
                     <b>Check Logs:</b> <a href="${env.BUILD_URL}">${env.BUILD_URL}</a>
                 """,
                 mimeType: 'text/html',
