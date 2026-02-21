@@ -29,16 +29,7 @@ pipeline {
             }
         }
 
-        stage('Docker Run (Optional)') {
-            steps {
-                echo 'Stopping old container if exists...'
-                bat "docker rm -f %CONTAINER_NAME% || exit 0"
-
-                echo 'Running new container...'
-                bat "docker run -d -p 5000:5000 --name %CONTAINER_NAME% %IMAGE_NAME%"
-            }
-        }
-    }
+        
 
     post {
 
