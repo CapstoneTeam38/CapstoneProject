@@ -71,7 +71,7 @@ router.get('/api/stats', ensureAuth, async (req, res) => {
             fraudsDetected: fraudCount,
             globalRiskScore: totalCount > 0 ? Math.round((fraudCount / totalCount) * 100) : 0,
             chartLabels: recentData.map(t => new Date(t.timestamp).toLocaleTimeString()).reverse(),
-            chartValues: recentData.map(t => t.amount).reverse()
+            chartValues: recentData.map(t => t.Amount).reverse()
         });
     } catch (err) {
         console.error(err);

@@ -37,10 +37,15 @@ app.use(flash());
 app.get('/api/stats', async (req, res) => {
     try {
         const Transaction = mongoose.model('Transaction');
+
         const totalTransactions = await Transaction.countDocuments();
         const fraudsDetected = await Transaction.countDocuments({ isFraud: true });
 
-        // Calculate average risk score
+        //  THIS WAS MISSING
+        const recentData = await Transaction.find()
+            .sort({ timestamp: -1 })
+            .limit(10);
+
         const stats = await Transaction.aggregate([
             { $group: { _id: null, avgRisk: { $avg: "$riskScore" } } }
         ]);
@@ -48,8 +53,11 @@ app.get('/api/stats', async (req, res) => {
         res.json({
             totalTransactions,
             fraudsDetected,
-            globalRiskScore: stats.length > 0 ? Math.round(stats[0].avgRisk) : 0
+            globalRiskScore: stats.length > 0 ? Math.round(stats[0].avgRisk) : 0,
+            chartLabels: recentData.map(t => new Date(t.timestamp).toLocaleTimeString()).reverse(),
+            chartValues: recentData.map(t => t.Amount).reverse()
         });
+
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
