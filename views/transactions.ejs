@@ -37,23 +37,54 @@
                         <th class="p-6">Model Confidence</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <% transactions.forEach(tx=> { %>
-                        <tr class="border-b border-white/5">
-                            <td class="p-6">ID: <span class="text-slate-400">
-                                    <%= tx._id %>
-                                </span><br>$<%= tx.Amount %>
-                            </td>
-                            <td class="p-6">
-                                <span class="<%= tx.isFraud ? 'text-red-500' : 'text-green-500' %> font-bold">
-                                    <%= tx.isFraud ? 'FRAUD' : 'NORMAL' %>
-                                </span>
-                            </td>
-                            <td class="p-6 font-mono">
-                                <%= tx.riskScore %>%
-                            </td>
-                        </tr>
-                        <% }) %>
+                <tbody class="divide-y divide-white/5">
+                    <% if (transactions.length> 0) { %>
+                        <% transactions.forEach(tx=> { %>
+                            <tr class="hover:bg-white/5 transition">
+                                <td class="p-6">
+                                    <span class="text-[10px] text-slate-500 uppercase block mb-1">Transaction ID</span>
+                                    <span class="font-mono text-xs text-slate-400">
+                                        <%= tx._id %>
+                                    </span>
+                                    <div class="mt-2 text-lg font-bold text-white">$<%= tx.Amount %>
+                                    </div>
+                                </td>
+                                <td class="p-6">
+                                    <span
+                                        class="<%= tx.isFraud ? 'bg-red-500/10 text-red-500 border-red-500/20' : 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' %> px-3 py-1 rounded-full text-xs font-bold border">
+                                        <%= tx.isFraud ? 'FRAUD DETECTED' : 'VERIFIED NORMAL' %>
+                                    </span>
+                                </td>
+                                <td class="p-6">
+                                    <div class="flex items-center gap-3">
+                                        <div class="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden w-24">
+                                            <div class="h-full <%= tx.riskScore > 50 ? 'bg-red-500' : 'bg-indigo-500' %>"
+                                                style="width: <%= tx.riskScore %>%"></div>
+                                        </div>
+                                        <span class="font-mono text-sm">
+                                            <%= tx.riskScore %>%
+                                        </span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <% }) %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="3" class="p-20 text-center text-slate-500 italic">
+                                            <div class="flex flex-col items-center gap-3">
+                                                <div
+                                                    class="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center animate-pulse">
+                                                    <div
+                                                        class="w-6 h-6 rounded-full border-2 border-indigo-500/30 border-t-indigo-500 animate-spin">
+                                                    </div>
+                                                </div>
+                                                <p class="font-medium">Waiting for live transaction stream...</p>
+                                                <p class="text-xs text-slate-600">Start simulate_data.py to begin
+                                                    predictive modeling</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <% } %>
                 </tbody>
             </table>
         </div>

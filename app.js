@@ -36,18 +36,19 @@ app.use(flash());
 // 5. API ROUTES (For your dashboard.js script)
 app.get('/api/stats', async (req, res) => {
     try {
-        const db = mongoose.connection.db;
-        const col = db.collection('transactions');
-        const totalTransactions = await col.countDocuments();
-        const fraudsDetected = await col.countDocuments({ isFraud: true });
-        const result = await col.aggregate([
+        const Transaction = mongoose.model('Transaction');
+        const totalTransactions = await Transaction.countDocuments();
+        const fraudsDetected = await Transaction.countDocuments({ isFraud: true });
+
+        // Calculate average risk score
+        const stats = await Transaction.aggregate([
             { $group: { _id: null, avgRisk: { $avg: "$riskScore" } } }
-        ]).toArray();
+        ]);
 
         res.json({
             totalTransactions,
             fraudsDetected,
-            globalRiskScore: result.length > 0 ? Math.round(result[0].avgRisk) : 0
+            globalRiskScore: stats.length > 0 ? Math.round(stats[0].avgRisk) : 0
         });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -56,7 +57,7 @@ app.get('/api/stats', async (req, res) => {
 
 // 6. VIEW ROUTES (For navigating between pages)
 app.use('/', require('./routes/auth'));
-
+app.use(require('./routes/api'));
 app.get('/dashboard', (req, res) => {
     res.render('dashboard');
 });
@@ -65,7 +66,7 @@ app.get('/dashboard', (req, res) => {
 app.get('/alerts', async (req, res) => {
     try {
         const db = mongoose.connection.db;
-        const col = db.collection('transactions');
+        const col = db.collection('predictions');
         // Fetch only flagged anomalies
         const alerts = await col.find({ isFraud: true }).sort({ _id: -1 }).limit(20).toArray();
         res.render('alerts', { alerts });
@@ -78,12 +79,38 @@ app.get('/alerts', async (req, res) => {
 app.get('/transactions', async (req, res) => {
     try {
         const db = mongoose.connection.db;
-        const col = db.collection('transactions');
+        const col = db.collection('predictions');
         // Fetch recent modeling history
         const transactions = await col.find().sort({ _id: -1 }).limit(50).toArray();
         res.render('transactions', { transactions });
     } catch (err) {
         res.status(500).send("Error loading transactions: " + err.message);
+    }
+});
+
+// In your main app.js or a specific route file
+const axios = require('axios');
+const Transaction = require('./models/transactions');
+
+app.post('/api/webhook', async (req, res) => {
+    try {
+        // 1. Forward data to Flask (model.py) for scoring
+        const mlResponse = await axios.post('http://localhost:5001/predict', req.body);
+
+        // 2. Combine raw data with ML results
+        const newRecord = new Transaction({
+            Amount: req.body.amount,
+            isFraud: mlResponse.data.is_fraud,
+            riskScore: mlResponse.data.riskScore,
+            timestamp: new Date()
+        });
+
+        // 3. Save to MongoDB to populate the tabs
+        await newRecord.save();
+        res.status(200).json({ status: "Processed", isFraud: newRecord.isFraud });
+    } catch (err) {
+        console.error("ML Service Error:", err.message);
+        res.status(500).json({ error: "ML Service Unreachable" });
     }
 });
 

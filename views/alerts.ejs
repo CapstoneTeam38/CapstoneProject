@@ -44,22 +44,62 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-white/5">
-                    <% alerts.forEach(alert=> { %>
-                        <tr class="hover:bg-white/5 transition">
-                            <td class="p-6 font-mono text-xs text-slate-400">
-                                <%= alert._id %>
-                            </td>
-                            <td class="p-6 font-bold text-white">$<%= alert.Amount %>
-                            </td>
-                            <td class="p-6">
-                                <span
-                                    class="px-3 py-1 bg-red-500/10 text-red-500 rounded-full text-xs font-bold border border-red-500/20">
-                                    <%= alert.riskScore %>% Risk
-                                </span>
-                            </td>
-                            <td class="p-6 text-sm text-red-400 italic font-medium">Anomaly Detected</td>
-                        </tr>
-                        <% }) %>
+                    <% if (alerts.length> 0) { %>
+                        <% alerts.forEach(alert=> { %>
+                            <tr class="hover:bg-white/5 transition">
+                                <td class="p-6 font-mono text-xs text-slate-400">
+                                    <span class="text-[10px] text-slate-500 uppercase block mb-1">Transaction ID</span>
+                                    <%= alert._id %>
+                                </td>
+                                <td class="p-6 font-bold text-white">
+                                    $<%= alert.Amount %>
+                                </td>
+                                <td class="p-6">
+                                    <div class="flex flex-col gap-2">
+                                        <span
+                                            class="px-3 py-1 bg-red-500/10 text-red-500 rounded-full text-xs font-bold border border-red-500/20 w-fit">
+                                            <%= alert.riskScore %>% Risk
+                                        </span>
+                                        <div class="w-24 h-1 bg-white/5 rounded-full overflow-hidden">
+                                            <div class="h-full bg-red-500" style="width: <%= alert.riskScore %>%"></div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="p-6">
+                                    <div class="flex items-center gap-2 text-sm text-red-400 font-medium">
+                                        <span class="relative flex h-2 w-2">
+                                            <span
+                                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                            <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                                        </span>
+                                        Anomaly Detected
+                                    </div>
+                                </td>
+                            </tr>
+                            <% }) %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="4" class="p-20 text-center">
+                                            <div class="flex flex-col items-center gap-3">
+                                                <div
+                                                    class="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
+                                                    <svg class="w-8 h-8 text-emerald-500" fill="none"
+                                                        stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                    </svg>
+                                                </div>
+                                                <p class="text-slate-400 font-semibold text-lg">System Secure</p>
+                                                <p class="text-slate-500 text-sm">No fraud anomalies detected in the
+                                                    current stream.</p>
+                                                <span
+                                                    class="text-[10px] px-2 py-1 bg-white/5 rounded uppercase tracking-widest text-slate-600 animate-pulse">Monitoring
+                                                    Active</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <% } %>
                 </tbody>
             </table>
         </div>
