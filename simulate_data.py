@@ -5,7 +5,7 @@ from datetime import datetime
 
 URL = "http://localhost:5000/api/webhook"
 
-FRAUD_RATE = 0.50  # 8% realistic fraud rate
+FRAUD_RATE = 0.08  # 8% realistic fraud rate
 
 def generate_transaction(force_fraud=False):
     if force_fraud:
