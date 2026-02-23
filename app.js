@@ -63,6 +63,12 @@ app.get('/api/stats', async (req, res) => {
     }
 });
 
+// TEMP TEST ROUTE
+app.get("/", (req, res) => {
+    res.send("Server working fine 🚀");
+});
+
+
 // 6. VIEW ROUTES (For navigating between pages)
 app.use('/', require('./routes/auth'));
 app.use(require('./routes/api'));
@@ -103,7 +109,7 @@ const Transaction = require('./models/transactions');
 app.post('/api/webhook', async (req, res) => {
     try {
         // 1. Forward data to Flask (model.py) for scoring
-        const mlResponse = await axios.post('http://localhost:5001/predict', req.body);
+        const mlResponse = await axios.post('http://127.0.0.1:5001/predict', req.body);
 
         // 2. Combine raw data with ML results
         const newRecord = new Transaction({
@@ -117,8 +123,8 @@ app.post('/api/webhook', async (req, res) => {
         await newRecord.save();
         res.status(200).json({ status: "Processed", isFraud: newRecord.isFraud });
     } catch (err) {
-        console.error("ML Service Error:", err.message);
-        res.status(500).json({ error: "ML Service Unreachable" });
+        console.error("FULL ERROR:", err);
+        res.status(500).json({ error: err.message });
     }
 });
 
