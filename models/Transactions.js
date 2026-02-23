@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const transactionSchema = new mongoose.Schema({
-    Amount: Number,
+    amount: Number,
     isFraud: Boolean,
     riskScore: Number,
     timestamp: { type: Date, default: Date.now }

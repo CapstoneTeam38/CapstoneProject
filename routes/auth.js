@@ -56,23 +56,43 @@ router.get('/alerts', ensureAuth, async (req, res) => {
 // Inside your BACKEND routes file (e.g., routes/auth.js)
 router.get('/api/stats', ensureAuth, async (req, res) => {
     try {
-        // 1. Get real data from your MongoDB models
+        // 1️⃣ Get counts
+        const recentTransactions = await Transaction
+            .find()
+            .sort({ timestamp: -1 })
+            .limit(30);
+
+        // Get ACTUAL total counts from the whole DB
         const totalCount = await Transaction.countDocuments();
         const fraudCount = await Transaction.countDocuments({ isFraud: true });
 
-        // 2. Fetch the last 10 transactions for the graph
+        // Keep last 10 for chart only
         const recentData = await Transaction.find()
             .sort({ timestamp: -1 })
             .limit(10);
 
-        // 3. Send it back as JSON (this is what dashboard.js "eats")
+        // 3️⃣ Smooth risk values BEFORE sending
+        const smoothedRisk = recentData.map((t, i, arr) => {
+            const current = t.riskScore || 0;
+            const prev = arr[i - 1]?.riskScore ?? current;
+            const next = arr[i + 1]?.riskScore ?? current;
+
+            return Math.round((prev + current + next) / 3);
+        });
+
+        // 4️⃣ Send JSON to dashboard.js
         res.json({
             totalTransactions: totalCount,
             fraudsDetected: fraudCount,
-            globalRiskScore: totalCount > 0 ? Math.round((fraudCount / totalCount) * 100) : 0,
-            chartLabels: recentData.map(t => new Date(t.timestamp).toLocaleTimeString()).reverse(),
-            chartValues: recentData.map(t => t.Amount).reverse()
+            globalRiskScore: totalCount > 0
+                ? Math.round((fraudCount / totalCount) * 100)
+                : 0,
+            chartLabels: recentData
+                .map(t => new Date(t.timestamp).toLocaleTimeString())
+                .reverse(),
+            chartValues: smoothedRisk.reverse()
         });
+
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Database error" });

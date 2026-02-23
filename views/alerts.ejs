@@ -38,8 +38,8 @@
                 <thead class="bg-white/5 text-[10px] uppercase tracking-widest text-slate-400">
                     <tr>
                         <th class="p-6">Transaction ID</th>
-                        <th class="p-6">Amount</th>
-                        <th class="p-6">Risk Score</th>
+                        <th class="p-6">amount</th>
+                        <th class="p-6">Anomaly Severity</th>
                         <th class="p-6">Pattern Status</th>
                     </tr>
                 </thead>
@@ -52,18 +52,30 @@
                                     <%= alert._id %>
                                 </td>
                                 <td class="p-6 font-bold text-white">
-                                    $<%= alert.Amount %>
+                                    $<%= alert.amount %>
                                 </td>
                                 <td class="p-6">
-                                    <div class="flex flex-col gap-2">
-                                        <span
-                                            class="px-3 py-1 bg-red-500/10 text-red-500 rounded-full text-xs font-bold border border-red-500/20 w-fit">
-                                            <%= alert.riskScore %>% Risk
-                                        </span>
-                                        <div class="w-24 h-1 bg-white/5 rounded-full overflow-hidden">
-                                            <div class="h-full bg-red-500" style="width: <%= alert.riskScore %>%"></div>
+                                    <% const score=alert.riskScore; let level="LOW" ; let colorClass="emerald" ; if
+                                        (score>= 70) {
+                                        level = "HIGH";
+                                        colorClass = "red";
+                                        } else if (score >= 30) {
+                                        level = "MEDIUM";
+                                        colorClass = "amber";
+                                        }
+                                        %>
+
+                                        <div class="flex flex-col gap-2">
+                                            <span
+                                                class="px-3 py-1 bg-<%= colorClass %>-500/10 text-<%= colorClass %>-500 rounded-full text-xs font-bold border border-<%= colorClass %>-500/20 w-fit">
+                                                <%= level %>
+                                            </span>
+
+                                            <% const progressWidth=(typeof score !=='undefined' ? score : 0) + '%' ; %>
+                                                <div class="h-full bg-<%= colorClass %>-500" 
+                                                   style="width: <%= progressWidth %>;">
+                                                </div>
                                         </div>
-                                    </div>
                                 </td>
                                 <td class="p-6">
                                     <div class="flex items-center gap-2 text-sm text-red-400 font-medium">

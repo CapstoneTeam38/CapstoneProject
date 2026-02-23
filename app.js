@@ -59,17 +59,17 @@ const Transaction = require('./models/transactions');
 
 app.post('/api/webhook', async (req, res) => {
     try {
-        // Send transaction data to Flask ML server
         const mlResponse = await axios.post(
             'http://127.0.0.1:5001/predict',
             req.body,
             { timeout: 5000 }
         );
 
-        // Save result to MongoDB
+        console.log("ML RESPONSE:", mlResponse.data);
+
         const newRecord = new Transaction({
-            Amount: req.body.amount,
-            isFraud: mlResponse.data.is_fraud,
+            amount: req.body.amount,
+            isFraud: mlResponse.data.isFraud,
             riskScore: mlResponse.data.riskScore,
             timestamp: new Date()
         });
