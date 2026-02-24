@@ -5,7 +5,6 @@ const passport = require('passport');
 const flash = require('connect-flash');
 const path = require('path');
 const cors = require('cors');
-const axios = require('axios');
 require('dotenv').config();
 
 const app = express();
@@ -20,10 +19,9 @@ mongoose.connect('mongodb://127.0.0.1:27017/fraud_detection')
 // =============================
 // 2️⃣ MIDDLEWARE & SETTINGS
 // =============================
-app.use(cors());
+app.use(cors({ origin: '*', methods: ['GET', 'POST'] }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -45,53 +43,13 @@ app.use(flash());
 // =============================
 // 4️⃣ ROUTES
 // =============================
-
-// Auth + Views (login, signup, dashboard, alerts, transactions)
-app.use('/', require('./routes/auth'));
-
-// API routes (if you have separate api.js)
-app.use(require('./routes/api'));
+app.use('/', require('./routes/auth'));       // handles /login, /dashboard etc
+app.use('/api', require('./routes/api'));     // handles /api/transactions, /api/webhook
 
 // =============================
-// 5️⃣ WEBHOOK (ML Integration)
-// =============================
-const Transaction = require('./models/transactions');
-
-app.post('/api/webhook', async (req, res) => {
-    try {
-        const mlResponse = await axios.post(
-            'http://127.0.0.1:5001/predict',
-            req.body,
-            { timeout: 5000 }
-        );
-
-        console.log("ML RESPONSE:", mlResponse.data);
-
-        const newRecord = new Transaction({
-            amount: req.body.amount,
-            isFraud: mlResponse.data.isFraud,
-            riskScore: mlResponse.data.riskScore,
-            timestamp: new Date()
-        });
-
-        await newRecord.save();
-
-        res.status(200).json({
-            status: "Processed",
-            isFraud: newRecord.isFraud
-        });
-
-    } catch (err) {
-        console.error("ML SERVICE ERROR:", err.message);
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// =============================
-// 6️⃣ START SERVER
+// 5️⃣ START SERVER
 // =============================
 const PORT = 5000;
-
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });

@@ -9,23 +9,12 @@ const userSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now }
 });
 
-// 🔐 Hash password before saving
-// REMOVED 'next' from the arguments
 userSchema.pre('save', async function () {
-    try {
-        // Skip if no password (Google user) or if password not modified
-        if (!this.password || !this.isModified('password')) {
-            return; // Just return, don't call next()
-        }
-
-        const salt = await bcrypt.genSalt(10);
-        this.password = await bcrypt.hash(this.password, salt);
-
-        // No next() call here
-    } catch (err) {
-        throw err; // Throw the error instead of calling next(err)
+    if (!this.password || !this.isModified('password')) {
+        return;
     }
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
 });
-
 
 module.exports = mongoose.models.User || mongoose.model('User', userSchema);
