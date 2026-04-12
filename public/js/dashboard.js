@@ -2,8 +2,6 @@ let fraudChart;
 
 function initChart() {
     const ctx = document.getElementById('fraudChart').getContext('2d');
-
-    // Create a glow gradient
     const gradient = ctx.createLinearGradient(0, 0, 0, 400);
     gradient.addColorStop(0, 'rgba(217, 70, 239, 0.3)');
     gradient.addColorStop(1, 'rgba(217, 70, 239, 0)');
@@ -47,21 +45,56 @@ async function updateDashboard() {
         const response = await fetch('/api/stats');
         const data = await response.json();
 
-        // Update Text Stats
-        document.getElementById('total-transactions').innerText = data.totalTransactions;
-        document.getElementById('frauds-detected').innerText = data.fraudsDetected;
-        document.getElementById('risk-score').innerText = `${data.globalRiskScore}%`;
-        document.getElementById('risk-bar').style.width = `${data.globalRiskScore}%`;
+        // Update KPI cards
+        document.getElementById('total-transactions').innerText =
+            data.totalTransactions ? data.totalTransactions.toLocaleString() : '0';
+        document.getElementById('frauds-detected').innerText =
+            data.fraudsDetected ? data.fraudsDetected.toLocaleString() : '0';
+        document.getElementById('risk-score').innerText =
+            `${data.globalRiskScore || 0}%`;
+        document.getElementById('risk-bar').style.width =
+            `${Math.min(data.globalRiskScore || 0, 100)}%`;
 
-        // Update Chart
-        if (fraudChart && data.chartLabels && data.chartLabels.length > 0) {
-            fraudChart.data.labels = data.chartLabels;
-            fraudChart.data.datasets[0].data = data.chartValues;
-            fraudChart.update('none'); // Use 'none' for smoother updates
+        // Update chart — use live rolling data points
+        if (fraudChart) {
+            const now = new Date().toLocaleTimeString();
+            if (fraudChart.data.labels.length > 20) {
+                fraudChart.data.labels.shift();
+                fraudChart.data.datasets[0].data.shift();
+            }
+            fraudChart.data.labels.push(now);
+            fraudChart.data.datasets[0].data.push(data.fraudsDetected || 0);
+            fraudChart.update('none');
         }
+
+        // Add new nav links if not already present
+        addNavLinks();
+
     } catch (err) {
         console.error('Dashboard sync error:', err);
+        document.getElementById('total-transactions').innerText = 'Flask offline';
     }
+}
+
+function addNavLinks() {
+    const nav = document.querySelector('nav ul');
+    if (!nav) return;
+    const links = [
+        { href: '/analytics', label: 'Analytics' },
+        { href: '/model-stats', label: 'Model Performance' },
+        { href: '/shap', label: 'SHAP Explainer' },
+        { href: '/cases', label: 'Case Review' }
+    ];
+    links.forEach(link => {
+        if (!document.querySelector(`[data-nav="${link.href}"]`)) {
+            const li = document.createElement('li');
+            li.setAttribute('data-nav', link.href);
+            li.onclick = () => location.href = link.href;
+            li.className = 'flex items-center gap-3 text-slate-500 hover:text-slate-200 p-4 rounded-2xl transition cursor-pointer hover:bg-white/5';
+            li.textContent = link.label;
+            nav.appendChild(li);
+        }
+    });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -69,5 +102,3 @@ document.addEventListener('DOMContentLoaded', () => {
     updateDashboard();
     setInterval(updateDashboard, 3000);
 });
-
-console.log(data);
