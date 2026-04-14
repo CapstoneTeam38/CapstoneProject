@@ -249,7 +249,7 @@ def shap_explain():
         base = explainer.expected_value
 
     result = sorted(
-        [{"feature": FEATURE_NAMES[i], "shap_value": round(float(sv[i]), 4)}
+        [{"feature": FEATURE_NAMES[i], "shap_value": round(float(np.ravel(sv[i])[0]), 4)}
          for i in range(len(sv))],
         key=lambda x: abs(x["shap_value"]), reverse=True
     )[:15]
@@ -261,7 +261,7 @@ def shap_explain():
         "shapValues":       result,
         "fraudProbability": round(float(proba), 4),
         "prediction":       "FRAUD" if is_fraud else "LEGITIMATE",
-        "baseValue":        round(float(base), 4)
+        "baseValue": round(float(np.ravel(base)[0]), 4)
     })
 
 
@@ -296,6 +296,100 @@ def review_case(case_id):
         }}
     )
     return jsonify({"success": True})
+
+@app.route("/api/transactions-page")
+def transactions_page():
+    page   = int(request.args.get("page",   1))
+    limit  = int(request.args.get("limit",  100))
+    fltr   = request.args.get("filter", "all")
+    skip   = (page - 1) * limit
+
+    query = {}
+    if fltr == "fraud":
+        query = {"is_fraud": 1}
+    elif fltr == "legit":
+        query = {"is_fraud": 0}
+
+    total       = transactions_col.count_documents(query)
+    fraud_total = transactions_col.count_documents({"is_fraud": 1})
+
+    rows = list(transactions_col.find(
+        query,
+        {"_id": 0, "loaded_at": 0, "source": 0}
+    ).sort("Time", -1).skip(skip).limit(limit))
+
+    return jsonify({
+        "transactions": rows,
+        "total":        total,
+        "fraudTotal":   fraud_total,
+        "page":         page,
+        "totalPages":   (total + limit - 1) // limit
+    })
+@app.route("/api/upload-dataset", methods=["POST"])
+def upload_dataset():
+    try:
+        import pandas as pd
+        from io import StringIO
+
+        if 'file' not in request.files:
+            return jsonify({"error": "No file received"}), 400
+
+        file    = request.files['file']
+        user_id = request.form.get('userId', 'anonymous')
+
+        df = pd.read_csv(file)
+        df.columns = [c.strip() for c in df.columns]
+
+        # Map common column names
+        if 'Class' in df.columns:
+            df.rename(columns={'Class': 'is_fraud'}, inplace=True)
+        if 'Amount' not in df.columns and 'amount' in df.columns:
+            df.rename(columns={'amount': 'Amount'}, inplace=True)
+
+        if 'Amount' not in df.columns:
+            return jsonify({"error": "CSV must have an 'Amount' column"}), 400
+
+        # Build feature matrix
+        feature_cols = ['Time'] + [f'V{i}' for i in range(1, 29)] + ['Amount']
+        X = []
+        for _, row in df.iterrows():
+            features = column_means.copy()
+            for j, col in enumerate(feature_cols):
+                if col in df.columns:
+                    features[j] = float(row[col])
+            X.append(features)
+
+        X = np.array(X)
+        probas   = rf_model.predict_proba(X)[:, 1]
+        is_fraud = (probas >= threshold).astype(int)
+
+        # Store in Atlas tagged with userId
+        user_col = db["user_transactions"]
+        user_col.delete_many({"userId": user_id})
+
+        docs = []
+        for i, row in df.iterrows():
+            doc = row.to_dict()
+            doc['userId']            = user_id
+            doc['fraud_probability'] = round(float(probas[i]), 4)
+            doc['is_fraud']          = int(is_fraud[i])
+            doc['uploaded_at']       = datetime.now(timezone.utc)
+            docs.append(doc)
+
+        user_col.insert_many(docs)
+
+        total  = len(docs)
+        frauds = int(is_fraud.sum())
+
+        return jsonify({
+            "totalRows":      total,
+            "fraudsDetected": frauds,
+            "fraudRate":      round(frauds / total * 100, 2) if total > 0 else 0,
+            "userId":         user_id
+        })
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == "__main__":

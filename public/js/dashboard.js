@@ -68,7 +68,7 @@ async function updateDashboard() {
         }
 
         // Add new nav links if not already present
-        addNavLinks();
+
 
     } catch (err) {
         console.error('Dashboard sync error:', err);
@@ -76,26 +76,6 @@ async function updateDashboard() {
     }
 }
 
-function addNavLinks() {
-    const nav = document.querySelector('nav ul');
-    if (!nav) return;
-    const links = [
-        { href: '/analytics', label: 'Analytics' },
-        { href: '/model-stats', label: 'Model Performance' },
-        { href: '/shap', label: 'SHAP Explainer' },
-        { href: '/cases', label: 'Case Review' }
-    ];
-    links.forEach(link => {
-        if (!document.querySelector(`[data-nav="${link.href}"]`)) {
-            const li = document.createElement('li');
-            li.setAttribute('data-nav', link.href);
-            li.onclick = () => location.href = link.href;
-            li.className = 'flex items-center gap-3 text-slate-500 hover:text-slate-200 p-4 rounded-2xl transition cursor-pointer hover:bg-white/5';
-            li.textContent = link.label;
-            nav.appendChild(li);
-        }
-    });
-}
 
 document.addEventListener('DOMContentLoaded', () => {
     initChart();
