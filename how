@@ -1,0 +1,53 @@
+*   [33m65a13e8[m[33m ([m[1;31morigin/feature/auth-pages[m[33m, [m[1;32mfeature/auth-pages[m[33m)[m Merged main into feature/auth-pages
+[31m|[m[32m\[m  
+[31m|[m *   [33mee8d4a7[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Merge branch 'main' of https://github.com/CapstoneTeam38/CapstoneProject
+[31m|[m [33m|[m[34m\[m  
+[31m|[m [33m|[m * [33m1844f6b[m Delete model.py
+[31m|[m * [34m|[m [33mc80b194[m jenkins file chnage
+[31m|[m * [34m|[m [33mea57e54[m jenkins file change
+[31m|[m [34m|[m[34m/[m  
+* [34m|[m [33mc708eaf[m server change
+* [34m|[m [33m15215a6[m jenkins file update
+* [34m|[m [33me3a08dd[m jenkins file update
+* [34m|[m [33mfaf7903[m file change
+* [34m|[m [33mebc33bf[m jenkins file update
+* [34m|[m [33mfcd8f78[m docker file
+* [34m|[m [33mfd10458[m merge conflict resolved
+* [34m|[m   [33m28c16be[m Merge branch 'feature/auth-pages' of https://github.com/CapstoneTeam38/CapstoneProject into feature/auth-pages
+[35m|[m[36m\[m [34m\[m  
+[35m|[m * [34m|[m [33m182221b[m Update Jenkinsfile
+[35m|[m * [34m|[m [33m5420b97[m Update Jenkinsfile
+[35m|[m * [34m|[m [33m4f551e5[m Update Jenkinsfile
+* [36m|[m [34m|[m [33mbbf5b0f[m file change
+[34m|[m [36m|[m[34m/[m  
+[34m|[m[34m/[m[36m|[m   
+* [36m|[m [33m268e3ad[m add recepients
+* [36m|[m [33m05902ed[m jenkins update
+* [36m|[m [33md68c9f8[m email change
+* [36m|[m [33mf459b7b[m code
+* [36m|[m [33mfea2628[m code edit
+* [36m|[m [33meb2cfc2[m mail update
+* [36m|[m [33mfbe9bd1[m email testing
+* [36m|[m [33m9e12828[m final updated code
+* [36m|[m [33m04296e2[m updated code for jenkinsfile
+* [36m|[m [33m34edc13[m updated jenkinsfile code
+* [36m|[m [33m87855e2[m updated emails
+* [36m|[m [33mc0ef493[m added emails of team
+[36m|[m[36m/[m  
+* [33m6441dba[m[33m ([m[1;31mteam-project/feature/auth-pages[m[33m)[m Fixing shell for Windows
+* [33m560b63f[m[33m ([m[1;31mTeamproject/feature/auth-pages[m[33m, [m[1;31mCapstone/feature/auth-pages[m[33m)[m Add Jenkinsfile for Stage View
+* [33mbb6eafb[m Final devops demo
+[36m|[m * [33mde61f35[m[33m ([m[1;31mteam-project/Auth[m[33m, [m[1;31morigin/Auth[m[33m, [m[1;31mTeamproject/Auth[m[33m, [m[1;31mCapstone/Auth[m[33m)[m Added authentication using Firebase. Also added a login page.
+[36m|[m[36m/[m  
+* [33mc2fd0b9[m[33m ([m[1;31mteam-project/main[m[33m, [m[1;31mteam-project/HEAD[m[33m, [m[1;31mTeamproject/main[m[33m, [m[1;31mTeamproject/HEAD[m[33m, [m[1;31mCapstone/main[m[33m, [m[1;31mCapstone/HEAD[m[33m, [m[1;32mtext1[m[33m)[m Fixed DB connection and reinstalled dependencies
+*   [33m8d03b31[m Resolved merge conflict and removed node_modules
+[1;32m|[m[1;33m\[m  
+[1;32m|[m * [33mb0cddeb[m fix:update mongodb collections
+* [1;33m|[m [33mc2bae3d[m Removed node_modules from tracking
+[1;33m|[m[1;33m/[m  
+* [33mc96a0a2[m testing jenkins
+* [33me74ff85[m production deploy
+* [33m43b60ef[m Create README.md
+* [33m7957435[m deployment config
+* [33m489cc66[m added gitignore
+* [33mee4b300[m initial commit

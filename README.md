@@ -1,9 +1,6 @@
-# LLM Powered Fraud Detection System
+# Fraud Detection System
 
-A production-deployed fraud detection dashboard that analyzes transaction patterns, detects anomalies, and provides AI-driven risk insights.
 
-Live Application:  
-https://llm-fraud-detection-production.up.railway.app
 
 ---
 
