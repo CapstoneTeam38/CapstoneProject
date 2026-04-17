@@ -36,7 +36,6 @@ const Sidebar = () => {
   );
 };
 
-// Placeholder components for routes
 const PagePlaceholder = ({ title }) => (
   <div className="glass-panel p-8 h-[60vh] flex flex-col items-center justify-center">
     <h2 className="text-2xl font-semibold mb-4">{title}</h2>
