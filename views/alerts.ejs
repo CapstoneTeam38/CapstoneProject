@@ -8,12 +8,12 @@
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #050507;
-            color: #e2e8f0;
+            background-color: #0B1120;
+            color: #f8fafc;
         }
 
         .glass-panel {
-            background: rgba(18, 18, 24, 0.7);
+            background: rgba(30, 41, 59, 0.8);
             backdrop-filter: blur(25px);
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
@@ -25,12 +25,12 @@
         <header class="mb-6 flex justify-between items-center">
             <div>
                 <h1 class="text-3xl font-bold">Anomaly Alerts</h1>
-                <p class="text-slate-500 text-sm mt-1">
+                <p class="text-slate-400 text-sm mt-1">
                     Showing <span id="showing-count">—</span> of <span id="total-count">492</span> fraud alerts — Page
                     <span id="current-page">1</span>
                 </p>
             </div>
-            <button onclick="location.href='/dashboard'" class="px-6 py-2 bg-indigo-600 rounded-xl font-bold">Back to
+            <button onclick="location.href='/dashboard'" class="px-6 py-2 bg-cyan-600 rounded-xl font-bold">Back to
                 Dashboard</button>
         </header>
 
@@ -48,7 +48,7 @@
                 </thead>
                 <tbody id="alert-table" class="divide-y divide-white/5">
                     <tr>
-                        <td colspan="6" class="p-20 text-center text-slate-500">Loading alerts...</td>
+                        <td colspan="6" class="p-20 text-center text-slate-400">Loading alerts...</td>
                     </tr>
                 </tbody>
             </table>
@@ -59,7 +59,7 @@
             <button id="prev-btn" onclick="changePage(-1)"
                 class="px-6 py-2 bg-white/5 border border-white/10 rounded-xl text-sm" disabled>← Previous</button>
             <div class="flex gap-2" id="page-btns"></div>
-            <button id="next-btn" onclick="changePage(1)" class="px-6 py-2 bg-indigo-600 rounded-xl text-sm">Next
+            <button id="next-btn" onclick="changePage(1)" class="px-6 py-2 bg-cyan-600 rounded-xl text-sm">Next
                 →</button>
         </div>
     </div>
@@ -70,7 +70,7 @@
 
         async function loadPage(page) {
             const tbody = document.getElementById('alert-table');
-            tbody.innerHTML = '<tr><td colspan="6" class="p-10 text-center text-slate-500">Loading...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" class="p-10 text-center text-slate-400">Loading...</td></tr>';
 
             try {
                 const res = await fetch(`/api/transactions-page?page=${page}&limit=${PAGE_SIZE}&filter=fraud`);
@@ -128,7 +128,7 @@
                 </tr>`;
                 });
 
-                tbody.innerHTML = rows || '<tr><td colspan="6" class="p-10 text-center text-slate-500">No alerts found</td></tr>';
+                tbody.innerHTML = rows || '<tr><td colspan="6" class="p-10 text-center text-slate-400">No alerts found</td></tr>';
 
                 const totalPages = Math.ceil(total / PAGE_SIZE);
                 document.getElementById('prev-btn').disabled = page <= 1;
