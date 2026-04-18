@@ -24,6 +24,7 @@ const ModelStats = () => {
         title="Model Engine Offline" 
         message="Could not retrieve neural metrics. Ensure the ML service is operational." 
         icon="error" 
+        onRetry={refetch}
       />
     );
   }

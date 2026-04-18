@@ -92,13 +92,15 @@ const CaseReview = () => {
         <EmptyState 
            title="Connection Error" 
            message="We couldn't reach the intelligence server. Please ensure the backend services are running." 
-           icon="error"
+           icon="error" 
+           onRetry={refetch}
         />
       ) : localCases.length === 0 ? (
         <EmptyState 
           title="Queue Empty" 
           message="No anomalous cases require manual review at this moment. Good job!" 
           icon="success" 
+          onRetry={refetch}
         />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

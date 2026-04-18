@@ -14,8 +14,28 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #020617; /* Slate 950 for deeper feel */
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Global Focus Styles for A11y */
+:focus-visible {
+  outline: none;
+  border-color: #06b6d4 !important; /* Cyan 500 */
+  box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.4);
 }
 
 #root {
   width: 100%;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
 }

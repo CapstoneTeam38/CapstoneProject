@@ -165,6 +165,7 @@ const TransactionHistory = () => {
         rows={transactions}
         loading={loading}
         error={error}
+        onRetry={refetch}
         emptyMessage="No transactions match the current filter."
       />
 

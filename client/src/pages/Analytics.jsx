@@ -16,6 +16,7 @@ const Analytics = () => {
         title="Analytics Offline" 
         message="The statistical aggregation engine is currently unavailable. Ensure the backend services are synchronized." 
         icon="error" 
+        onRetry={refetch}
       />
     );
   }

@@ -104,6 +104,7 @@ const Alerts = () => {
           rows={activeAlerts}
           loading={loading}
           error={error}
+          onRetry={refetch}
           emptyMessage="System cleared! No high-risk threats detected currently."
         />
       </div>

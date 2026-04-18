@@ -41,58 +41,63 @@ const Dashboard = () => {
         <p className="text-slate-400 mt-2">Real-time fraud intelligence and system performance.</p>
       </div>
 
-      {/* Stats Grid */}
-      {statsError ? (
-        <div className="glass-panel p-6"><EmptyState error={statsError} /></div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <StatCard
-            title="Total Transactions"
-            value={statsLoading ? '...' : statsData?.totalTransactions}
-            icon={List}
-            colorClass="from-blue-500 to-indigo-600"
-            formatting="compact"
-            trend={statsLoading ? null : "+12% avg"}
-          />
-          <StatCard
-            title="Frauds Detected"
-            value={statsLoading ? '...' : statsData?.fraudsDetected}
-            icon={ShieldAlert}
-            colorClass="from-rose-500 to-red-600"
-            formatting="compact"
-            trend={statsLoading ? null : "Urgent"}
-          />
-          <StatCard
-            title="Global Risk Score"
-            value={statsLoading ? '...' : (statsData?.globalRiskScore ? statsData.globalRiskScore / 100 : 0)}
-            icon={Activity}
-            colorClass="from-amber-500 to-orange-600"
-            formatting="percentage"
-          />
-        </div>
-      )}
+      {/* Dashboard Metrics Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <StatCard 
+          title="Risk Exposure" 
+          value={`${statsData?.globalRiskScore || 0}%`} 
+          icon={AlertCircle} 
+          trend="+2.1%" 
+          colorClass="from-rose-500 to-red-600"
+          loading={statsLoading}
+        />
+        <StatCard 
+          title="Total Volume" 
+          value={statsData?.totalTransactions?.toLocaleString() || '0'} 
+          icon={CreditCard} 
+          colorClass="from-blue-500 to-indigo-600"
+          loading={statsLoading}
+        />
+        <StatCard 
+          title="Fraud Detected" 
+          value={statsData?.fraudsDetected?.toLocaleString() || '0'} 
+          icon={Zap} 
+          colorClass="from-amber-500 to-orange-600"
+          loading={statsLoading}
+        />
+        <StatCard 
+          title="Live Monitoring" 
+          value={statsData?.totalLive?.toLocaleString() || '0'} 
+          icon={Activity} 
+          colorClass="from-emerald-500 to-teal-600"
+          loading={statsLoading}
+        />
+      </div>
 
-      {/* Main Content Area */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
-        
-        {/* Live Feed List */}
-        <div className="lg:col-span-1 glass-panel flex flex-col overflow-hidden h-[600px]">
-          <div className="p-5 border-b border-white/10 bg-white/[0.02]">
-            <h2 className="text-lg font-bold text-white tracking-wide flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              Live Feed
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Live Threat Feed */}
+        <div className="lg:col-span-2 space-y-4 flex flex-col">
+          <div className="flex items-center justify-between px-2">
+            <h2 className="text-sm font-bold text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
+              <Zap size={14} className="text-amber-500" /> Live Threat Feed
             </h2>
+            <div className="flex items-center gap-2 px-3 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/20">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-[10px] font-bold text-emerald-500 uppercase">System Active</span>
+            </div>
           </div>
-          <div className="flex-1 overflow-y-auto custom-scrollbar relative">
-            {feedLoading && transactions.length === 0 ? (
-              <EmptyState loading={true} />
-            ) : feedError ? (
-              <EmptyState error={feedError} />
-            ) : transactions.length === 0 ? (
-              <EmptyState message="No transactions streaming yet." />
-            ) : (
-              <div className="flex flex-col">
-                {transactions.map(tx => (
+
+          <div className="glass-panel flex-1 min-h-[400px] flex flex-col overflow-hidden relative">
+            <EmptyState 
+              loading={feedLoading && transactions.length === 0} 
+              error={feedError || statsError} 
+              onRetry={() => { refetchFeed(); statsRefetch(); }}
+              message="Awaiting live transaction stream..."
+            />
+            
+            {transactions.length > 0 && (
+              <div className="divide-y divide-white/[0.03] overflow-y-auto max-h-[600px] custom-scrollbar">
+                {transactions.map((tx) => (
                   <LiveFeedItem key={tx.id} transaction={tx} />
                 ))}
               </div>
