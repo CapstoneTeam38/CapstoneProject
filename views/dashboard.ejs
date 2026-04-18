@@ -12,19 +12,19 @@
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background: radial-gradient(circle at top right, #1e1b4b 0%, #050507 40%);
-            background-color: #050507;
-            color: #e2e8f0;
+            background-color: #0B1120;
+            background-color: #0B1120;
+            color: #f8fafc;
         }
 
         .glass-panel {
-            background: rgba(18, 18, 24, 0.7);
+            background: rgba(30, 41, 59, 0.8);
             backdrop-filter: blur(25px);
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        .neon-purple-glow {
-            box-shadow: 0 0 20px rgba(192, 38, 211, 0.1);
+        .neon-blue-glow {
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.1);
         }
 
         ::-webkit-scrollbar {
@@ -37,55 +37,55 @@
     <div class="flex gap-6 h-[calc(100vh-3rem)] max-w-[1600px] mx-auto">
 
         <!-- Sidebar -->
-        <aside class="w-72 glass-panel rounded-[2.5rem] flex flex-col p-8 neon-purple-glow">
+        <aside class="w-72 glass-panel rounded-[2.5rem] flex flex-col p-8 neon-blue-glow">
             <div class="flex items-center gap-3 mb-14">
                 <div
-                    class="w-10 h-10 bg-gradient-to-br from-fuchsia-600 to-indigo-600 rounded-xl shadow-[0_0_15px_rgba(192,38,211,0.5)]">
+                    class="w-10 h-10 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-xl shadow-[0_0_15px_rgba(59,130,246,0.5)]">
                 </div>
                 <h1 class="text-lg font-bold tracking-tight">NEURALGUARD AI</h1>
             </div>
             <nav class="flex-1">
                 <ul class="space-y-2">
                     <li onclick="location.href='/dashboard'"
-                        class="flex items-center gap-3 bg-white/5 text-fuchsia-400 p-4 rounded-2xl border border-white/5 cursor-pointer transition hover:bg-white/10">
-                        <span class="w-2 h-2 bg-fuchsia-500 rounded-full shadow-[0_0_8px_#d946ef]"></span> Dashboard
+                        class="flex items-center gap-3 bg-white/5 text-blue-400 p-4 rounded-2xl border border-white/5 cursor-pointer transition hover:bg-white/10">
+                        <span class="w-2 h-2 bg-blue-500 rounded-full shadow-[0_0_8px_#3b82f6]"></span> Dashboard
                     </li>
                     <li onclick="location.href='/alerts'"
-                        class="flex items-center gap-3 text-slate-500 hover:text-slate-200 p-4 rounded-2xl transition cursor-pointer hover:bg-white/5">
+                        class="flex items-center gap-3 text-slate-400 hover:text-slate-50 p-4 rounded-2xl transition cursor-pointer hover:bg-white/5">
                         Alerts
                     </li>
                     <li onclick="location.href='/transactions'"
-                        class="flex items-center gap-3 text-slate-500 hover:text-slate-200 p-4 rounded-2xl transition cursor-pointer hover:bg-white/5">
+                        class="flex items-center gap-3 text-slate-400 hover:text-slate-50 p-4 rounded-2xl transition cursor-pointer hover:bg-white/5">
                         Transactions
                     </li>
                     <li onclick="location.href='/analytics'"
-                        class="flex items-center gap-3 text-slate-500 hover:text-slate-200 p-4 rounded-2xl transition cursor-pointer hover:bg-white/5">
+                        class="flex items-center gap-3 text-slate-400 hover:text-slate-50 p-4 rounded-2xl transition cursor-pointer hover:bg-white/5">
                         Analytics
                     </li>
                     <li onclick="location.href='/model-stats'"
-                        class="flex items-center gap-3 text-slate-500 hover:text-slate-200 p-4 rounded-2xl transition cursor-pointer hover:bg-white/5">
+                        class="flex items-center gap-3 text-slate-400 hover:text-slate-50 p-4 rounded-2xl transition cursor-pointer hover:bg-white/5">
                         Model Performance
                     </li>
                     <li onclick="location.href='/shap'"
-                        class="flex items-center gap-3 text-slate-500 hover:text-slate-200 p-4 rounded-2xl transition cursor-pointer hover:bg-white/5">
+                        class="flex items-center gap-3 text-slate-400 hover:text-slate-50 p-4 rounded-2xl transition cursor-pointer hover:bg-white/5">
                         SHAP Explainer
                     </li>
                     <li onclick="location.href='/cases'"
-                        class="flex items-center gap-3 text-slate-500 hover:text-slate-200 p-4 rounded-2xl transition cursor-pointer hover:bg-white/5">
+                        class="flex items-center gap-3 text-slate-400 hover:text-slate-50 p-4 rounded-2xl transition cursor-pointer hover:bg-white/5">
                         Case Review
                     </li>
                     <li onclick="location.href='/upload'"
-                        class="flex items-center gap-3 text-slate-500 hover:text-slate-200 p-4 rounded-2xl transition cursor-pointer hover:bg-white/5">
+                        class="flex items-center gap-3 text-slate-400 hover:text-slate-50 p-4 rounded-2xl transition cursor-pointer hover:bg-white/5">
                         Upload Data
                     </li>
                 </ul>
             </nav>
 
             <div class="mt-auto pt-6 border-t border-white/5">
-                <div class="bg-indigo-500/10 p-4 rounded-2xl border border-indigo-500/20">
-                    <p class="text-[10px] uppercase text-indigo-400 font-bold mb-2 tracking-widest">Model Health</p>
+                <div class="bg-cyan-500/10 p-4 rounded-2xl border border-cyan-500/20">
+                    <p class="text-[10px] uppercase text-cyan-400 font-bold mb-2 tracking-widest">Model Health</p>
                     <div class="w-full bg-white/5 h-1 rounded-full overflow-hidden">
-                        <div class="bg-indigo-500 h-full w-[92%]"></div>
+                        <div class="bg-cyan-500 h-full w-[92%]"></div>
                     </div>
                 </div>
             </div>
@@ -96,8 +96,8 @@
             <header class="flex justify-between items-center mb-2">
                 <div>
                     <h2 class="text-4xl font-bold tracking-tight">LLM Fraud Detection</h2>
-                    <p class="text-slate-500 text-sm mt-1 flex items-center gap-2">
-                        <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                    <p class="text-slate-400 text-sm mt-1 flex items-center gap-2">
+                        <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
                         Monitoring Live Transactions
                     </p>
                 </div>
@@ -113,20 +113,20 @@
             <!-- KPI Cards -->
             <div class="grid grid-cols-3 gap-6">
                 <div class="glass-panel p-6 rounded-[2rem]">
-                    <p class="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-4">Total Transactions
+                    <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-4">Total Transactions
                     </p>
                     <h3 id="total-transactions" class="text-3xl font-bold">Loading...</h3>
                 </div>
                 <div class="glass-panel p-6 rounded-[2rem]">
-                    <p class="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-4">Frauds Detected</p>
+                    <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-4">Frauds Detected</p>
                     <h3 id="frauds-detected" class="text-3xl font-bold text-red-500">0</h3>
                 </div>
                 <div class="glass-panel p-6 rounded-[2rem]">
-                    <p class="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-4">Global Risk Score</p>
+                    <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-4">Global Risk Score</p>
                     <h3 id="risk-score" class="text-3xl font-bold">0%</h3>
                     <div class="w-full bg-white/5 h-1.5 rounded-full mt-5">
                         <div id="risk-bar"
-                            class="bg-gradient-to-r from-fuchsia-500 to-indigo-500 h-full w-[0%] rounded-full shadow-[0_0_10px_#d946ef]">
+                            class="bg-gradient-to-r from-blue-500 to-cyan-500 h-full w-[0%] rounded-full shadow-[0_0_10px_#3b82f6]">
                         </div>
                     </div>
                 </div>
