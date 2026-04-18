@@ -79,6 +79,17 @@ router.get('/cases', async (req, res) => {
     }
 });
 
+router.post('/cases/:id/review', async (req, res) => {
+    try {
+        const r = await axios.post(
+            `${FLASK}/api/cases/${req.params.id}/review`, req.body
+        );
+        res.json(r.data);
+    } catch (err) {
+        res.status(500).json({ error: 'Review failed' });
+    }
+});
+
 router.post('/case-review/:id', async (req, res) => {
     try {
         const r = await axios.post(
