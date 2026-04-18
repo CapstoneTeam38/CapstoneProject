@@ -17,7 +17,7 @@
 
         body {
             background: #020617;
-            color: #e2e8f0;
+            color: #f8fafc;
             font-family: 'Inter', sans-serif;
             height: 100vh;
             overflow: hidden;
@@ -97,6 +97,11 @@
             backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
+
+        /* Hide Spline Watermark Logo */
+        spline-viewer::part(logo) {
+            display: none !important;
+        }
     </style>
 </head>
 
@@ -132,7 +137,7 @@
                 <h1 class="fade-up-3 text-7xl font-black text-white leading-[1.1] tracking-tighter">
                     Secure the<br />
                     <span
-                        class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500">Neural
+                        class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-500">Neural
                         Flow.</span>
                 </h1>
 
@@ -144,11 +149,11 @@
                 <div class="fade-up-5 flex gap-12 pt-8">
                     <div>
                         <p class="text-3xl font-bold text-white tracking-tighter">99.96%</p>
-                        <p class="text-[10px] text-slate-500 uppercase tracking-[0.2em] mt-1">Accuracy</p>
+                        <p class="text-[10px] text-slate-400 uppercase tracking-[0.2em] mt-1">Accuracy</p>
                     </div>
                     <div>
                         <p class="text-3xl font-bold text-white tracking-tighter">0.17%</p>
-                        <p class="text-[10px] text-slate-500 uppercase tracking-[0.2em] mt-1">Detection Rate</p>
+                        <p class="text-[10px] text-slate-400 uppercase tracking-[0.2em] mt-1">Detection Rate</p>
                     </div>
                 </div>
             </div>
@@ -178,13 +183,13 @@
                     <div class="glass-card p-10 rounded-[2.5rem] shadow-2xl relative">
                         <div class="mb-10">
                             <h2 class="text-3xl font-bold text-white tracking-tight">Login</h2>
-                            <p class="text-slate-500 text-sm mt-2 font-medium">Identity Verification Required</p>
+                            <p class="text-slate-400 text-sm mt-2 font-medium">Identity Verification Required</p>
                         </div>
 
                         <form action="/login" method="POST" class="space-y-6">
                             <div>
                                 <label
-                                    class="text-[10px] uppercase tracking-widest font-bold text-slate-500 mb-2 block">Research
+                                    class="text-[10px] uppercase tracking-widest font-bold text-slate-400 mb-2 block">Research
                                     Email</label>
                                 <input type="email" name="email" required
                                     class="w-full bg-slate-950/50 border border-slate-800 rounded-2xl py-4 px-5 text-white focus:ring-1 focus:ring-cyan-500/50 outline-none transition-all placeholder-slate-700"
@@ -192,7 +197,7 @@
                             </div>
                             <div>
                                 <label
-                                    class="text-[10px] uppercase tracking-widest font-bold text-slate-500 mb-2 block">Security
+                                    class="text-[10px] uppercase tracking-widest font-bold text-slate-400 mb-2 block">Security
                                     Key</label>
                                 <input type="password" name="password" required
                                     class="w-full bg-slate-950/50 border border-slate-800 rounded-2xl py-4 px-5 text-white focus:ring-1 focus:ring-cyan-500/50 outline-none transition-all"
@@ -217,7 +222,35 @@
         </div>
     </div>
 
-    <script>lucide.createIcons();</script>
+    <script>
+        lucide.createIcons();
+
+        // Hide Spline watermark logos
+        function hideSplineLogo(viewer) {
+            const shadow = viewer.shadowRoot;
+            if (shadow) {
+                const logo = shadow.querySelector('#logo');
+                if (logo) { logo.style.display = 'none'; return true; }
+                // Try alternative selectors
+                const allLinks = shadow.querySelectorAll('a');
+                allLinks.forEach(a => {
+                    if (a.href && a.href.includes('spline')) a.style.display = 'none';
+                });
+            }
+            return false;
+        }
+
+        // Retry until viewers are fully loaded
+        function hideAllSplineLogos() {
+            const viewers = document.querySelectorAll('spline-viewer');
+            let allHidden = true;
+            viewers.forEach(v => { if (!hideSplineLogo(v)) allHidden = false; });
+            if (!allHidden) setTimeout(hideAllSplineLogos, 500);
+        }
+
+        // Start checking after page load
+        window.addEventListener('load', () => setTimeout(hideAllSplineLogos, 1000));
+    </script>
 </body>
 
 </html>

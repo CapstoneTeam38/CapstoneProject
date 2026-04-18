@@ -8,12 +8,12 @@
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #050507;
-            color: #e2e8f0;
+            background-color: #0B1120;
+            color: #f8fafc;
         }
 
         .glass-panel {
-            background: rgba(18, 18, 24, 0.7);
+            background: rgba(30, 41, 59, 0.8);
             backdrop-filter: blur(25px);
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
@@ -25,7 +25,7 @@
         <header class="mb-6 flex justify-between items-center">
             <div>
                 <h1 class="text-3xl font-bold">Predictive Modeling History</h1>
-                <p class="text-slate-500 text-sm mt-1">
+                <p class="text-slate-400 text-sm mt-1">
                     Showing <span id="showing-count">—</span> of <span id="total-count">284,807</span> transactions
                     — Page <span id="current-page">1</span>
                 </p>
@@ -37,7 +37,7 @@
                     <option value="fraud">Fraud Only</option>
                     <option value="legit">Legitimate Only</option>
                 </select>
-                <button onclick="location.href='/dashboard'" class="px-6 py-2 bg-indigo-600 rounded-xl font-bold">Back
+                <button onclick="location.href='/dashboard'" class="px-6 py-2 bg-cyan-600 rounded-xl font-bold">Back
                     to Dashboard</button>
             </div>
         </header>
@@ -45,15 +45,15 @@
         <!-- Stats bar -->
         <div class="grid grid-cols-3 gap-4 mb-6">
             <div class="glass-panel rounded-2xl p-4 text-center">
-                <p class="text-slate-500 text-xs uppercase tracking-widest mb-1">Total</p>
+                <p class="text-slate-400 text-xs uppercase tracking-widest mb-1">Total</p>
                 <p class="text-2xl font-bold text-purple-400" id="stat-total">—</p>
             </div>
             <div class="glass-panel rounded-2xl p-4 text-center">
-                <p class="text-slate-500 text-xs uppercase tracking-widest mb-1">Fraud</p>
+                <p class="text-slate-400 text-xs uppercase tracking-widest mb-1">Fraud</p>
                 <p class="text-2xl font-bold text-red-400" id="stat-fraud">—</p>
             </div>
             <div class="glass-panel rounded-2xl p-4 text-center">
-                <p class="text-slate-500 text-xs uppercase tracking-widest mb-1">Legitimate</p>
+                <p class="text-slate-400 text-xs uppercase tracking-widest mb-1">Legitimate</p>
                 <p class="text-2xl font-bold text-emerald-400" id="stat-legit">—</p>
             </div>
         </div>
@@ -72,7 +72,7 @@
                 </thead>
                 <tbody id="tx-table" class="divide-y divide-white/5">
                     <tr>
-                        <td colspan="6" class="p-20 text-center text-slate-500">Loading transactions...</td>
+                        <td colspan="6" class="p-20 text-center text-slate-400">Loading transactions...</td>
                     </tr>
                 </tbody>
             </table>
@@ -84,7 +84,7 @@
                 class="px-6 py-2 bg-white/5 border border-white/10 rounded-xl text-sm disabled:opacity-30" disabled>←
                 Previous</button>
             <div class="flex gap-2" id="page-btns"></div>
-            <button id="next-btn" onclick="changePage(1)" class="px-6 py-2 bg-indigo-600 rounded-xl text-sm">Next
+            <button id="next-btn" onclick="changePage(1)" class="px-6 py-2 bg-cyan-600 rounded-xl text-sm">Next
                 →</button>
         </div>
     </div>
@@ -97,7 +97,7 @@
 
         async function loadPage(page, filter) {
             const tbody = document.getElementById('tx-table');
-            tbody.innerHTML = '<tr><td colspan="6" class="p-10 text-center text-slate-500">Loading...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" class="p-10 text-center text-slate-400">Loading...</td></tr>';
 
             try {
                 const res = await fetch(`/api/transactions-page?page=${page}&limit=${PAGE_SIZE}&filter=${filter}`);
@@ -133,15 +133,15 @@
                     <td class="p-4">
                         <div class="flex items-center gap-3">
                             <div class="w-24 h-1.5 bg-white/5 rounded-full overflow-hidden">
-                                <div class="h-full ${isFraud ? 'bg-red-500' : 'bg-indigo-500'}" style="width:${riskPct}%"></div>
+                                <div class="h-full ${isFraud ? 'bg-red-500' : 'bg-cyan-500'}" style="width:${riskPct}%"></div>
                             </div>
                             <span class="font-mono text-xs">${riskPct}%</span>
                         </div>
                     </td>
-                    <td class="p-4 text-slate-500 text-xs">${tx.Time || '—'}</td>
+                    <td class="p-4 text-slate-400 text-xs">${tx.Time || '—'}</td>
                 </tr>`;
                 });
-                tbody.innerHTML = rows || '<tr><td colspan="6" class="p-10 text-center text-slate-500">No transactions found</td></tr>';
+                tbody.innerHTML = rows || '<tr><td colspan="6" class="p-10 text-center text-slate-400">No transactions found</td></tr>';
 
                 // Update pagination buttons
                 const totalPages = Math.ceil(totalDocs / PAGE_SIZE);
@@ -173,7 +173,7 @@
                 } else {
                     html += `<button onclick="goToPage(${p})"
                     class="px-3 py-2 rounded-lg text-sm ${p === current
-                            ? 'bg-indigo-600 text-white'
+                            ? 'bg-cyan-600 text-white'
                             : 'bg-white/5 text-slate-400 hover:bg-white/10'}">${p}</button>`;
                 }
             });

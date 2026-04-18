@@ -13,8 +13,8 @@
         }
 
         body {
-            background: #050507;
-            color: #e2e8f0;
+            background: #0B1120;
+            color: #f8fafc;
             font-family: 'Plus Jakarta Sans', sans-serif;
             min-height: 100vh;
         }
@@ -33,11 +33,11 @@
         }
 
         .topbar h1 span {
-            color: #a855f7;
+            color: #06b6d4;
         }
 
         .btn {
-            background: #7c3aed;
+            background: #3b82f6;
             color: #fff;
             padding: 10px 22px;
             border-radius: 8px;
@@ -53,7 +53,7 @@
         }
 
         .kpi {
-            background: #111827;
+            background: #1e293b;
             border: 1px solid #1e293b;
             border-radius: 12px;
             padding: 24px;
@@ -77,7 +77,7 @@
         }
 
         .kpi .value.green {
-            color: #22c55e;
+            color: #10b981;
         }
 
         .kpi .value.amber {
@@ -85,7 +85,7 @@
         }
 
         .kpi .value.purple {
-            color: #a855f7;
+            color: #06b6d4;
         }
 
         .charts {
@@ -96,7 +96,7 @@
         }
 
         .chart-card {
-            background: #111827;
+            background: #1e293b;
             border: 1px solid #1e293b;
             border-radius: 12px;
             padding: 24px;
@@ -233,7 +233,7 @@
                         labels: ['Fraud', 'Legitimate'],
                         datasets: [{
                             data: [data.fraudCount || 0, data.legitCount || 0],
-                            backgroundColor: ['#ef4444', '#22c55e'],
+                            backgroundColor: ['#ef4444', '#10b981'],
                             borderWidth: 0, hoverOffset: 8
                         }]
                     },
@@ -254,7 +254,7 @@
                     data: {
                         labels: labels,
                         datasets: [
-                            { label: 'Total', data: counts, backgroundColor: '#7c3aed88' },
+                            { label: 'Total', data: counts, backgroundColor: '#3b82f688' },
                             { label: 'Fraud', data: frauds, backgroundColor: '#ef444488' }
                         ]
                     },
