@@ -19,7 +19,7 @@ The system provides a centralized dashboard for monitoring transactions, fraud c
 - Risk score visualization  
 - AI-generated transaction insights  
 - Alert monitoring system  
-- Deployed on Railway  
+- Deployed on Railway  (or vercel)
 
 ---
 
