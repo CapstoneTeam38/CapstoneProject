@@ -1,20 +1,14 @@
-# Use official Node image
+# Node/Express Service
 FROM node:18
 
-# Set working directory
 WORKDIR /app
 
-# Copy package.json first
 COPY package*.json ./
 
-# Install dependencies
 RUN npm install
 
-# Copy rest of project
 COPY . .
 
-# Expose your app port
-EXPOSE 5000
+EXPOSE 3000
 
-# Start app
-CMD ["npm", "start"]
+CMD ["node", "app.js"]
