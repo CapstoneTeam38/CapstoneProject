@@ -1,0 +1,75 @@
+26f5a57 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-04-16 Removed unnecessary directory
+656b814 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-04-14 Merge branch 'feature/auth-pages' of https://github.com/CapstoneTeam38/CapstoneProject into feature/auth-pages
+d4779d9 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-04-14 feat: restore all tabs, upload data nav, login page update
+b06bc90 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-04-14 Add multi-tenant CSV upload with per-user data isolation
+0f0af57 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-04-14 fix: restore all tabs and views
+50b7152 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-04-14 fix: resolve merge conflicts, restore all tabs
+a211633 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-04-13 ui change + login page + tabs
+3ce3953 AdwitiyaS adwitiyasinha25@gmail.com 2026-02-23 Add Isolation Forest model script for dashboard anomaly detection
+570384a dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-23 dashboard update
+2e0f693 AdwitiyaS 163662059+AdwitiyaS@users.noreply.github.com 2026-02-23 Merge pull request #3 from CapstoneTeam38/ml-mongodb-integration
+3f37306 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-23 update
+e8f4600 AdwitiyaS adwitiyasinha25@gmail.com 2026-02-23 Add ML prediction view with live fraud scoring interface
+bcd5be9 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-23 jenins
+821b344 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-23 update jenkins
+be84536 AdwitiyaS adwitiyasinha25@gmail.com 2026-02-22 Remove misplaced Python files from views directory
+cc34076 AdwitiyaS 163662059+AdwitiyaS@users.noreply.github.com 2026-02-22 Merge pull request #2 from CapstoneTeam38/ml-mongodb-integration
+9716759 AdwitiyaS adwitiyasinha25@gmail.com 2026-02-22 Add ML fraud prediction API with MongoDB Atlas integration and trained models
+ec3730e dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-22 Delete models directory
+b064633 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-22 Delete models/threshold.pkl
+501c9a3 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-22 Delete models/random_forest_model.pkl
+47958ce dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-22 Delete models/column_means.json
+b50df7a dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-22 Delete models/isolation_forest_model.pkl
+306a9f5 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-22 change file
+b4a6f43 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-22 update file
+06d7c63 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-22 Update README.md
+a50e539 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-22 Merge pull request #1 from CapstoneTeam38/feature/auth-pages
+121cf1e dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-22 jenkins file update
+00293ee dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-22 new file update
+143f490 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-22 jenkins build trigger
+8b7739c dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-22 jenkins file change
+dd8c832 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-21 ML model integration using Random and isolation forest
+5ee4786 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-21 ML model files added
+65a13e8 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-21 Merged main into feature/auth-pages
+c708eaf dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-21 server change
+15215a6 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-21 jenkins file update
+e3a08dd dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-21 jenkins file update
+faf7903 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-21 file change
+ebc33bf dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-21 jenkins file update
+fcd8f78 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-21 docker file
+fd10458 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-21 merge conflict resolved
+28c16be dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-21 Merge branch 'feature/auth-pages' of https://github.com/CapstoneTeam38/CapstoneProject into feature/auth-pages
+bbf5b0f dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-21 file change
+ee8d4a7 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-21 Merge branch 'main' of https://github.com/CapstoneTeam38/CapstoneProject
+c80b194 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-21 jenkins file chnage
+ea57e54 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-21 jenkins file change
+1844f6b dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-20 Delete model.py
+182221b dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-20 Update Jenkinsfile
+5420b97 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-20 Update Jenkinsfile
+268e3ad dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-20 add recepients
+4f551e5 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-20 Update Jenkinsfile
+05902ed dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-20 jenkins update
+d68c9f8 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-20 email change
+f459b7b dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-20 code
+fea2628 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-20 code edit
+eb2cfc2 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-20 mail update
+fbe9bd1 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-20 email testing
+9e12828 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-20 final updated code
+04296e2 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-20 updated code for jenkinsfile
+34edc13 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-20 updated jenkinsfile code
+87855e2 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-20 updated emails
+c0ef493 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-20 added emails of team
+6441dba dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-20 Fixing shell for Windows
+560b63f dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-20 Add Jenkinsfile for Stage View
+bb6eafb dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-20 Final devops demo
+de61f35 dhyeypuj dhyey.pujara23@st.niituniversity.in 2026-02-20 Added authentication using Firebase. Also added a login page.
+c2fd0b9 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-17 Fixed DB connection and reinstalled dependencies
+8d03b31 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-17 Resolved merge conflict and removed node_modules
+c2bae3d dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-17 Removed node_modules from tracking
+b0cddeb akanksha akankshajoshi294@gmail.com 2026-02-16 fix:update mongodb collections
+c96a0a2 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-14 testing jenkins
+e74ff85 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-12 production deploy
+43b60ef dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-12 Create README.md
+7957435 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-12 deployment config
+489cc66 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-12 added gitignore
+ee4b300 dishasharma23-prog disha.sharma23@st.niituniversity.in 2026-02-12 initial commit
