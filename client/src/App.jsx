@@ -1,40 +1,6 @@
 import React from 'react';
-import { Routes, Route, Link } from 'react-router-dom';
-import { LayoutDashboard, AlertCircle, List, FileSearch, ShieldCheck, Activity, BarChart2 } from 'lucide-react';
-
-const Sidebar = () => {
-  const links = [
-    { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-    { to: "/alerts", icon: AlertCircle, label: "Live Alerts" },
-    { to: "/transactions", icon: List, label: "Transactions" },
-    { to: "/check", icon: FileSearch, label: "Manual Check" },
-    { to: "/cases", icon: ShieldCheck, label: "Case Review" },
-    { to: "/analytics", icon: Activity, label: "Analytics" },
-    { to: "/model-stats", icon: BarChart2, label: "Model Stats" },
-  ];
-
-  return (
-    <aside className="fixed inset-y-0 left-0 w-64 bg-[#020617]/80 backdrop-blur-xl border-r border-white/10 hidden md:flex flex-col z-50">
-      <div className="p-6">
-        <h1 className="text-xl font-bold tracking-widest uppercase text-white/90">
-          NeuralGuard
-        </h1>
-      </div>
-      <nav className="flex-1 px-4 space-y-2 mt-4">
-        {links.map(({ to, icon: Icon, label }) => (
-          <Link
-            key={to}
-            to={to}
-            className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
-          >
-            <Icon size={18} />
-            <span className="text-sm font-medium">{label}</span>
-          </Link>
-        ))}
-      </nav>
-    </aside>
-  );
-};
+import { Routes, Route } from 'react-router-dom';
+import Navbar from './components/Navbar';
 
 const PagePlaceholder = ({ title }) => (
   <div className="glass-panel p-8 h-[60vh] flex flex-col items-center justify-center">
@@ -48,8 +14,10 @@ const PagePlaceholder = ({ title }) => (
 function App() {
   return (
     <div className="min-h-screen">
-      <Sidebar />
-      <main className="ml-0 md:ml-64 p-6 md:p-8 transition-all">
+      <Navbar />
+
+      {/* Main content — offset for desktop sidebar (ml-64) and mobile top bar (pt-14) */}
+      <main className="ml-0 md:ml-64 pt-14 md:pt-0 p-6 md:p-8 transition-all">
         <header className="mb-8 hidden md:block">
           <h2 className="text-sm uppercase tracking-widest text-slate-500 font-bold">Workspace</h2>
         </header>
