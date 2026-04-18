@@ -6,6 +6,7 @@ import Alerts from './pages/Alerts';
 import CheckTransaction from './pages/CheckTransaction';
 import CaseReview from './pages/CaseReview';
 import Analytics from './pages/Analytics';
+import ModelStats from './pages/ModelStats';
 
 const PagePlaceholder = ({ title }) => (
   <div className="glass-panel p-8 h-[60vh] flex flex-col items-center justify-center">
@@ -35,7 +36,7 @@ function App() {
           <Route path="/check" element={<CheckTransaction />} />
           <Route path="/cases" element={<CaseReview />} />
           <Route path="/analytics" element={<Analytics />} />
-          <Route path="/model-stats" element={<PagePlaceholder title="Model Performance Stats" />} />
+          <Route path="/model-stats" element={<ModelStats />} />
         </Routes>
       </main>
     </div>
