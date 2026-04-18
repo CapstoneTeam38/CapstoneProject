@@ -3,6 +3,7 @@ import Navbar from './components/Navbar';
 import Dashboard from './pages/Dashboard';
 import TransactionHistory from './pages/TransactionHistory';
 import Alerts from './pages/Alerts';
+import CheckTransaction from './pages/CheckTransaction';
 
 const PagePlaceholder = ({ title }) => (
   <div className="glass-panel p-8 h-[60vh] flex flex-col items-center justify-center">
@@ -29,7 +30,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/alerts" element={<Alerts />} />
           <Route path="/transactions" element={<TransactionHistory />} />
-          <Route path="/check" element={<PagePlaceholder title="Manual Transaction Check" />} />
+          <Route path="/check" element={<CheckTransaction />} />
           <Route path="/cases" element={<PagePlaceholder title="Case Review Queue" />} />
           <Route path="/analytics" element={<PagePlaceholder title="Deep Analytics" />} />
           <Route path="/model-stats" element={<PagePlaceholder title="Model Performance Stats" />} />

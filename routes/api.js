@@ -52,6 +52,15 @@ router.get('/transactions-page', async (req, res) => {
     }
 });
 
+router.post('/shap', async (req, res) => {
+    try {
+        const r = await axios.post(`${FLASK}/api/shap`, req.body);
+        res.json(r.data);
+    } catch (err) {
+        res.status(500).json({ error: 'SHAP service unavailable. Is Flask running?' });
+    }
+});
+
 router.post('/shap-proxy', async (req, res) => {
     try {
         const r = await axios.post(`${FLASK}/api/shap`, req.body);
