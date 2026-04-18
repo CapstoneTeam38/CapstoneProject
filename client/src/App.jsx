@@ -1,6 +1,6 @@
-import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
+import Dashboard from './pages/Dashboard';
 
 const PagePlaceholder = ({ title }) => (
   <div className="glass-panel p-8 h-[60vh] flex flex-col items-center justify-center">
@@ -24,7 +24,7 @@ function App() {
 
         <Routes>
           <Route path="/" element={<PagePlaceholder title="Welcome to NeuralGuard" />} />
-          <Route path="/dashboard" element={<PagePlaceholder title="Dashboard Overview" />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/alerts" element={<PagePlaceholder title="Live Threat Alerts" />} />
           <Route path="/transactions" element={<PagePlaceholder title="Transaction Ledger" />} />
           <Route path="/check" element={<PagePlaceholder title="Manual Transaction Check" />} />
