@@ -15,22 +15,21 @@ app = Flask(__name__)
 CORS(app)
 
 # ── Models ─────────────────────────────────────────────────────────
-rf_model  = joblib.load("models/random_forest_model.pkl")
-iso_model = joblib.load("models/isolation_forest_model.pkl")
-threshold = joblib.load("models/threshold.pkl")
+model = joblib.load("models/xgb_model_v2.pkl")
 
-with open("models/column_means.json") as f:
-    column_means = json.load(f)
+with open("models/top_features.json") as f:
+    top_features = json.load(f)
 
-FEATURE_NAMES = ["Time"] + [f"V{i}" for i in range(1, 29)] + ["Amount"]
+with open("models/threshold.json") as f:
+    threshold = json.load(f)["threshold"]
 
 # ── MongoDB ────────────────────────────────────────────────────────
-client = MongoClient(os.getenv("MONGO_URI"))
+'''client = MongoClient(os.getenv("MONGO_URI"))
 db     = client["fraud_platform"]
 
 predictions_col  = db["predictions"]
 transactions_col = db["transactions"]
-
+'''
 # ════════════════════════════════════════════════════════════════════
 # BASIC
 # ════════════════════════════════════════════════════════════════════
@@ -46,38 +45,36 @@ def home():
 
 @app.route("/api/predict", methods=["POST"])
 def predict():
-    data     = request.json
-    features = column_means.copy()
+    try:
+        data = request.json
 
-    features[0]  = float(data.get("time", column_means[0]))
-    features[29] = float(data.get("amount", column_means[29]))
-    features[13] = float(data.get("v14", column_means[13]))
+        df = pd.DataFrame([data])
 
-    proba      = rf_model.predict_proba([features])[0][1]
-    is_fraud   = int(proba >= threshold)
-    iso_score  = iso_model.decision_function([features])[0]
-    is_anomaly = int(iso_model.predict([features])[0] == -1)
+        for col in top_features:
+            if col not in df:
+                df[col] = 0
 
-    doc = {
-        "timestamp": datetime.now(timezone.utc),
-        "amount": features[29],
-        "time": features[0],
-        "fraud_probability": round(float(proba), 4),
-        "is_fraud": is_fraud,
-        "iso_score": round(float(iso_score), 4),
-        "is_anomaly": is_anomaly,
-    }
+        df = df[top_features]
 
-    predictions_col.insert_one(doc)
+        prob = model.predict_proba(df)[0][1]
+        is_fraud = int(prob >= threshold)
 
-    return jsonify({
-        "fraud_probability": doc["fraud_probability"],
-        "is_fraud": is_fraud,
-        "is_anomaly": is_anomaly,
-        "iso_score": doc["iso_score"],
-        "label": "FRAUD" if is_fraud else "LEGITIMATE"
-    })
+        doc = {
+            "timestamp": datetime.now(timezone.utc),
+            "fraud_probability": float(prob),
+            "is_fraud": is_fraud
+        }
 
+       # predictions_col.insert_one(doc)
+
+        return jsonify({
+            "fraud_probability": float(prob),
+            "is_fraud": is_fraud,
+            "label": "FRAUD" if is_fraud else "LEGITIMATE"
+        })
+
+    except Exception as e:
+        return jsonify({"error": str(e)})
 
 # ════════════════════════════════════════════════════════════════════
 # HISTORY
