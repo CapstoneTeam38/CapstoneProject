@@ -1,10 +1,9 @@
-//jenkins111111122666
-
 pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "neuralguard"
+        IMAGE_FLASK = "neuralguard-flask"
+        IMAGE_NODE  = "neuralguard-node"
     }
 
     stages {
@@ -15,22 +14,47 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Install Node Dependencies') {
             steps {
                 bat 'npm install'
             }
         }
 
-        stage('Docker Build') {
+        stage('Install Python Dependencies') {
             steps {
-                echo 'Building Docker Image...'
-                bat "docker build -t %IMAGE_NAME% ."
+                bat 'pip install -r backend/requirements.txt'
+            }
+        }
+
+        stage('Run Python Tests') {
+            steps {
+                bat 'python backend/test_flask.py'
+            }
+        }
+
+        stage('Docker Build - Flask') {
+            steps {
+                echo 'Building Flask Docker Image...'
+                bat "docker build -t %IMAGE_FLASK% ./backend"
+            }
+        }
+
+        stage('Docker Build - Node') {
+            steps {
+                echo 'Building Node Docker Image...'
+                bat "docker build -t %IMAGE_NODE% ."
+            }
+        }
+
+        stage('Docker Compose Up') {
+            steps {
+                echo 'Starting all services...'
+                bat 'docker-compose up -d'
             }
         }
     }
 
     post {
-
         success {
             emailext(
                 subject: "NeuralGuard CI/CD: SUCCESS ✅",

@@ -1,9 +1,11 @@
 require('dotenv').config();
 
+require('dotenv').config();
+
 const mongoose = require('mongoose');
 
 mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log("MongoDB Connected"))
+    .then(() => console.log("MongoDB Atlas Connected ✓"))
     .catch(err => console.log("Mongo Error:", err));
 
 const express = require('express');
@@ -15,40 +17,29 @@ const flash = require('connect-flash');
 
 const app = express();
 
-// Routes
 const authRoutes = require('./routes/auth');
 const apiRoutes = require('./routes/api');
 
-// Passport config
 require('./config/passport')(passport);
 
-// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 app.use(session({
-    secret: 'supersecretkey',
+    secret: process.env.SESSION_SECRET || 'neuralguard_secret_2024',
     resave: false,
     saveUninitialized: false
 }));
-
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
-
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 
-//  Mount authentication routes
 app.use('/', authRoutes);
-
-// Mount API bridge
 app.use('/api', apiRoutes);
 
+// ── Existing Pages ────────────────────────────────────────────────────────────
 
-// ================= ML ROUTES =================
-
-// Alerts Page (Protected inside auth.js via ensureAuth on dashboard)
 app.get('/alerts', async (req, res) => {
     try {
         const response = await axios.get('http://127.0.0.1:5001/history');
@@ -60,7 +51,6 @@ app.get('/alerts', async (req, res) => {
     }
 });
 
-// Transactions Page
 app.get('/transactions', async (req, res) => {
     try {
         const response = await axios.get('http://127.0.0.1:5001/history');
@@ -70,9 +60,66 @@ app.get('/transactions', async (req, res) => {
     }
 });
 
+// ── New Pages ─────────────────────────────────────────────────────────────────
 
-//  DO NOT define '/' or '/dashboard' here.
-// They are handled in auth.js
+// Analytics tab
+app.get('/analytics', async (req, res) => {
+    try {
+        const response = await axios.get('http://127.0.0.1:5001/api/analytics');
+        res.render('analytics', { data: response.data });
+    } catch (err) {
+        console.error("Analytics fetch failed:", err.message);
+        res.render('analytics', { data: {} });
+    }
+});
 
+// Model Performance tab
+app.get('/model-stats', async (req, res) => {
+    try {
+        const response = await axios.get('http://127.0.0.1:5001/api/model-stats');
+        res.render('model_stats', { stats: response.data });
+    } catch (err) {
+        console.error("Model stats fetch failed:", err.message);
+        res.render('model_stats', { stats: {} });
+    }
+});
 
-app.listen(5000, () => console.log("Server running on http://localhost:5000"));
+// SHAP Explainer tab
+app.get('/shap', (req, res) => {
+    res.render('shap');
+});
+
+// Case Review tab
+app.get('/cases', async (req, res) => {
+    try {
+        const response = await axios.get('http://127.0.0.1:5001/api/cases');
+        res.render('cases', { cases: response.data });
+    } catch (err) {
+        console.error("Cases fetch failed:", err.message);
+        res.render('cases', { cases: [] });
+    }
+});
+
+app.listen(5000, () => console.log("NeuralGuard running → http://localhost:5000"));
+
+// ── Proxy routes (bridge EJS → Flask) ────────────────────────────────────────
+
+app.post('/api/shap-proxy', async (req, res) => {
+    try {
+        const response = await axios.post('http://127.0.0.1:5001/api/shap', req.body);
+        res.json(response.data);
+    } catch (err) {
+        res.status(500).json({ error: 'SHAP service unavailable. Is Flask running?' });
+    }
+});
+
+app.post('/api/case-review/:id', async (req, res) => {
+    try {
+        const response = await axios.post(
+            `http://127.0.0.1:5001/api/cases/${req.params.id}/review`, req.body
+        );
+        res.json(response.data);
+    } catch (err) {
+        res.status(500).json({ error: 'Review failed.' });
+    }
+});
