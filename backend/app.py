@@ -1,3 +1,4 @@
+import pandas as pd
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from pymongo import MongoClient
@@ -15,21 +16,39 @@ app = Flask(__name__)
 CORS(app)
 
 # ── Models ─────────────────────────────────────────────────────────
-model = joblib.load("models/xgb_model_v2.pkl")
+model = joblib.load("backend/models/xgb_model_v2.pkl")
+ocsvm_model = joblib.load("backend/models/ocsvm_model.pkl")
 
-with open("models/top_features.json") as f:
+with open("backend/models/top_features.json") as f:
     top_features = json.load(f)
 
-with open("models/threshold.json") as f:
+with open("backend/models/threshold.json") as f:
     threshold = json.load(f)["threshold"]
 
 # ── MongoDB ────────────────────────────────────────────────────────
-'''client = MongoClient(os.getenv("MONGO_URI"))
-db     = client["fraud_platform"]
+# ── MongoDB ────────────────────────────────────────────────────────
+MONGO_URI = os.getenv("MONGO_URI")
 
-predictions_col  = db["predictions"]
+if not MONGO_URI:
+    raise ValueError("MONGO_URI not found in .env")
+
+client = MongoClient(MONGO_URI)
+db = client["fraud_platform"]
+
+predictions_col = db["predictions"]
 transactions_col = db["transactions"]
-'''
+
+
+## ════════════════════════════════════════════════════════════════════
+# Debugging route to check DB connection
+# ════════════════════════════════════════════════════════════════════
+@app.route("/test-db")
+def test_db():
+    try:
+        count = transactions_col.count_documents({})
+        return {"status": "connected", "count": count}
+    except Exception as e:
+        return {"error": str(e)}
 # ════════════════════════════════════════════════════════════════════
 # BASIC
 # ════════════════════════════════════════════════════════════════════
@@ -58,6 +77,9 @@ def predict():
 
         prob = model.predict_proba(df)[0][1]
         is_fraud = int(prob >= threshold)
+        # OCSVM
+        iso_score = ocsvm_model.decision_function(df)[0]
+        is_anomaly = int(ocsvm_model.predict(df)[0] == -1)
 
         doc = {
             "timestamp": datetime.now(timezone.utc),
@@ -70,6 +92,8 @@ def predict():
         return jsonify({
             "fraud_probability": float(prob),
             "is_fraud": is_fraud,
+            "is_anomaly": is_anomaly,
+            "iso_score": float(iso_score),
             "label": "FRAUD" if is_fraud else "LEGITIMATE"
         })
 
