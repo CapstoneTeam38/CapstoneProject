@@ -9,6 +9,7 @@ import Analytics from './pages/Analytics';
 import ModelStats from './pages/ModelStats';
 import UploadDataset from './pages/UploadDataset';
 import Login from './pages/Login';
+import Signup from './pages/Signup';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './hooks/useAuth';
 
@@ -23,16 +24,17 @@ const PagePlaceholder = ({ title }) => (
 
 function App() {
   const location = useLocation();
-  const isLoginPage = location.pathname === '/login';
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/signup';
 
   return (
     <AuthProvider>
       <div className="min-h-screen">
-        {!isLoginPage && <Navbar />}
+        {!isAuthPage && <Navbar />}
 
-        {isLoginPage ? (
+        {isAuthPage ? (
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
             <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
         ) : (

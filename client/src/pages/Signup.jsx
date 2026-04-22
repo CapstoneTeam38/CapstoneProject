@@ -1,37 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { ShieldCheck } from 'lucide-react';
+import { ShieldCheck, User as UserIcon } from 'lucide-react';
 
-const Login = () => {
+const Signup = () => {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
+  const { signup } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Load spline viewer script if not present
     if (!document.querySelector('script[src="https://unpkg.com/@splinetool/viewer@1.12.81/build/spline-viewer.js"]')) {
       const script = document.createElement('script');
       script.type = 'module';
       script.src = 'https://unpkg.com/@splinetool/viewer@1.12.81/build/spline-viewer.js';
       document.head.appendChild(script);
     }
-    
-    // Attempt to hide watermark periodically
-    const interval = setInterval(() => {
-      const viewers = document.querySelectorAll('spline-viewer');
-      viewers.forEach(viewer => {
-        if (viewer.shadowRoot) {
-          const logo = viewer.shadowRoot.querySelector('#logo');
-          if (logo) logo.style.display = 'none';
-        }
-      });
-    }, 1000);
-    
-    return () => clearInterval(interval);
   }, []);
 
   const handleSubmit = async (e) => {
@@ -40,18 +27,18 @@ const Login = () => {
     setError('');
     
     try {
-      await login(email, password);
-      // Navigate to dashboard on success
+      await signup(name, email, password);
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to authenticate');
+      setError(err.response?.data?.error || 'Failed to create account');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="flex h-screen w-full fixed inset-0 z-50 bg-[#020617] text-[#f8fafc] font-['Inter'] overflow-hidden">
+    <div className="flex h-screen w-full fixed inset-0 z-50 bg-[#020617] text-white font-['Inter'] overflow-hidden">
+      {/* Left side: Hero */}
       <div className="hidden lg:flex lg:w-[55%] flex-col justify-between p-16 relative overflow-hidden bg-[#020617]">
         <div className="absolute inset-0 z-0">
           <spline-viewer url="https://prod.spline.design/kBalJIBRP2lou3NE/scene.splinecode" style={{ width: '100%', height: '100%' }}></spline-viewer>
@@ -93,7 +80,7 @@ const Login = () => {
           </div>
         </div>
 
-        <div className="z-20 overflow-hidden border-t border-slate-800/40 pt-8">
+        <div className="z-20 border-t border-slate-800/40 pt-8 overflow-hidden">
           <div className="flex animate-[ticker_25s_linear_infinite] w-max text-[9px] uppercase tracking-[0.3em] text-slate-400/60 gap-12">
             <span>● Random Forest</span><span>● Isolation Forest</span><span>● SHAP</span><span>● MongoDB Atlas</span><span>● Real-Time</span>
             <span>● Random Forest</span><span>● Isolation Forest</span><span>● SHAP</span><span>● MongoDB Atlas</span><span>● Real-Time</span>
@@ -101,6 +88,7 @@ const Login = () => {
         </div>
       </div>
 
+      {/* Right side: Form */}
       <div className="w-full lg:w-[45%] relative border-l border-white/5 overflow-hidden">
         <div className="absolute inset-0 z-0">
           <spline-viewer url="https://prod.spline.design/h9Aq2IwvqBgXbswQ/scene.splinecode" style={{ width: '100%', height: '100%' }}></spline-viewer>
@@ -110,8 +98,8 @@ const Login = () => {
         <div className="absolute inset-0 z-20 flex items-center justify-center px-10">
           <div className="w-full max-w-sm">
             <div className="bg-slate-900/75 backdrop-blur-[16px] border border-white/10 p-10 rounded-[2.5rem] shadow-2xl relative">
-              <div className="mb-10">
-                <h2 className="text-3xl font-bold text-white tracking-tight">Login</h2>
+              <div className="mb-8">
+                <h2 className="text-3xl font-bold text-white tracking-tight">Create Account</h2>
               </div>
 
               {error && (
@@ -120,7 +108,18 @@ const Login = () => {
                 </div>
               )}
 
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-5">
+                <div>
+                  <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400 mb-2 block">Full Name</label>
+                  <input 
+                    type="text" 
+                    required
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full bg-slate-950/50 border border-slate-800 rounded-2xl py-3.5 px-5 text-white focus:ring-1 focus:ring-cyan-500/50 outline-none transition-all placeholder-slate-700"
+                    placeholder="Agent Name" 
+                  />
+                </div>
                 <div>
                   <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400 mb-2 block">Email</label>
                   <input 
@@ -128,7 +127,7 @@ const Login = () => {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-slate-950/50 border border-slate-800 rounded-2xl py-4 px-5 text-white focus:ring-1 focus:ring-cyan-500/50 outline-none transition-all placeholder-slate-700"
+                    className="w-full bg-slate-950/50 border border-slate-800 rounded-2xl py-3.5 px-5 text-white focus:ring-1 focus:ring-cyan-500/50 outline-none transition-all placeholder-slate-700"
                     placeholder="name@research.ai" 
                   />
                 </div>
@@ -139,34 +138,26 @@ const Login = () => {
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full bg-slate-950/50 border border-slate-800 rounded-2xl py-4 px-5 text-white focus:ring-1 focus:ring-cyan-500/50 outline-none transition-all"
+                    className="w-full bg-slate-950/50 border border-slate-800 rounded-2xl py-3.5 px-5 text-white focus:ring-1 focus:ring-cyan-500/50 outline-none transition-all"
                     placeholder="••••••••" 
                   />
                 </div>
                 <button 
                   type="submit"
                   disabled={isLoading}
-                  className={`w-full bg-white text-black font-black py-4 rounded-2xl transition-all active:scale-[0.98] text-xs uppercase tracking-widest ${isLoading ? 'opacity-70 cursor-not-allowed' : 'animate-[pulse-ring_2.5s_ease_infinite]'}`}
+                  className={`w-full bg-white text-black font-black py-4 rounded-2xl transition-all active:scale-[0.98] text-xs uppercase tracking-widest ${isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:bg-cyan-50'}`}
                 >
-                  {isLoading ? 'Verifying...' : 'Login'}
+                  {isLoading ? 'Processing...' : 'Sign Up'}
                 </button>
               </form>
 
-              <div className="mt-8 pt-8 border-t border-slate-800/50 space-y-4">
-                <a href="/api/auth/google"
-                   className="flex items-center justify-center gap-3 bg-white/5 border border-white/5 py-3.5 rounded-2xl hover:bg-white/10 transition-all text-xs font-bold text-slate-400 uppercase tracking-tighter">
-                  <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-4 h-4" alt="Google" />
-                  Google SSO
-                </a>
-                
-                <div className="text-center pt-2">
-                  <p className="text-xs text-slate-500">
-                    New to NeuralGuard?{' '}
-                    <Link to="/signup" className="text-cyan-400 font-bold hover:underline">
-                      Register Account
-                    </Link>
-                  </p>
-                </div>
+              <div className="mt-8 text-center">
+                <p className="text-xs text-slate-500">
+                  Already have an account?{' '}
+                  <Link to="/login" className="text-cyan-400 font-bold hover:underline">
+                    Login
+                  </Link>
+                </p>
               </div>
             </div>
           </div>
@@ -178,10 +169,6 @@ const Login = () => {
             from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        @keyframes pulse-ring {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.3); }
-            50% { box-shadow: 0 0 0 20px rgba(6, 182, 212, 0); }
-        }
         @keyframes ticker {
             from { transform: translateX(0); }
             to { transform: translateX(-50%); }
@@ -191,4 +178,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Signup;

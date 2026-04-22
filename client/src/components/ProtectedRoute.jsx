@@ -8,8 +8,8 @@ const ProtectedRoute = ({ children }) => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen w-full bg-[#020617] text-cyan-500">
-        <div className="w-8 h-8 rounded-full border-2 border-t-cyan-400 border-cyan-500/20 animate-spin"></div>
+      <div className="flex items-center justify-center h-screen w-full bg-[var(--ng-bg)] text-[var(--ng-accent)]">
+        <div className="w-8 h-8 rounded-full border-2 border-t-[var(--ng-accent)] border-[var(--ng-border)] animate-spin"></div>
       </div>
     );
   }

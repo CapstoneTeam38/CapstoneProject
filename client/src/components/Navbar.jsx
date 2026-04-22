@@ -12,9 +12,12 @@ import {
   X,
   ExternalLink,
   UploadCloud,
+  LogOut,
 } from 'lucide-react';
 import BrandMark from './BrandMark';
 import ThemeToggle from './ThemeToggle';
+import { useAuth } from '../hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 
 const NAV_LINKS = [
   { to: '/dashboard',   icon: LayoutDashboard, label: 'Dashboard' },
@@ -34,10 +37,24 @@ const linkActive =
 const linkInactive =
   'hover:text-[var(--ng-text)] hover:bg-[var(--ng-border)]';
 
-const SidebarContent = ({ onNavigate }) => (
-  <div className="flex flex-col h-full" role="navigation" aria-label="Main Navigation">
-    {/* Brand */}
-    <BrandMark />
+const SidebarContent = ({ onNavigate }) => {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      if (onNavigate) onNavigate();
+      navigate('/login');
+    } catch (err) {
+      console.error('Logout failed:', err);
+    }
+  };
+
+  return (
+    <div className="flex flex-col h-full" role="navigation" aria-label="Main Navigation">
+      {/* Brand */}
+      <BrandMark />
 
     {/* Divider */}
     <div className="mx-5 border-t border-white/[0.06] mb-4" aria-hidden="true" />
@@ -76,9 +93,19 @@ const SidebarContent = ({ onNavigate }) => (
 
       {/* Theme Toggle */}
       <ThemeToggle />
+
+      {/* Sign Out */}
+      <button
+        onClick={handleLogout}
+        className="flex items-center gap-3 w-full px-4 py-2.5 rounded-xl text-rose-400 hover:text-white hover:bg-rose-500/20 transition-all text-xs font-bold uppercase tracking-widest focus-visible:ring-2 focus-visible:ring-rose-500 outline-none"
+      >
+        <LogOut size={14} aria-hidden="true" />
+        <span>Sign Out</span>
+      </button>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
