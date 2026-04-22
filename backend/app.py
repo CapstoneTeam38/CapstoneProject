@@ -16,8 +16,8 @@ app = Flask(__name__)
 CORS(app)
 
 # ── Models ─────────────────────────────────────────────────────────
-model = joblib.load("ml-models/xgb_model_v2.pkl")
-ocsvm_model = joblib.load("ml-models/ocsvm_model.pkl")
+model = joblib.load("backend/models/xgb_model_v2.pkl")
+ocsvm_model = joblib.load("backend/models/ocsvm_model.pkl")
 
 with open("ml-models/top_features.json") as f:
     top_features = json.load(f)
