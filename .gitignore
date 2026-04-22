@@ -1,8 +1,6 @@
 node_modules
 .env
 *.csv
-*.pkl
-models/*.pkl
 data/*.csv
 __pycache__/
 *.pyc

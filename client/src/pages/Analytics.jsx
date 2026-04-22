@@ -27,62 +27,66 @@ const Analytics = () => {
   }
 
   return (
-    <div className="space-y-8 pb-12 animate-fade-in">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 py-4">
+    <div className="font-syne" style={{ margin: '-2rem', background: 'var(--ng-bg)', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      
+      {/* ── HEADER ── */}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '14px 24px', borderBottom: '1px solid var(--ng-border)',
+        background: 'var(--ng-surface)', position: 'sticky', top: 0, zIndex: 50,
+      }}>
         <div>
-          <h1 className="text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
-             <BarChart3 className="text-cyan-400" /> Deep Fraud Analytics
-          </h1>
-          <p className="text-slate-400 mt-2 max-w-2xl">
-            Multi-dimensional behavioral analysis of the fraudulent landscape. Explore volume distributions, risk density, and comparative class baselines.
-          </p>
+          <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--ng-text)' }}>Analytics hub</div>
+          <div className="font-mono2" style={{ fontSize: 10, color: 'var(--ng-muted)', marginTop: 1 }}>
+            Multi-dimensional behavioral analysis and insights
+          </div>
         </div>
-        
-        <div className="flex flex-col md:flex-row items-center gap-4">
-          <div className="flex items-center gap-2 bg-cyan-500/10 border border-cyan-500/20 px-4 py-2 rounded-xl text-cyan-400 text-xs font-bold uppercase tracking-wider">
-             <Cpu size={14} />
-             {activeStructure}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div className="ng-badge ng-badge-live" style={{ color: 'var(--ng-accent)', borderColor: 'rgba(0,229,255,.2)', background: 'rgba(0,229,255,.08)' }}>
+            {activeStructure}
           </div>
-          <div className="flex items-center gap-2 bg-white/[0.03] border border-white/5 px-4 py-2 rounded-xl text-slate-500 text-xs font-semibold">
-             <Info size={14} className="text-cyan-500" />
-             Latest 24h Aggregation
-          </div>
+          <div className="ng-badge ng-badge-info">Latest 24h Aggregation</div>
         </div>
       </div>
 
-      {loading && !analytics ? (
-        <div className="space-y-8">
-           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {[...Array(4)].map((_, i) => <div key={i} className="h-24 glass-panel animate-pulse bg-white/[0.02] border-white/5" />)}
-           </div>
-           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="h-96 glass-panel animate-pulse bg-white/[0.02] border-white/5" />
-              <div className="h-96 glass-panel animate-pulse bg-white/[0.02] border-white/5" />
-           </div>
-        </div>
-      ) : (
-        <div className="space-y-8 animate-slide-up">
-           {/* Summary Grid */}
-           <MetricGrid stats={analytics} />
-
-           {/* Visualization Section */}
-           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <LineChartCard data={analytics.amountDistribution} />
-              <ComparisonCard data={analytics.avgByClass} />
-           </div>
-
-           {/* Methodology Insight */}
-           <div className="p-6 rounded-2xl bg-gradient-to-br from-cyan-600/10 to-transparent border border-cyan-500/10 backdrop-blur-sm">
-              <h4 className="text-sm font-bold text-white mb-2">Aggregation Methodology</h4>
-              <p className="text-xs leading-relaxed text-slate-400 max-w-3xl">
-                The metrics displayed above are derived from an ensemble of historical Kaggle datasets and live inference streams. 
-                Distributions are calculated using binned MongoDB aggregations to detect significant deviations in high-amount transaction buckets, 
-                where AI model precision is historically most sensitive.
-              </p>
-           </div>
-        </div>
-      )}
+      {/* ── PAGE CONTENT ── */}
+      <div style={{ padding: '20px 24px', flex: 1 }}>
+        {loading && !analytics ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
+               {[...Array(4)].map((_, i) => <div key={i} className="ng-card" style={{ height: 100, opacity: 0.5, animation: 'ng-pulse 2s infinite' }} />)}
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+               <div className="ng-card" style={{ height: 380, opacity: 0.5, animation: 'ng-pulse 2s infinite' }} />
+               <div className="ng-card" style={{ height: 380, opacity: 0.5, animation: 'ng-pulse 2s infinite' }} />
+            </div>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 24, animation: 'ng-fadeIn 0.4s ease' }}>
+             {/* Summary Grid */}
+             <MetricGrid stats={analytics} />
+  
+             {/* Visualization Section */}
+             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: 16 }}>
+                <LineChartCard data={analytics.amountDistribution} />
+                <ComparisonCard data={analytics.avgByClass} />
+             </div>
+  
+             {/* Methodology Insight */}
+             <div style={{
+                padding: 24, borderRadius: 10, background: 'linear-gradient(135deg, rgba(0,229,255,0.05), transparent)',
+                border: '1px solid rgba(0,229,255,0.1)'
+             }}>
+                <h4 style={{ fontSize: 13, fontWeight: 700, color: 'var(--ng-text)', marginBottom: 8 }}>Aggregation Methodology</h4>
+                <p style={{ fontSize: 11, color: 'var(--ng-muted)', lineHeight: 1.6, maxWidth: 800 }}>
+                  The metrics displayed above are derived from an ensemble of historical Kaggle datasets and live inference streams. 
+                  Distributions are calculated using binned MongoDB aggregations to detect significant deviations in high-amount transaction buckets, 
+                  where AI model precision is historically most sensitive.
+                </p>
+             </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

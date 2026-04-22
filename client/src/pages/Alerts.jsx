@@ -86,34 +86,46 @@ const Alerts = () => {
   const activeFraudCount = statsData?.fraudsDetected || 0;
 
   return (
-    <div className="space-y-6 pb-12 animate-fade-in">
-      {/* Structural Header Mapping */}
-      <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-8">
+    <div className="font-syne" style={{ margin: '-2rem', background: 'var(--ng-bg)', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      
+      {/* ── HEADER ── */}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '14px 24px', borderBottom: '1px solid var(--ng-border)',
+        background: 'var(--ng-surface)', position: 'sticky', top: 0, zIndex: 50,
+      }}>
         <div>
-           <h1 className="text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
-               Live Threat Alerts
-           </h1>
-           <p className="text-slate-400 mt-2 max-w-lg">
-             Immediate operational queuing exclusively mapped to high-risk transactions requiring active analytical investigation or manual clearance.
-           </p>
+          <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--ng-text)' }}>Alerts center</div>
+          <div className="font-mono2" style={{ fontSize: 10, color: 'var(--ng-muted)', marginTop: 1 }}>
+            Unsupervised anomaly detection results
+          </div>
         </div>
-        
-        {/* Dynamic badge mapping */}
-        <div className="pt-1">
-           <AlertBadge count={activeFraudCount} label="Anomalies Found" />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div className="ng-status-badge">
+            <span style={{ color: 'var(--ng-red)' }}>{activeFraudCount.toLocaleString()} flagged</span>
+          </div>
         </div>
       </div>
 
-      {/* Main Table Interface (reuses the existing flexible DataTable prop architecture) */}
-      <div className="shadow-2xl shadow-red-500/5">
-        <DataTable
-          columns={COLUMNS}
-          rows={activeAlerts}
-          loading={loading}
-          error={error}
-          onRetry={refetch}
-          emptyMessage="System cleared! No high-risk threats detected currently."
-        />
+      {/* ── PAGE CONTENT ── */}
+      <div style={{ padding: '20px 24px', flex: 1 }}>
+        <div className="ng-card" style={{ padding: 0, border: 'none', background: 'transparent' }}>
+          <div className="ng-card-header" style={{ padding: '0 0 14px 0' }}>
+            <div className="ng-card-title">Fraud anomalies</div>
+            <span className="font-mono2" style={{ fontSize: 10, color: 'var(--ng-muted)' }}>
+              Showing {activeAlerts.length} high-priority records
+            </span>
+          </div>
+          
+          <DataTable
+            columns={COLUMNS}
+            rows={activeAlerts}
+            loading={loading}
+            error={error}
+            onRetry={refetch}
+            emptyMessage="System cleared! No high-risk threats detected currently."
+          />
+        </div>
       </div>
     </div>
   );

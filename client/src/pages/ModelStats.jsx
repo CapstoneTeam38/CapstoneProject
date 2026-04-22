@@ -30,139 +30,137 @@ const ModelStats = () => {
   }
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8 pb-12 animate-fade-in">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-white/5">
-        <div className="space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20">
-             <Cpu size={12} className="text-cyan-400" />
-             <span className="text-[10px] font-bold uppercase tracking-widest text-white/80">Inference Core V2.4</span>
+    <div className="font-syne" style={{ margin: '-2rem', background: 'var(--ng-bg)', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      
+      {/* ── HEADER ── */}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '14px 24px', borderBottom: '1px solid var(--ng-border)',
+        background: 'var(--ng-surface)', position: 'sticky', top: 0, zIndex: 50,
+      }}>
+        <div>
+          <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--ng-text)' }}>Model performance</div>
+          <div className="font-mono2" style={{ fontSize: 10, color: 'var(--ng-muted)', marginTop: 1 }}>
+            Technical audit of the fraud detection classifier
           </div>
-          <h1 className="text-4xl font-extrabold text-white tracking-tight">Model Performance Stats</h1>
-          <p className="text-slate-400 max-w-2xl leading-relaxed">
-            Technical audit of the fraud detection classifier. These metrics represent the model's historical reliability and feature influence weights.
-          </p>
         </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          {stats && (
+            <div className="ng-badge ng-badge-info">
+              Architecture: {stats.modelName}
+            </div>
+          )}
+          <div className="ng-status-badge">
+             <div className="ng-status-dot" />Inference Core V2.4
+          </div>
+        </div>
+      </div>
 
-        {stats && (
-          <div className="text-right">
-             <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Model Architecture</div>
-             <div className="text-xs font-bold text-white px-3 py-1 rounded-lg bg-white/5 border border-white/10">
-                {stats.modelName}
-             </div>
+      {/* ── PAGE CONTENT ── */}
+      <div style={{ padding: '20px 24px', flex: 1 }}>
+        {loading && !stats ? (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
+             {[...Array(4)].map((_, i) => <div key={i} className="ng-card" style={{ height: 120, opacity: 0.5, animation: 'ng-pulse 2s infinite' }} />)}
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20, animation: 'ng-fadeIn 0.4s ease' }}>
+            {/* Metrics Gallery */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
+              <PerformanceTile 
+                label="Overall Accuracy" 
+                value={stats.metrics.accuracy} 
+                description="Correct predictions (Fraud + Legit)."
+                colorClass="bg-cyan-500"
+              />
+              <PerformanceTile 
+                label="Precision Score" 
+                value={stats.metrics.precision} 
+                description="Reliability of fraud flags (fewer FP)."
+                colorClass="bg-emerald-500"
+              />
+              <PerformanceTile 
+                label="Recall Score" 
+                value={stats.metrics.recall} 
+                description="Ability to catch fraud (fewer FN)."
+                colorClass="bg-amber-500"
+              />
+              <PerformanceTile 
+                label="F1 Calibration" 
+                value={stats.metrics.f1} 
+                description="Harmonic mean of precision and recall."
+                colorClass="bg-rose-500"
+              />
+            </div>
+  
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 16 }}>
+              {/* Confusion Matrix Section */}
+              <div className="ng-card" style={{ display: 'flex', flexDirection: 'column' }}>
+                <div className="ng-card-header">
+                   <div className="ng-card-title">Confusion Matrix</div>
+                </div>
+                <div className="cm-grid" style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                  <div className="cm-cell tn" style={{ background: 'var(--ng-surface)', borderRadius: 6, padding: 16, textAlign: 'center', border: '1px solid var(--ng-border)' }}>
+                    <div className="font-mono2" style={{ fontSize: 20, fontWeight: 700, color: 'var(--ng-accent)' }}>{stats.confusionMatrix[0][0].toLocaleString()}</div>
+                    <div style={{ fontSize: 9, color: 'var(--ng-muted)', textTransform: 'uppercase', marginTop: 4 }}>True Negative</div>
+                  </div>
+                  <div className="cm-cell fp" style={{ background: 'var(--ng-surface)', borderRadius: 6, padding: 16, textAlign: 'center', border: '1px solid var(--ng-border)' }}>
+                    <div className="font-mono2" style={{ fontSize: 20, fontWeight: 700, color: 'var(--ng-red)' }}>{stats.confusionMatrix[0][1].toLocaleString()}</div>
+                    <div style={{ fontSize: 9, color: 'var(--ng-muted)', textTransform: 'uppercase', marginTop: 4 }}>False Positive</div>
+                  </div>
+                  <div className="cm-cell fn" style={{ background: 'var(--ng-surface)', borderRadius: 6, padding: 16, textAlign: 'center', border: '1px solid var(--ng-border)' }}>
+                    <div className="font-mono2" style={{ fontSize: 20, fontWeight: 700, color: 'var(--ng-amber)' }}>{stats.confusionMatrix[1][0].toLocaleString()}</div>
+                    <div style={{ fontSize: 9, color: 'var(--ng-muted)', textTransform: 'uppercase', marginTop: 4 }}>False Negative</div>
+                  </div>
+                  <div className="cm-cell tp" style={{ background: 'var(--ng-surface)', borderRadius: 6, padding: 16, textAlign: 'center', border: '1px solid var(--ng-border)' }}>
+                    <div className="font-mono2" style={{ fontSize: 20, fontWeight: 700, color: 'var(--ng-green)' }}>{stats.confusionMatrix[1][1].toLocaleString()}</div>
+                    <div style={{ fontSize: 9, color: 'var(--ng-muted)', textTransform: 'uppercase', marginTop: 4 }}>True Positive</div>
+                  </div>
+                </div>
+                <div style={{ marginTop: 12, fontSize: 10, color: 'var(--ng-muted)', fontStyle: 'italic' }}>
+                   Raw test set distribution used during final model validation.
+                </div>
+              </div>
+  
+              {/* Feature Importance Rankings */}
+              <div className="ng-card">
+                 <div className="ng-card-header">
+                   <div className="ng-card-title">Top Influence Vectors</div>
+                 </div>
+                 <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                   {stats.featureImportance.map((feat, i) => (
+                     <div key={i} className="shap-row" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                       <div style={{ width: 80, fontSize: 10, color: 'var(--ng-muted)', textAlign: 'right' }}>{feat.feature}</div>
+                       <div style={{ flex: 1, background: 'var(--ng-dim)', borderRadius: 3, height: 6 }}>
+                          <div style={{ height: '100%', background: 'var(--ng-accent)', borderRadius: 3, width: `${feat.importance * 100}%` }} />
+                       </div>
+                       <div className="font-mono2" style={{ fontSize: 10, color: 'var(--ng-text)', width: 50, textAlign: 'right' }}>
+                          {(feat.importance * 100).toFixed(1)}%
+                       </div>
+                     </div>
+                   ))}
+                 </div>
+              </div>
+            </div>
+  
+            {/* Training Origin Card */}
+            <div className="ng-card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div style={{ width: 40, height: 40, borderRadius: 8, background: 'rgba(0,200,122,.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ng-green)' }}>
+                     ✓
+                  </div>
+                  <div>
+                     <h4 style={{ fontSize: 12, fontWeight: 700, color: 'var(--ng-text)' }}>Validation Set Confirmed</h4>
+                     <p style={{ fontSize: 10, color: 'var(--ng-muted)', marginTop: 2 }}>Dataset Origin: {stats.trainedOn}</p>
+                  </div>
+               </div>
+               <div style={{ textAlign: 'right' }}>
+                  <div style={{ fontSize: 9, fontWeight: 700, color: 'var(--ng-muted)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>Inference Threshold</div>
+                  <div className="font-mono2" style={{ fontSize: 16, fontWeight: 800, color: 'var(--ng-text)' }}>{(stats.metrics.threshold * 100).toFixed(1)}%</div>
+               </div>
+            </div>
           </div>
         )}
       </div>
-
-      {loading && !stats ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-           {[...Array(4)].map((_, i) => <div key={i} className="h-40 glass-panel animate-pulse bg-white/[0.02] border-white/5" />)}
-        </div>
-      ) : (
-        <div className="space-y-8 animate-slide-up">
-          {/* Metrics Gallery */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <PerformanceTile 
-              label="Overall Accuracy" 
-              value={stats.metrics.accuracy} 
-              description="Percentage of total predictions that were correct (Fraud + Legitimate)."
-              colorClass="bg-cyan-500"
-            />
-            <PerformanceTile 
-              label="Precision Score" 
-              value={stats.metrics.precision} 
-              description="Reliability of fraud flags. High precision means fewer false alarms."
-              colorClass="bg-emerald-500"
-            />
-            <PerformanceTile 
-              label="Recall Score" 
-              value={stats.metrics.recall} 
-              description="The ability to catch fraud. High recall means fewer missed attacks."
-              colorClass="bg-amber-500"
-            />
-            <PerformanceTile 
-              label="F1 Calibration" 
-              value={stats.metrics.f1} 
-              description="Balanced harmonic mean of precision and recall for safe operations."
-              colorClass="bg-rose-500"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Confusion Matrix Section */}
-            <div className="lg:col-span-1 space-y-4">
-              <div className="flex items-center gap-2 mb-2">
-                 <Layers size={16} className="text-cyan-400" />
-                 <h3 className="text-xs font-bold uppercase tracking-widest text-white/90">Confusion Matrix</h3>
-              </div>
-              <div className="glass-panel p-1 grid grid-cols-2 gap-1 bg-white/[0.01]">
-                {/* Visual Grid representing binary classification outcomes */}
-                <div className="p-6 bg-emerald-500/[0.03] border border-emerald-500/10 rounded-tl-xl text-center">
-                  <div className="text-[9px] font-bold text-emerald-500 uppercase mb-1">True Negative</div>
-                  <div className="text-lg font-black text-white">{stats.confusionMatrix[0][0].toLocaleString()}</div>
-                </div>
-                <div className="p-6 bg-rose-500/[0.03] border border-rose-500/10 rounded-tr-xl text-center">
-                  <div className="text-[9px] font-bold text-rose-500 uppercase mb-1">False Positive</div>
-                  <div className="text-lg font-black text-white">{stats.confusionMatrix[0][1].toLocaleString()}</div>
-                </div>
-                <div className="p-6 bg-rose-500/[0.03] border border-rose-500/10 rounded-bl-xl text-center">
-                  <div className="text-[9px] font-bold text-rose-500 uppercase mb-1">False Negative</div>
-                  <div className="text-lg font-black text-white">{stats.confusionMatrix[1][0].toLocaleString()}</div>
-                </div>
-                <div className="p-6 bg-emerald-500/[0.03] border border-emerald-500/10 rounded-br-xl text-center">
-                  <div className="text-[9px] font-bold text-emerald-500 uppercase mb-1">True Positive</div>
-                  <div className="text-lg font-black text-white">{stats.confusionMatrix[1][1].toLocaleString()}</div>
-                </div>
-              </div>
-              <div className="flex gap-2 p-4 rounded-xl bg-white/[0.02] border border-white/5 text-[11px] text-slate-500 italic">
-                 <Info size={14} className="shrink-0 text-slate-600" />
-                 This matrix represents the raw test set distribution used during final model validation.
-              </div>
-            </div>
-
-            {/* Feature Importance Rankings */}
-            <div className="lg:col-span-2 space-y-4">
-               <div className="flex items-center gap-2 mb-2">
-                 <BarChart size={16} className="text-cyan-400" />
-                 <h3 className="text-xs font-bold uppercase tracking-widest text-white/90">Top Influence Vectors</h3>
-               </div>
-               <div className="glass-panel p-6 space-y-5">
-                 {stats.featureImportance.map((feat, i) => (
-                   <div key={i} className="space-y-2">
-                     <div className="flex justify-between items-center text-[11px]">
-                        <span className="font-bold text-slate-400 uppercase tracking-widest">{feat.feature}</span>
-                        <span className="font-mono text-cyan-400">{(feat.importance * 100).toFixed(2)}%</span>
-                     </div>
-                     <div className="h-1.5 w-full bg-white/[0.03] rounded-full overflow-hidden">
-                        <div 
-                           className="h-full bg-gradient-to-r from-cyan-600 to-cyan-400 rounded-full transition-all duration-1000 ease-out"
-                           style={{ width: `${feat.importance * 100}%` }}
-                        />
-                     </div>
-                   </div>
-                 ))}
-               </div>
-            </div>
-          </div>
-
-          {/* Training Origin Card */}
-          <div className="p-6 rounded-2xl bg-gradient-to-r from-white/[0.03] to-transparent border border-white/5 flex items-center justify-between">
-             <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center border border-white/10">
-                   <CheckCircle2 className="text-emerald-500" />
-                </div>
-                <div>
-                   <h4 className="text-sm font-bold text-white">Validation Set Confirmed</h4>
-                   <p className="text-xs text-slate-500">Dataset Origin: {stats.trainedOn}</p>
-                </div>
-             </div>
-             <div className="text-right">
-                <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Inference Threshold</div>
-                <div className="text-sm font-black text-white">{(stats.metrics.threshold * 100).toFixed(1)}%</div>
-             </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
