@@ -1,3 +1,9 @@
 node_modules
 .env
-data/creditcard.csv
+*.csv
+*.pkl
+models/*.pkl
+data/*.csv
+__pycache__/
+*.pyc
+.DS_Store
