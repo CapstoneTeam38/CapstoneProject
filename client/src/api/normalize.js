@@ -15,7 +15,7 @@ export const normalizeTransaction = (data) => {
     id: data._id || data.id || `tx-${Math.random().toString(36).substr(2, 9)}`,
     time: parseNum(data.Time || data.time),
     amount: parseNum(data.Amount || data.amount),
-    v14: parseNum(data.V14 || data.v14),
+    card1: parseNum(data.card1 || data.Card1),
     isFraud: Boolean(data.is_fraud || data.isFraud),
     fraudProbability: parseNum(data.fraud_probability, null),
     userId: data.userId || null,

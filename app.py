@@ -113,11 +113,11 @@ def predict():
     structure = get_analysis_structure(count)
     
     # Convert input dict to DataFrame for preprocessing
-    # Normalize keys (time -> Time, amount -> Amount)
+    # Normalize keys
     input_data = {
-        "Time": float(data.get("time", 0)),
-        "Amount": float(data.get("amount", 0)),
-        "V14": float(data.get("v14", 0))
+        "TransactionDT": float(data.get("time", 0)),
+        "TransactionAmt": float(data.get("amount", 0)),
+        "card1": float(data.get("card1", 0))
     }
     df = pd.DataFrame([input_data])
     
@@ -376,15 +376,17 @@ def shap_explain():
     except ImportError:
         return jsonify({"error": "Run: pip install shap"}), 500
 
-    data     = request.json
-    features = column_means.copy()
-    features[0]  = float(data.get("time",   column_means[0]))
-    features[29] = float(data.get("amount", column_means[29]))
-    features[13] = float(data.get("v14",    column_means[13]))
-
-    arr         = np.array([features])
+    data = request.json
+    input_data = {
+        "TransactionDT": float(data.get("time", 0)),
+        "TransactionAmt": float(data.get("amount", 0)),
+        "card1": float(data.get("card1", 0))
+    }
+    df = pd.DataFrame([input_data])
+    arr, _, _ = preprocess_for_model(df)
+    features = arr[0]
     explainer   = shap.TreeExplainer(rf_model)
-    shap_values = explainer.shap_values(arr)
+    shap_values = explainer.shap_values(arr, check_additivity=False)
 
     # Handle both old (list) and new (ndarray) shap APIs
     if isinstance(shap_values, list):
@@ -398,13 +400,13 @@ def shap_explain():
         base = explainer.expected_value
 
     result = sorted(
-        [{"feature": FEATURE_NAMES[i], "shap_value": round(float(np.ravel(sv[i])[0]), 4)}
+        [{"feature": XGB_FULL_FEATURES[i], "shap_value": round(float(np.ravel(sv[i])[0]), 4)}
          for i in range(len(sv))],
         key=lambda x: abs(x["shap_value"]), reverse=True
     )[:15]
 
     proba    = rf_model.predict_proba([features])[0][1]
-    is_fraud = int(proba >= threshold)
+    is_fraud = int(proba >= rf_threshold)
 
     return jsonify({
         "shapValues":       result,

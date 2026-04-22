@@ -5,8 +5,8 @@ import { DollarSign, Clock, Hash, AlertTriangle, FileText } from 'lucide-react';
 const CaseCard = ({ caseData, onReview }) => {
   const { id, amount, time, reviewed, reviewLabel, notes } = caseData;
   
-  // Use V14 or similar from raw as a mock 'Risk Evidence' indicators
-  const riskFactor = caseData.v14 ? (caseData.v14).toFixed(4) : "2.4011";
+  // Use card1 or similar from raw as a mock 'Risk Evidence' indicators
+  const riskFactor = caseData.card1 ? (caseData.card1).toFixed(4) : "2.4011";
 
   return (
     <div className={`glass-panel p-6 border-white/5 relative overflow-hidden group transition-all duration-500 ${reviewed ? 'opacity-70 grayscale-[0.2]' : 'hover:border-cyan-500/30'}`}>

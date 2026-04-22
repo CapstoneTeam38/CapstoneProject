@@ -6,10 +6,10 @@ const genItem = () => {
   const isFraud = Math.random() < 0.18;
   const amt = (isFraud ? Math.random() * 4000 + 500 : Math.random() * 90 + 10).toFixed(2);
   const prob = (isFraud ? Math.random() * 0.3 + 0.65 : Math.random() * 0.25).toFixed(2);
-  const v14 = (isFraud ? -(Math.random() * 8 + 5) : Math.random() * 2 - 1).toFixed(1);
+  const card1 = (Math.random() * 8000 + 1000).toFixed(0);
   const co = COMPANIES[Math.floor(Math.random() * COMPANIES.length)];
   const id = 'TX-' + (Math.floor(Math.random() * 9000) + 1000);
-  return { isFraud, amt, prob, v14, co, id, key: Date.now() + Math.random() };
+  return { isFraud, amt, prob, card1, co, id, key: Date.now() + Math.random() };
 };
 
 const RealTimeFeed = () => {
@@ -41,7 +41,7 @@ const RealTimeFeed = () => {
               {item.isFraud ? '!' : '✓'}
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div className="ng-feed-id">{item.id} · {item.co} · V14={item.v14}</div>
+              <div className="ng-feed-id">{item.id} · {item.co} · Card={item.card1}</div>
               <div className="ng-feed-amt">
                 ${parseFloat(item.amt).toLocaleString('en-US', { minimumFractionDigits: 2 })}
               </div>

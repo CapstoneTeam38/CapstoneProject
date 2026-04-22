@@ -5,7 +5,7 @@ const PredictionForm = ({ onSubmit, loading }) => {
   const [formData, setFormData] = useState({
     amount: '',
     time: '1',
-    v14: '0'
+    card1: '0'
   });
 
   const [errors, setErrors] = useState({});
@@ -14,7 +14,7 @@ const PredictionForm = ({ onSubmit, loading }) => {
     let newErrors = {};
     if (!formData.amount || isNaN(formData.amount)) newErrors.amount = "Valid numeric amount is required";
     if (!formData.time || isNaN(formData.time)) newErrors.time = "Numeric time offset is required";
-    if (!formData.v14 || isNaN(formData.v14)) newErrors.v14 = "Numeric V14 component required";
+    if (!formData.card1 || isNaN(formData.card1)) newErrors.card1 = "Numeric card1 component required";
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -31,7 +31,7 @@ const PredictionForm = ({ onSubmit, loading }) => {
       onSubmit({
         amount: parseFloat(formData.amount),
         time: parseFloat(formData.time),
-        v14: parseFloat(formData.v14)
+        card1: parseFloat(formData.card1)
       });
     }
   };
@@ -83,26 +83,26 @@ const PredictionForm = ({ onSubmit, loading }) => {
           {errors.time && <p id="time-error" className="text-[10px] text-rose-400 font-medium">{errors.time}</p>}
         </div>
 
-        {/* V14 Input */}
+        {/* card1 Input */}
         <div className="space-y-2">
           <label 
-            htmlFor="v14-input"
+            htmlFor="card1-input"
             className="text-[10px] font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2"
           >
-             Anonymized Component V14
+             Payment Card Factor (card1)
           </label>
           <input
-            id="v14-input"
+            id="card1-input"
             type="text"
-            name="v14"
-            value={formData.v14}
+            name="card1"
+            value={formData.card1}
             onChange={handleChange}
-            placeholder="Model variance factor"
-            aria-invalid={errors.v14 ? "true" : "false"}
-            aria-describedby={errors.v14 ? "v14-error" : undefined}
-            className={`w-full bg-white/[0.03] border ${errors.v14 ? 'border-rose-500/50' : 'border-white/10'} rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500/50 focus:bg-white/[0.05] transition-all`}
+            placeholder="Numerical card ID"
+            aria-invalid={errors.card1 ? "true" : "false"}
+            aria-describedby={errors.card1 ? "card1-error" : undefined}
+            className={`w-full bg-white/[0.03] border ${errors.card1 ? 'border-rose-500/50' : 'border-white/10'} rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500/50 focus:bg-white/[0.05] transition-all`}
           />
-          {errors.v14 && <p id="v14-error" className="text-[10px] text-rose-400 font-medium">{errors.v14}</p>}
+          {errors.card1 && <p id="card1-error" className="text-[10px] text-rose-400 font-medium">{errors.card1}</p>}
         </div>
       </div>
 

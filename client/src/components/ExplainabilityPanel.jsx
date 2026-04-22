@@ -15,7 +15,7 @@ const ExplainabilityPanel = ({ shapValues = [], fraudProbability = 0 }) => {
     const mapping = {
       'Amount': 'Transaction Amount',
       'Time': 'Transaction Timing',
-      'V14': 'Feature V14 (Model Indicator)',
+      'card1': 'Payment Card Factor (card1)',
     };
     return mapping[feature] || `Component ${feature}`;
   };
