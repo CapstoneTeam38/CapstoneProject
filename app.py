@@ -17,29 +17,29 @@ CORS(app)
 
 # ── Models ───────────────────────────────────────────────────────────────────
 # Structure 1: Random Forest + Isolation Forest
-rf_model  = joblib.load("ml-models/random_forest_model.pkl")
-iso_model = joblib.load("ml-models/isolation_forest_model.pkl")
+rf_model  = joblib.load("backend/models/rf_model.pkl")
+iso_model = joblib.load("backend/models/if_model.pkl")
 rf_threshold = 0.35  # Calibrated for retrained RF on IEEE-CIS (unscaled data)
 
 # Structure 2: XGBoost + One-Class SVM
-xgb_model = joblib.load("ml-models/xgb_model_v2.pkl")
-ocsvm_model = joblib.load("ml-models/ocsvm_model.pkl")
-xgb_scaler = joblib.load("ml-models/scaler.pkl")
+xgb_model = joblib.load("backend/models/xgb_model_v2.pkl")
+ocsvm_model = joblib.load("backend/models/ocsvm_model.pkl")
+xgb_scaler = joblib.load("backend/models/scaler.pkl")
 
-with open("ml-models/top_features.json") as f:
+with open("backend/models/top_features.json") as f:
     XGB_TOP_FEATURES = json.load(f)
 
-with open("ml-models/feature_names.json") as f:
+with open("backend/models/feature_names.json") as f:
     # This list has 200 features. We add the 2 missing ones (D3, M4) to reach 202.
     XGB_FULL_FEATURES = json.load(f) + ["D3", "M4"]
 
-with open("ml-models/threshold.json") as f:
+with open("backend/models/threshold.json") as f:
     xgb_threshold = json.load(f)["threshold"]
 
-with open("ml-models/column_means.json") as f:
+with open("backend/models/column_means.json") as f:
     column_means = json.load(f)
 
-with open("ml-models/label_encoders.json") as f:
+with open("backend/models/label_encoders.json") as f:
     LABEL_ENCODERS = json.load(f)
 
 def encode_categorical(df, encoders):
@@ -333,7 +333,7 @@ def model_stats():
         features = XGB_TOP_FEATURES
         trained_on = "IEEE-CIS Fraud Dataset (XGBoost Engine)"
 
-    metrics_path = "ml-models/metrics.json"
+    metrics_path = "backend/models/metrics.json"
     if os.path.exists(metrics_path):
         with open(metrics_path) as f:
             metrics = json.load(f)

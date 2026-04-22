@@ -5,8 +5,8 @@ import numpy as np
 app = Flask(__name__)
 
 # Load models from your specific folder structure
-rf_model = pickle.load(open('ml-models/random_forest_model.pkl', 'rb'))
-iso_model = pickle.load(open('ml-models/isolation_forest_model.pkl', 'rb'))
+rf_model = pickle.load(open('backend/models/rf_model.pkl', 'rb'))
+iso_model = pickle.load(open('backend/models/if_model.pkl', 'rb'))
 
 @app.route('/predict', methods=['POST'])
 def predict():

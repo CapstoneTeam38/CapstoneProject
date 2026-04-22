@@ -38,48 +38,39 @@ const DataTable = ({
   }
 
   return (
-    <div className="glass-panel border-white/5 overflow-hidden relative shadow-2xl shadow-black/20">
+    <div className="ng-card" style={{ padding: 0, position: 'relative' }}>
       {/* Subtle loading overlay when refetching with existing data */}
       {loading && rows.length > 0 && (
-        <div className="absolute top-3 right-4 z-10">
-          <span className="flex h-3 w-3 relative">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-3 w-3 bg-cyan-500" />
+        <div style={{ position: 'absolute', top: 12, right: 16, zIndex: 10 }}>
+          <span style={{ display: 'flex', height: 12, width: 12, position: 'relative' }}>
+            <span style={{ animation: 'ng-pulse 2s infinite', position: 'absolute', height: '100%', width: '100%', borderRadius: '50%', background: 'var(--ng-accent)', opacity: 0.75 }} />
+            <span style={{ position: 'relative', borderRadius: '50%', height: 12, width: 12, background: 'var(--ng-accent)' }} />
           </span>
         </div>
       )}
 
       {/* A11y: Wrapping table in a focusable region with horizontal scroll support */}
       <div 
-        className="overflow-x-auto custom-scrollbar"
+        style={{ overflowX: 'auto' }}
         tabIndex="0"
         role="region"
-        aria-label="Transaction Ledger Table"
+        aria-label="Data Table"
       >
-        <table className="w-full text-left min-w-[800px] border-separate border-spacing-0">
+        <table className="ng-table">
           <thead>
-            <tr className="border-b border-white/10 bg-white/[0.03]">
+            <tr>
               {columns.map((col) => (
-                <th
-                  key={col.key}
-                  className={`px-6 py-4 text-[10px] font-bold uppercase tracking-[0.15em] text-slate-500 border-b border-white/5 ${col.className || ''}`}
-                >
+                <th key={col.key} className={col.className || ''}>
                   {col.label}
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/[0.03]">
+          <tbody>
             {rows.map((row, rowIdx) => (
-              <tr
-                key={row.id || rowIdx}
-                className="group hover:bg-white/[0.02] transition-colors focus-within:bg-white/[0.04] outline-none"
-              >
+              <tr key={row.id || rowIdx}>
                 {columns.map((col) => (
-                  <td
-                    key={col.key}
-                    className={`px-6 py-4 text-sm text-slate-300 font-medium ${col.className || ''}`}
-                  >
+                  <td key={col.key} className={col.className || ''}>
                     {col.render ? col.render(row[col.key], row) : row[col.key]}
                   </td>
                 ))}

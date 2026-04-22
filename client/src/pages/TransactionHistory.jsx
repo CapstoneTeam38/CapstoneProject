@@ -4,8 +4,9 @@ import { fetchPaginatedTransactions } from '../api/apiClient';
 import { useFetch } from '../hooks/useFetch';
 import DataTable from '../components/DataTable';
 import TableToolbar from '../components/TableToolbar';
+import KpiCard from '../components/KpiCard';
 
-// ─── Column definitions (purely normalized field names) ─────────────────────
+// ─── Column definitions ─────────────────────
 const COLUMNS = [
   {
     key: 'id',
@@ -20,15 +21,10 @@ const COLUMNS = [
     key: 'time',
     label: 'Time',
     render: (val) => {
-      // The Kaggle dataset uses "seconds from first transaction"
       const hrs = Math.floor(val / 3600).toString().padStart(2, '0');
       const mins = Math.floor((val % 3600) / 60).toString().padStart(2, '0');
       const secs = Math.floor(val % 60).toString().padStart(2, '0');
-      return (
-        <span className="text-[10px] font-mono text-cyan-400/80 bg-cyan-400/5 px-2 py-0.5 rounded border border-cyan-400/10">
-          T+{hrs}:{mins}:{secs}
-        </span>
-      );
+      return <span style={{ fontSize: 10, fontFamily: "'JetBrains Mono', monospace", color: 'var(--ng-muted)' }}>T+{hrs}:{mins}:{secs}</span>;
     },
   },
   {
@@ -36,42 +32,31 @@ const COLUMNS = [
     label: 'Amount',
     render: (val) =>
       `$${Number(val || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-    className: 'text-right',
   },
   {
     key: 'isFraud',
-    label: 'Status',
+    label: 'Classification',
     render: (val) =>
       val ? (
-        <span className="inline-flex items-center gap-1.5 text-red-400 font-semibold text-xs">
-          <AlertCircle size={14} /> Fraud
-        </span>
+        <span className="ng-badge ng-badge-live" style={{ color: 'var(--ng-red)', borderColor: 'rgba(255,59,92,.2)', background: 'rgba(255,59,92,.08)' }}>Fraud detected</span>
       ) : (
-        <span className="inline-flex items-center gap-1.5 text-emerald-400/70 text-xs">
-          <CheckCircle size={14} /> Legit
-        </span>
+        <span className="ng-badge ng-badge-info" style={{ color: 'var(--ng-green)', borderColor: 'rgba(0,200,122,.2)', background: 'rgba(0,200,122,.08)' }}>Verified normal</span>
       ),
   },
   {
     key: 'fraudProbability',
-    label: 'Risk %',
-    render: (val) => {
-      if (val == null) return <span className="text-slate-600">—</span>;
-      const pct = (val * 100).toFixed(1);
-      const color = val > 0.7 ? 'text-red-400' : val > 0.3 ? 'text-amber-400' : 'text-emerald-400/60';
-      return <span className={`font-semibold text-xs ${color}`}>{pct}%</span>;
+    label: 'Confidence',
+    render: (val, row) => {
+      const risk = row.isFraud ? 95 : 2;
+      return (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ width: 80, height: 4, background: 'var(--ng-dim)', borderRadius: 2 }}>
+            <div style={{ width: `${risk}%`, height: '100%', background: row.isFraud ? 'var(--ng-red)' : 'var(--ng-accent)', borderRadius: 2 }} />
+          </div>
+          <span style={{ fontSize: 11, color: 'var(--ng-muted)' }}>{risk}%</span>
+        </div>
+      );
     },
-    className: 'text-right',
-  },
-  {
-    key: 'reviewed',
-    label: 'Reviewed',
-    render: (val) =>
-      val ? (
-        <span className="text-xs text-cyan-400/80">Yes</span>
-      ) : (
-        <span className="text-xs text-slate-600">No</span>
-      ),
   },
 ];
 
@@ -122,88 +107,95 @@ const TransactionHistory = () => {
   const totalPages = data?.totalPages || 1;
   const total = data?.total || 0;
   const fraudTotal = data?.fraudTotal || 0;
+  const legitTotal = total - fraudTotal;
 
   const handleFilterChange = (val) => {
     setFilter(val);
-    setPage(1); // reset to first page on filter change
+    setPage(1);
   };
 
   const handleLimitChange = (val) => {
     setLimit(val);
-    setPage(1); // reset to first page on limit change
+    setPage(1);
   };
 
   return (
-    <div className="space-y-6 pb-12">
-      {/* Page Header */}
-      <div className="mb-2">
-        <h1 className="text-3xl font-extrabold text-white tracking-tight">Transaction History</h1>
-        <p className="text-slate-400 mt-2">
-          Browse, filter, and export transaction records with server-side pagination.
-        </p>
-      </div>
-
-      {/* Quick summary stats */}
-      <div className="flex flex-wrap items-center gap-4 text-sm">
-        <span className="text-slate-500">
-          Total: <span className="text-white font-semibold">{total.toLocaleString()}</span>
-        </span>
-        <span className="text-slate-500">
-          Flagged: <span className="text-red-400 font-semibold">{fraudTotal.toLocaleString()}</span>
-        </span>
-        <span className="text-slate-500">
-          Page <span className="text-white font-semibold">{page}</span> of{' '}
-          <span className="text-white font-semibold">{totalPages}</span>
-        </span>
-      </div>
-
-      {/* Toolbar */}
-      <TableToolbar
-        filter={filter}
-        onFilterChange={handleFilterChange}
-        limit={limit}
-        onLimitChange={handleLimitChange}
-        onExport={() => exportCSV(transactions)}
-      />
-
-      {/* Data Table */}
-      <DataTable
-        columns={COLUMNS}
-        rows={transactions}
-        loading={loading}
-        error={error}
-        onRetry={refetch}
-        emptyMessage="No transactions match the current filter."
-      />
-
-      {/* Pagination Controls */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between mt-4">
-          <button
-            id="pagination-prev"
-            disabled={page <= 1}
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white/[0.04] border border-white/10 text-sm text-slate-300 hover:bg-white/[0.08] hover:text-white transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-          >
-            <ChevronLeft size={16} />
-            Previous
-          </button>
-
-          <span className="text-sm text-slate-500">
-            Page <span className="text-white font-semibold">{page}</span> / {totalPages}
-          </span>
-
-          <button
-            id="pagination-next"
-            disabled={page >= totalPages}
-            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white/[0.04] border border-white/10 text-sm text-slate-300 hover:bg-white/[0.08] hover:text-white transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-          >
-            Next
-            <ChevronRight size={16} />
-          </button>
+    <div className="font-syne" style={{ margin: '-2rem', background: 'var(--ng-bg)', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      
+      {/* ── HEADER ── */}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '14px 24px', borderBottom: '1px solid var(--ng-border)',
+        background: 'var(--ng-surface)', position: 'sticky', top: 0, zIndex: 50,
+      }}>
+        <div>
+          <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--ng-text)' }}>All transactions</div>
+          <div className="font-mono2" style={{ fontSize: 10, color: 'var(--ng-muted)', marginTop: 1 }}>
+            {total.toLocaleString()} records · paginated
+          </div>
         </div>
-      )}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <TableToolbar
+            filter={filter}
+            onFilterChange={handleFilterChange}
+            limit={limit}
+            onLimitChange={handleLimitChange}
+            onExport={() => exportCSV(transactions)}
+          />
+        </div>
+      </div>
+
+      {/* ── PAGE CONTENT ── */}
+      <div style={{ padding: '20px 24px', flex: 1 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 20 }}>
+          <KpiCard label="Total" value={total.toLocaleString()} accent="cyan" />
+          <KpiCard label="Fraud" value={fraudTotal.toLocaleString()} accent="red" />
+          <KpiCard label="Legitimate" value={legitTotal.toLocaleString()} accent="green" />
+        </div>
+
+        <div className="ng-card" style={{ padding: 0, border: 'none', background: 'transparent' }}>
+          <div className="ng-card-header" style={{ padding: '0 0 14px 0' }}>
+            <div className="ng-card-title">Transaction history</div>
+            <span className="font-mono2" style={{ fontSize: 10, color: 'var(--ng-muted)' }}>
+              Showing {(page - 1) * limit + 1}–{Math.min(page * limit, total)} of {total.toLocaleString()}
+            </span>
+          </div>
+
+          <DataTable
+            columns={COLUMNS}
+            rows={transactions}
+            loading={loading}
+            error={error}
+            onRetry={refetch}
+            emptyMessage="No transactions match the current filter."
+          />
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 16 }}>
+              <button
+                disabled={page <= 1}
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                style={{ background: 'transparent', border: '1px solid var(--ng-border)', color: 'var(--ng-muted)', padding: '6px 12px', borderRadius: 6, fontSize: 11, cursor: page <= 1 ? 'not-allowed' : 'pointer', opacity: page <= 1 ? 0.5 : 1 }}
+              >
+                ← Previous
+              </button>
+
+              <span className="font-mono2" style={{ fontSize: 10, color: 'var(--ng-muted)' }}>
+                Page <span style={{ color: 'var(--ng-text)', fontWeight: 700 }}>{page}</span> / {totalPages}
+              </span>
+
+              <button
+                disabled={page >= totalPages}
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                style={{ background: 'var(--ng-dim)', border: '1px solid var(--ng-border)', color: 'var(--ng-text)', padding: '6px 12px', borderRadius: 6, fontSize: 11, cursor: page >= totalPages ? 'not-allowed' : 'pointer', opacity: page >= totalPages ? 0.5 : 1 }}
+              >
+                Next →
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

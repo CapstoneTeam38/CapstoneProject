@@ -19,10 +19,10 @@ CORS(app)
 model = joblib.load("backend/models/xgb_model_v2.pkl")
 ocsvm_model = joblib.load("backend/models/ocsvm_model.pkl")
 
-with open("ml-models/top_features.json") as f:
-    top_features = json.load(f)
+with open("backend/models/top_features.json") as f:
+    XGB_TOP_FEATURES = json.load(f)
 
-with open("ml-models/threshold.json") as f:
+with open("backend/models/threshold.json") as f:
     threshold = json.load(f)["threshold"]
 
 # ── MongoDB ────────────────────────────────────────────────────────

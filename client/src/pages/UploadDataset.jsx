@@ -97,250 +97,216 @@ const UploadDataset = () => {
 
   /* ── Render ───────────────────────────────────────────────────────────── */
   return (
-    <div className="space-y-6 max-w-3xl mx-auto">
-      {/* Page heading */}
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Upload Dataset</h1>
-        <p className="text-slate-400 text-sm mt-1">
-          Upload a CSV file of transactions to run through the fraud detection model.
-        </p>
+    <div className="font-syne" style={{ margin: '-2rem', background: 'var(--ng-bg)', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      
+      {/* ── HEADER ── */}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '14px 24px', borderBottom: '1px solid var(--ng-border)',
+        background: 'var(--ng-surface)', position: 'sticky', top: 0, zIndex: 50,
+      }}>
+        <div>
+          <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--ng-text)' }}>Dataset upload</div>
+          <div className="font-mono2" style={{ fontSize: 10, color: 'var(--ng-muted)', marginTop: 1 }}>
+            Run batch inference on transaction CSVs
+          </div>
+        </div>
       </div>
 
-      {/* ── Drop Zone ─────────────────────────────────────────────────────── */}
-      {!results && (
-        <div
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-          onClick={() => inputRef.current?.click()}
-          role="button"
-          tabIndex={0}
-          aria-label="Drop CSV file here or click to browse"
-          className={`
-            glass-panel relative cursor-pointer group
-            flex flex-col items-center justify-center gap-4
-            rounded-2xl border-2 border-dashed
-            py-16 px-6 transition-all duration-300
-            ${
-              dragOver
-                ? 'border-cyan-400 bg-cyan-500/[0.06] shadow-[0_0_40px_rgba(6,182,212,0.15)]'
-                : 'border-white/10 hover:border-white/20 hover:bg-white/[0.02]'
-            }
-          `}
-        >
-          {/* Animated icon */}
-          <div
-            className={`
-              w-16 h-16 rounded-2xl flex items-center justify-center
-              transition-all duration-300
-              ${
-                dragOver
-                  ? 'bg-cyan-500/20 scale-110'
-                  : 'bg-white/[0.06] group-hover:bg-white/10 group-hover:scale-105'
-              }
-            `}
-          >
-            <UploadCloud
-              size={30}
-              className={`transition-colors duration-300 ${
-                dragOver ? 'text-cyan-400' : 'text-slate-400 group-hover:text-slate-200'
-              }`}
-            />
-          </div>
-
-          <div className="text-center">
-            <p className="text-slate-200 font-medium">
-              {dragOver ? 'Drop your file here' : 'Drag & drop your CSV file'}
-            </p>
-            <p className="text-slate-500 text-xs mt-1">
-              or <span className="text-cyan-400 underline underline-offset-2">browse files</span>
-            </p>
-          </div>
-          <p className="text-slate-600 text-[11px]">
-            Supports .csv files •  Must include an "Amount" column
-          </p>
-
-          <input
-            ref={inputRef}
-            type="file"
-            accept=".csv"
-            onChange={handleBrowse}
-            className="hidden"
-            aria-hidden="true"
-          />
-        </div>
-      )}
-
-      {/* ── Selected File Card ────────────────────────────────────────────── */}
-      {file && !results && (
-        <div className="glass-panel rounded-xl p-4 flex items-center gap-4 animate-fade-in">
-          <div className="w-10 h-10 rounded-lg bg-emerald-500/15 flex items-center justify-center shrink-0">
-            <FileSpreadsheet size={20} className="text-emerald-400" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-slate-200 truncate">{file.name}</p>
-            <p className="text-xs text-slate-500">{formatSize(file.size)}</p>
-          </div>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleReset();
-            }}
-            aria-label="Remove file"
-            className="text-slate-500 hover:text-red-400 transition-colors p-1"
-          >
-            <X size={16} />
-          </button>
-        </div>
-      )}
-
-      {/* ── Error Banner ──────────────────────────────────────────────────── */}
-      {error && (
-        <div className="flex items-start gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/20 animate-fade-in">
-          <XCircle size={18} className="text-red-400 mt-0.5 shrink-0" />
-          <div className="flex-1">
-            <p className="text-sm text-red-300 font-medium">Upload Error</p>
-            <p className="text-xs text-red-400/80 mt-0.5">{error}</p>
-          </div>
-          <button
-            onClick={() => setError(null)}
-            aria-label="Dismiss error"
-            className="text-red-400/60 hover:text-red-300 transition-colors"
-          >
-            <X size={14} />
-          </button>
-        </div>
-      )}
-
-      {/* ── Upload Button ─────────────────────────────────────────────────── */}
-      {file && !results && (
-        <button
-          onClick={handleUpload}
-          disabled={uploading}
-          className={`
-            w-full py-3.5 rounded-xl font-semibold text-sm tracking-wide
-            flex items-center justify-center gap-2
-            transition-all duration-300
-            ${
-              uploading
-                ? 'bg-cyan-700/40 text-cyan-300/60 cursor-not-allowed'
-                : 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white hover:shadow-[0_0_30px_rgba(6,182,212,0.3)] hover:scale-[1.01] active:scale-[0.99]'
-            }
-          `}
-        >
-          {uploading ? (
-            <>
-              <Loader2 size={18} className="animate-spin" />
-              Analyzing transactions…
-            </>
-          ) : (
-            <>
-              <UploadCloud size={18} />
-              Run Fraud Analysis
-            </>
-          )}
-        </button>
-      )}
-
-      {/* ── Results Panel ─────────────────────────────────────────────────── */}
-      {results && (
-        <div className="space-y-5 animate-fade-in">
-          {/* Success header */}
-          <div className="flex items-center gap-3 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-            <CheckCircle2 size={20} className="text-emerald-400" />
-            <div>
-              <p className="text-sm text-emerald-300 font-semibold">Analysis Complete</p>
-              <p className="text-xs text-emerald-400/70 mt-0.5">
-                Your dataset has been evaluated by the fraud detection model.
-              </p>
-            </div>
-          </div>
-
-          {/* Stat cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {/* Total Rows */}
-            <div className="glass-panel rounded-xl p-5 flex flex-col items-center text-center group hover:bg-white/[0.04] transition-colors">
-              <div className="w-11 h-11 rounded-xl bg-blue-500/15 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
-                <Database size={20} className="text-blue-400" />
+      {/* ── PAGE CONTENT ── */}
+      <div style={{ padding: '20px 24px', flex: 1, display: 'flex', justifyContent: 'center' }}>
+        <div style={{ width: '100%', maxWidth: 700, display: 'flex', flexDirection: 'column', gap: 24 }}>
+          
+          {/* ── Drop Zone ─────────────────────────────────────────────────────── */}
+          {!results && (
+            <div
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              onClick={() => inputRef.current?.click()}
+              role="button"
+              tabIndex={0}
+              aria-label="Drop CSV file here or click to browse"
+              className="ng-card group"
+              style={{
+                cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16,
+                padding: '60px 24px', borderStyle: 'dashed', textAlign: 'center', transition: 'all 0.3s ease',
+                borderColor: dragOver ? 'var(--ng-accent)' : 'var(--ng-border)',
+                background: dragOver ? 'rgba(0,229,255,0.05)' : 'var(--ng-surface)'
+              }}
+            >
+              <div style={{ 
+                width: 60, height: 60, borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.3s ease',
+                background: dragOver ? 'rgba(0,229,255,0.1)' : 'var(--ng-dim)', 
+                transform: dragOver ? 'scale(1.1)' : 'scale(1)' 
+              }}>
+                <UploadCloud size={24} color={dragOver ? 'var(--ng-accent)' : 'var(--ng-muted)'} />
               </div>
-              <p className="text-2xl font-bold text-white tabular-nums">
-                {results.totalRows?.toLocaleString() ?? '—'}
-              </p>
-              <p className="text-xs text-slate-500 mt-1 uppercase tracking-wider font-medium">
-                Total Rows
-              </p>
-            </div>
 
-            {/* Frauds Detected */}
-            <div className="glass-panel rounded-xl p-5 flex flex-col items-center text-center group hover:bg-white/[0.04] transition-colors">
-              <div className="w-11 h-11 rounded-xl bg-red-500/15 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
-                <ShieldAlert size={20} className="text-red-400" />
+              <div>
+                <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--ng-text)' }}>
+                  {dragOver ? 'Drop your file here' : 'Drag & drop your CSV file'}
+                </p>
+                <p style={{ fontSize: 12, color: 'var(--ng-muted)', marginTop: 4 }}>
+                  or <span style={{ color: 'var(--ng-accent)', textDecoration: 'underline' }}>browse files</span>
+                </p>
               </div>
-              <p className="text-2xl font-bold text-white tabular-nums">
-                {results.fraudsDetected?.toLocaleString() ?? '—'}
+              <p style={{ fontSize: 10, color: 'var(--ng-muted)', fontStyle: 'italic' }}>
+                Supports .csv files • Must include an "Amount" column
               </p>
-              <p className="text-xs text-slate-500 mt-1 uppercase tracking-wider font-medium">
-                Frauds Detected
-              </p>
-            </div>
 
-            {/* Fraud Rate */}
-            <div className="glass-panel rounded-xl p-5 flex flex-col items-center text-center group hover:bg-white/[0.04] transition-colors">
-              <div className="w-11 h-11 rounded-xl bg-amber-500/15 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
-                <BarChart3 size={20} className="text-amber-400" />
-              </div>
-              <p className="text-2xl font-bold text-white tabular-nums">
-                {results.fraudRate != null ? `${results.fraudRate}%` : '—'}
-              </p>
-              <p className="text-xs text-slate-500 mt-1 uppercase tracking-wider font-medium">
-                Fraud Rate
-              </p>
-            </div>
-          </div>
-
-          {/* Fraud-rate severity bar */}
-          <div className="glass-panel rounded-xl p-5">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs text-slate-400 font-medium">Threat Level</span>
-              <span
-                className={`text-xs font-bold uppercase tracking-wider ${
-                  (results.fraudRate ?? 0) > 10
-                    ? 'text-red-400'
-                    : (results.fraudRate ?? 0) > 3
-                    ? 'text-amber-400'
-                    : 'text-emerald-400'
-                }`}
-              >
-                {(results.fraudRate ?? 0) > 10
-                  ? 'High Risk'
-                  : (results.fraudRate ?? 0) > 3
-                  ? 'Moderate'
-                  : 'Low Risk'}
-              </span>
-            </div>
-            <div className="w-full h-2.5 rounded-full bg-white/[0.06] overflow-hidden">
-              <div
-                className={`h-full rounded-full transition-all duration-700 ease-out ${
-                  (results.fraudRate ?? 0) > 10
-                    ? 'bg-gradient-to-r from-red-500 to-rose-400'
-                    : (results.fraudRate ?? 0) > 3
-                    ? 'bg-gradient-to-r from-amber-500 to-yellow-400'
-                    : 'bg-gradient-to-r from-emerald-500 to-green-400'
-                }`}
-                style={{ width: `${Math.min(results.fraudRate ?? 0, 100)}%` }}
+              <input
+                ref={inputRef}
+                type="file"
+                accept=".csv"
+                onChange={handleBrowse}
+                className="hidden"
+                aria-hidden="true"
               />
             </div>
-          </div>
+          )}
 
-          {/* Upload another */}
-          <button
-            onClick={handleReset}
-            className="w-full py-3 rounded-xl font-medium text-sm text-slate-400 border border-white/10 hover:border-white/20 hover:text-white hover:bg-white/[0.03] transition-all duration-200"
-          >
-            Upload Another Dataset
-          </button>
+          {/* ── Selected File Card ────────────────────────────────────────────── */}
+          {file && !results && (
+            <div className="ng-card" style={{ display: 'flex', alignItems: 'center', gap: 16, padding: 16, animation: 'ng-fadeIn 0.3s ease' }}>
+              <div style={{ width: 40, height: 40, borderRadius: 8, background: 'rgba(0,200,122,.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <FileSpreadsheet size={18} color="var(--ng-green)" />
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--ng-text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{file.name}</p>
+                <p className="font-mono2" style={{ fontSize: 10, color: 'var(--ng-muted)' }}>{formatSize(file.size)}</p>
+              </div>
+              <button
+                onClick={(e) => { e.stopPropagation(); handleReset(); }}
+                style={{ background: 'transparent', border: 'none', color: 'var(--ng-muted)', cursor: 'pointer', padding: 8 }}
+              >
+                <X size={16} />
+              </button>
+            </div>
+          )}
+
+          {/* ── Error Banner ──────────────────────────────────────────────────── */}
+          {error && (
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: 16, borderRadius: 10, background: 'rgba(255,59,92,.1)', border: '1px solid rgba(255,59,92,.2)', animation: 'ng-fadeIn 0.3s ease' }}>
+              <XCircle size={18} color="var(--ng-red)" style={{ marginTop: 2, flexShrink: 0 }} />
+              <div style={{ flex: 1 }}>
+                <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--ng-red)' }}>Upload Error</p>
+                <p style={{ fontSize: 12, color: 'var(--ng-red)', opacity: 0.8, marginTop: 4 }}>{error}</p>
+              </div>
+              <button
+                onClick={() => setError(null)}
+                style={{ background: 'transparent', border: 'none', color: 'var(--ng-red)', opacity: 0.6, cursor: 'pointer' }}
+              >
+                <X size={14} />
+              </button>
+            </div>
+          )}
+
+          {/* ── Upload Button ─────────────────────────────────────────────────── */}
+          {file && !results && (
+            <button
+              onClick={handleUpload}
+              disabled={uploading}
+              style={{
+                width: '100%', padding: '14px', borderRadius: 10, fontSize: 13, fontWeight: 700, letterSpacing: 0.5,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, transition: 'all 0.3s ease', cursor: uploading ? 'not-allowed' : 'pointer',
+                background: uploading ? 'var(--ng-dim)' : 'var(--ng-accent)',
+                color: uploading ? 'var(--ng-muted)' : '#000',
+                border: 'none',
+              }}
+            >
+              {uploading ? (
+                <>
+                  <Loader2 size={16} className="animate-spin" />
+                  Analyzing transactions…
+                </>
+              ) : (
+                <>
+                  <UploadCloud size={16} />
+                  Run Fraud Analysis
+                </>
+              )}
+            </button>
+          )}
+
+          {/* ── Results Panel ─────────────────────────────────────────────────── */}
+          {results && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 20, animation: 'ng-slideUp 0.4s ease' }}>
+              {/* Success header */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 16, borderRadius: 10, background: 'rgba(0,200,122,.1)', border: '1px solid rgba(0,200,122,.2)' }}>
+                <CheckCircle2 size={20} color="var(--ng-green)" />
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--ng-green)' }}>Analysis Complete</p>
+                  <p style={{ fontSize: 11, color: 'var(--ng-green)', opacity: 0.7, marginTop: 2 }}>
+                    Your dataset has been evaluated by the fraud detection model.
+                  </p>
+                </div>
+              </div>
+
+              {/* Stat cards */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16 }}>
+                {/* Total Rows */}
+                <div className="ng-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: 20 }}>
+                  <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(0,229,255,.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+                    <Database size={20} color="var(--ng-accent)" />
+                  </div>
+                  <div className="font-mono2" style={{ fontSize: 24, fontWeight: 700, color: 'var(--ng-text)' }}>
+                    {results.totalRows?.toLocaleString() ?? '—'}
+                  </div>
+                  <p style={{ fontSize: 9, color: 'var(--ng-muted)', marginTop: 4, textTransform: 'uppercase', letterSpacing: 1, fontWeight: 700 }}>Total Rows</p>
+                </div>
+
+                {/* Frauds Detected */}
+                <div className="ng-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: 20 }}>
+                  <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(255,59,92,.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+                    <ShieldAlert size={20} color="var(--ng-red)" />
+                  </div>
+                  <div className="font-mono2" style={{ fontSize: 24, fontWeight: 700, color: 'var(--ng-text)' }}>
+                    {results.fraudsDetected?.toLocaleString() ?? '—'}
+                  </div>
+                  <p style={{ fontSize: 9, color: 'var(--ng-muted)', marginTop: 4, textTransform: 'uppercase', letterSpacing: 1, fontWeight: 700 }}>Frauds Detected</p>
+                </div>
+
+                {/* Fraud Rate */}
+                <div className="ng-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: 20 }}>
+                  <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(255,176,32,.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+                    <BarChart3 size={20} color="var(--ng-amber)" />
+                  </div>
+                  <div className="font-mono2" style={{ fontSize: 24, fontWeight: 700, color: 'var(--ng-text)' }}>
+                    {results.fraudRate != null ? `${results.fraudRate}%` : '—'}
+                  </div>
+                  <p style={{ fontSize: 9, color: 'var(--ng-muted)', marginTop: 4, textTransform: 'uppercase', letterSpacing: 1, fontWeight: 700 }}>Fraud Rate</p>
+                </div>
+              </div>
+
+              {/* Fraud-rate severity bar */}
+              <div className="ng-card" style={{ padding: 20 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--ng-muted)' }}>Threat Level</span>
+                  <span
+                    style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: 1, color: (results.fraudRate ?? 0) > 10 ? 'var(--ng-red)' : (results.fraudRate ?? 0) > 3 ? 'var(--ng-amber)' : 'var(--ng-green)' }}
+                  >
+                    {(results.fraudRate ?? 0) > 10 ? 'High Risk' : (results.fraudRate ?? 0) > 3 ? 'Moderate' : 'Low Risk'}
+                  </span>
+                </div>
+                <div style={{ width: '100%', height: 8, borderRadius: 4, background: 'var(--ng-dim)', overflow: 'hidden' }}>
+                  <div
+                    style={{ height: '100%', transition: 'width 1s ease-out', width: `${Math.min(results.fraudRate ?? 0, 100)}%`, background: (results.fraudRate ?? 0) > 10 ? 'var(--ng-red)' : (results.fraudRate ?? 0) > 3 ? 'var(--ng-amber)' : 'var(--ng-green)' }}
+                  />
+                </div>
+              </div>
+
+              {/* Upload another */}
+              <button
+                onClick={handleReset}
+                style={{ width: '100%', padding: '14px', borderRadius: 10, background: 'transparent', border: '1px solid var(--ng-border)', color: 'var(--ng-text)', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
+              >
+                Upload Another Dataset
+              </button>
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 };
