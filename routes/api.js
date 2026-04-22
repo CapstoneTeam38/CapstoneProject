@@ -82,7 +82,7 @@ router.get('/analytics', async (req, res) => {
 
 router.get('/model-stats', async (req, res) => {
     try {
-        const r = await axios.get(`${FLASK}/api/model-stats`);
+        const r = await axios.get(`${FLASK}/api/model-stats?userId=${getUserId(req)}`);
         res.json(r.data);
     } catch (err) {
         res.status(500).json({ error: 'Flask offline' });

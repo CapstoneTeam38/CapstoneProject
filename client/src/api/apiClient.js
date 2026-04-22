@@ -47,13 +47,13 @@ export const fetchStats = async () => {
   return normalizeStats(data);
 };
 
-export const fetchAnalytics = async () => {
-  const { data } = await apiClient.get('/analytics');
+export const fetchAnalytics = async (userId = 'anonymous') => {
+  const { data } = await apiClient.get('/analytics', { params: { userId } });
   return normalizeAnalytics(data);
 };
 
-export const fetchModelStats = async () => {
-  const { data } = await apiClient.get('/model-stats');
+export const fetchModelStats = async (userId = 'anonymous') => {
+  const { data } = await apiClient.get('/model-stats', { params: { userId } });
   return normalizeModelStats(data);
 };
 

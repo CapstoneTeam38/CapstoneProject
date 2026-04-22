@@ -6,6 +6,7 @@ import joblib
 import numpy as np
 import json
 import os
+import pandas as pd
 from datetime import datetime, timezone
 from bson import ObjectId
 
@@ -15,14 +16,76 @@ app = Flask(__name__)
 CORS(app)
 
 # ── Models ───────────────────────────────────────────────────────────────────
+# Structure 1: Random Forest + Isolation Forest
 rf_model  = joblib.load("ml-models/random_forest_model.pkl")
 iso_model = joblib.load("ml-models/isolation_forest_model.pkl")
-threshold = joblib.load("ml-models/threshold.pkl")
+rf_threshold = 0.35  # Calibrated for retrained RF on IEEE-CIS (unscaled data)
+
+# Structure 2: XGBoost + One-Class SVM
+xgb_model = joblib.load("ml-models/xgb_model_v2.pkl")
+ocsvm_model = joblib.load("ml-models/ocsvm_model.pkl")
+xgb_scaler = joblib.load("ml-models/scaler.pkl")
+
+with open("ml-models/top_features.json") as f:
+    XGB_TOP_FEATURES = json.load(f)
+
+with open("ml-models/feature_names.json") as f:
+    # This list has 200 features. We add the 2 missing ones (D3, M4) to reach 202.
+    XGB_FULL_FEATURES = json.load(f) + ["D3", "M4"]
+
+with open("ml-models/threshold.json") as f:
+    xgb_threshold = json.load(f)["threshold"]
 
 with open("ml-models/column_means.json") as f:
     column_means = json.load(f)
 
-FEATURE_NAMES = ["Time"] + [f"V{i}" for i in range(1, 29)] + ["Amount"]
+with open("ml-models/label_encoders.json") as f:
+    LABEL_ENCODERS = json.load(f)
+
+def encode_categorical(df, encoders):
+    df = df.copy()
+    for col, classes in encoders.items():
+        if col in df.columns:
+            # Create a mapping dict for speed
+            mapping = {str(c): i for i, c in enumerate(classes)}
+            # Map unseen values to 'nan' index or 0
+            nan_idx = mapping.get('nan', 0)
+            df[col] = df[col].astype(str).map(lambda x: mapping.get(x, nan_idx))
+    return df
+
+RF_FEATURES = ["Time"] + [f"V{i}" for i in range(1, 29)] + ["Amount"]
+
+def get_analysis_structure(row_count):
+    """Returns 'RF_IF' for < 200k rows, 'XGB_SVM' otherwise."""
+    return "XGB_SVM" if row_count >= 200000 else "RF_IF"
+
+def preprocess_for_model(df):
+    """
+    Unified preprocessing for all models.
+    Returns:
+        X_raw:    202-feature UNSCALED vector (for RF, IF — trained on raw data)
+        X_scaled: 202-feature SCALED vector (for OCSVM)
+        X_top:    80-feature SCALED subset (for XGBoost)
+    """
+    # 202 features mapping
+    df_encoded = encode_categorical(df, LABEL_ENCODERS)
+    X = np.zeros((len(df_encoded), len(XGB_FULL_FEATURES))) 
+    existing_cols = [col for col in XGB_FULL_FEATURES if col in df_encoded.columns]
+    col_indices = [XGB_FULL_FEATURES.index(col) for col in existing_cols]
+    if existing_cols:
+        X_df = df_encoded[existing_cols].apply(pd.to_numeric, errors='coerce').fillna(0)
+        X[:, col_indices] = X_df.values.astype(float)
+    
+    X_raw = X  # Unscaled for RF/IF
+    
+    # Scale for XGBoost/OCSVM
+    X_scaled = xgb_scaler.transform(X)
+    
+    # Extract the 80 features for XGBoost
+    top_indices = [XGB_FULL_FEATURES.index(f) for f in XGB_TOP_FEATURES]
+    X_top = X_scaled[:, top_indices]
+    
+    return X_raw, X_scaled, X_top
 
 # ── MongoDB Atlas ─────────────────────────────────────────────────────────────
 client = MongoClient(os.getenv("MONGO_URI"))
@@ -41,34 +104,60 @@ def home():
 
 @app.route("/predict", methods=["POST"])
 def predict():
-    data     = request.json
-    features = column_means.copy()
-    features[0]  = float(data.get("time",   column_means[0]))
-    features[29] = float(data.get("amount", column_means[29]))
-    features[13] = float(data.get("v14",    column_means[13]))
-
-    proba      = rf_model.predict_proba([features])[0][1]
-    is_fraud   = int(proba >= threshold)
-    iso_score  = iso_model.decision_function([features])[0]
-    is_anomaly = int(iso_model.predict([features])[0] == -1)
+    data = request.json
+    user_id = data.get("userId", "anonymous")
+    
+    # Determine structure based on current user data volume
+    col = db["user_transactions"]
+    count = col.count_documents({"userId": user_id})
+    structure = get_analysis_structure(count)
+    
+    # Convert input dict to DataFrame for preprocessing
+    # Normalize keys (time -> Time, amount -> Amount)
+    input_data = {
+        "Time": float(data.get("time", 0)),
+        "Amount": float(data.get("amount", 0)),
+        "V14": float(data.get("v14", 0))
+    }
+    df = pd.DataFrame([input_data])
+    
+    # Unified Preprocessing
+    X_raw, X_scaled, X_top = preprocess_for_model(df)
+    
+    if structure == "RF_IF":
+        proba = rf_model.predict_proba(X_raw)[0][1]
+        is_fraud = int(proba >= rf_threshold)
+        iso_score = iso_model.decision_function(X_raw)[0]
+        is_anomaly = int(iso_model.predict(X_raw)[0] == -1)
+        model_name = "Random Forest + Isolation Forest"
+    else:
+        # XGBoost path
+        proba = xgb_model.predict_proba(X_top)[0][1]
+        is_fraud = int(proba >= xgb_threshold)
+        iso_score = ocsvm_model.decision_function(X_scaled)[0]
+        is_anomaly = int(ocsvm_model.predict(X_scaled)[0] == -1)
+        model_name = "XGBoost + One-Class SVM"
 
     doc = {
-        "timestamp":         datetime.now(timezone.utc),
-        "amount":            features[29],
-        "time":              features[0],
+        "timestamp": datetime.now(timezone.utc),
+        "amount": input_data["Amount"],
+        "time": input_data["Time"],
         "fraud_probability": round(float(proba), 4),
-        "is_fraud":          is_fraud,
-        "iso_score":         round(float(iso_score), 4),
-        "is_anomaly":        is_anomaly,
-        "source":            "live_prediction"
+        "is_fraud": is_fraud,
+        "iso_score": round(float(iso_score), 4),
+        "is_anomaly": is_anomaly,
+        "source": "live_prediction",
+        "model_used": model_name,
+        "userId": user_id
     }
     predictions_col.insert_one(doc)
     return jsonify({
         "fraud_probability": doc["fraud_probability"],
-        "is_fraud":          is_fraud,
-        "is_anomaly":        is_anomaly,
-        "iso_score":         doc["iso_score"],
-        "label":             "FRAUD" if is_fraud else "LEGITIMATE"
+        "is_fraud": is_fraud,
+        "is_anomaly": is_anomaly,
+        "iso_score": doc["iso_score"],
+        "label": "FRAUD" if is_fraud else "LEGITIMATE",
+        "engine": model_name
     })
 
 
@@ -215,33 +304,64 @@ def analytics():
 
 @app.route("/api/model-stats")
 def model_stats():
-    metrics_path = "models/metrics.json"
+    user_id = request.args.get('userId', 'anonymous')
+    
+    # Try to find upload metadata: first for this userId, then the most recent one
+    meta = db["upload_metadata"].find_one({"userId": user_id})
+    if not meta:
+        # Fallback: get the MOST RECENT upload from any user
+        meta = db["upload_metadata"].find_one(sort=[("uploaded_at", -1)])
+    
+    if meta:
+        structure = meta.get("structure", "RF_IF")
+    else:
+        # Final fallback: count ALL rows in user_transactions (any userId)
+        count = db["user_transactions"].count_documents({})
+        structure = get_analysis_structure(count)
+    
+    if structure == "RF_IF":
+        model_name = "Random Forest + Isolation Forest"
+        threshold_val = float(rf_threshold)
+        importances = rf_model.feature_importances_
+        features = XGB_FULL_FEATURES
+        trained_on = "Retrained Ensemble (202 features)"
+    else:
+        model_name = "XGBoost + One-Class SVM"
+        threshold_val = float(xgb_threshold)
+        # XGBoost feature importances (uses top 80)
+        importances = xgb_model.feature_importances_
+        features = XGB_TOP_FEATURES
+        trained_on = "IEEE-CIS Fraud Dataset (XGBoost Engine)"
+
+    metrics_path = "ml-models/metrics.json"
     if os.path.exists(metrics_path):
         with open(metrics_path) as f:
             metrics = json.load(f)
     else:
         metrics = {
-            "accuracy":         0.9996,
-            "precision":        0.9405,
-            "recall":           0.8061,
-            "f1":               0.8681,
-            "roc_auc":          0.9529,
-            "threshold":        float(threshold),
-            "cv_mean":          0.9508,
-            "cv_std":           0.0021,
+            "accuracy": 0.9996,
+            "precision": 0.9405,
+            "recall": 0.8061,
+            "f1": 0.8681,
+            "roc_auc": 0.9529,
+            "threshold": threshold_val,
+            "cv_mean": 0.9508,
+            "cv_std": 0.0021,
             "confusion_matrix": [[56859, 5], [19, 79]],
         }
-    importances = rf_model.feature_importances_
+    
     feat_imp = sorted(
-        [{"feature": FEATURE_NAMES[i], "importance": round(float(importances[i]), 4)}
+        [{"feature": features[i], "importance": round(float(importances[i]), 4)}
          for i in range(len(importances))],
         key=lambda x: x["importance"], reverse=True
     )[:10]
+
     return jsonify({
-        "metrics":           metrics,
+        "metrics": metrics,
         "featureImportance": feat_imp,
-        "modelName":         "Random Forest + Isolation Forest",
-        "trainedOn":         "Kaggle Credit Card Fraud Dataset (284,807 txns)"
+        "modelName": model_name,
+        "trainedOn": trained_on,
+        "activeStructure": structure
     })
 
 
@@ -369,9 +489,17 @@ def upload_dataset():
         if 'file' not in request.files:
             return jsonify({"error": "No file received"}), 400
 
-        file    = request.files['file']
+        file = request.files['file']
         user_id = request.form.get('userId', 'anonymous')
 
+        # Count data rows (subtract 1 for the CSV header line)
+        file_bytes = file.read()
+        row_count = max(file_bytes.count(b'\n') - 1, 0)
+        file.seek(0) # Reset file pointer for pandas
+        
+        structure = get_analysis_structure(row_count)
+        model_name = "Random Forest + Isolation Forest" if structure == "RF_IF" else "XGBoost + One-Class SVM"
+        
         # Clear existing transactions for this user
         user_col = db["user_transactions"]
         user_col.delete_many({"userId": user_id})
@@ -379,58 +507,86 @@ def upload_dataset():
         total_rows = 0
         total_frauds = 0
         
-        feature_cols = ['Time'] + [f'V{i}' for i in range(1, 29)] + ['Amount']
-        
-        # Process in chunks of 50,000 rows to keep memory usage low and prevent Mongo timeouts
+        # Process in chunks
         for chunk_idx, df_chunk in enumerate(pd.read_csv(file, chunksize=50000)):
             df_chunk.columns = [c.strip() for c in df_chunk.columns]
 
-            # Map common column names
-            if 'Class' in df_chunk.columns:
-                df_chunk.rename(columns={'Class': 'is_fraud'}, inplace=True)
-            if 'Amount' not in df_chunk.columns and 'amount' in df_chunk.columns:
-                df_chunk.rename(columns={'amount': 'Amount'}, inplace=True)
+            # Case-insensitive column normalization
+            col_map = {c.lower(): c for c in df_chunk.columns}
+            
+            if 'isfraud' in col_map:
+                df_chunk.rename(columns={col_map['isfraud']: 'is_fraud'}, inplace=True)
+            elif 'class' in col_map:
+                df_chunk.rename(columns={col_map['class']: 'is_fraud'}, inplace=True)
+                
+            if 'transactionamt' in col_map:
+                df_chunk.rename(columns={col_map['transactionamt']: 'Amount'}, inplace=True)
+            elif 'amount' in col_map:
+                df_chunk.rename(columns={col_map['amount']: 'Amount'}, inplace=True)
+
+            if 'transactiondt' in col_map:
+                df_chunk.rename(columns={col_map['transactiondt']: 'Time'}, inplace=True)
+            elif 'time' in col_map:
+                df_chunk.rename(columns={col_map['time']: 'Time'}, inplace=True)
 
             if 'Amount' not in df_chunk.columns:
-                return jsonify({"error": "CSV must have an 'Amount' column"}), 400
+                return jsonify({
+                    "error": "CSV must have an 'Amount' or 'TransactionAmt' column",
+                    "found_columns": list(df_chunk.columns)
+                }), 400
 
-            # Vectorized feature construction
-            # Create a 2D array filled with the means
-            X_chunk = np.tile(column_means, (len(df_chunk), 1))
+            # Unified Preprocessing
+            X_raw, X_scaled, X_top = preprocess_for_model(df_chunk)
             
-            # Identify which feature columns from the model exist in the uploaded chunk
-            existing_cols = [col for col in feature_cols if col in df_chunk.columns]
-            col_indices = [feature_cols.index(col) for col in existing_cols]
-            
-            # If we have existing columns, overwrite the defaults in X_chunk efficiently
-            if existing_cols:
-                # df_chunk[existing_cols].values matches the shape of X_chunk columns at col_indices
-                X_chunk[:, col_indices] = df_chunk[existing_cols].values.astype(float)
-            
-            # Batch probability prediction
-            probas = rf_model.predict_proba(X_chunk)[:, 1]
-            is_fraud_arr = (probas >= threshold).astype(int)
+            if structure == "RF_IF":
+                probas = rf_model.predict_proba(X_raw)[:, 1]
+                is_fraud_arr = (probas >= rf_threshold).astype(int)
+            else:
+                probas = xgb_model.predict_proba(X_top)[:, 1]
+                is_fraud_arr = (probas >= xgb_threshold).astype(int)
             
             total_rows += len(df_chunk)
             total_frauds += int(is_fraud_arr.sum())
             
-            # Create dicts for mongo bulk insert
-            # Adding required fields directly to the chunk dataframe is faster than iterating dicts manually
             df_chunk['userId'] = user_id
             df_chunk['fraud_probability'] = np.round(probas.astype(float), 4)
             df_chunk['is_fraud'] = is_fraud_arr
             df_chunk['uploaded_at'] = datetime.now(timezone.utc)
+            # Keep ONLY essential columns for the UI to save MongoDB space (prevents quota errors)
+            essential_cols = ['Time', 'Amount', 'is_fraud', 'fraud_probability', 'userId']
+            # Add placeholders for UI state
+            df_chunk['reviewed'] = False
+            df_chunk['review_label'] = None
+            df_chunk['notes'] = ""
             
-            # Convert to dict and insert batch
-            docs = df_chunk.to_dict(orient='records')
-            if docs:
-                user_col.insert_many(docs)
+            # Filter the chunk to only essential data
+            db_ready_df = df_chunk[essential_cols + ['reviewed', 'review_label', 'notes']].copy()
+            
+            records = db_ready_df.to_dict('records')
+            if records:
+                user_col.insert_many(records)
+
+        # Store upload metadata so model-stats can retrieve the structure used
+        meta_col = db["upload_metadata"]
+        meta_col.update_one(
+            {"userId": user_id},
+            {"$set": {
+                "userId": user_id,
+                "totalRows": total_rows,
+                "fraudsDetected": total_frauds,
+                "structure": structure,
+                "engine": model_name,
+                "uploaded_at": datetime.now(timezone.utc)
+            }},
+            upsert=True
+        )
 
         return jsonify({
-            "totalRows":      total_rows,
+            "totalRows": total_rows,
             "fraudsDetected": total_frauds,
-            "fraudRate":      round(total_frauds / total_rows * 100, 2) if total_rows > 0 else 0,
-            "userId":         user_id
+            "fraudRate": round(total_frauds / total_rows * 100, 2) if total_rows > 0 else 0,
+            "userId": user_id,
+            "engine": model_name
         })
 
     except Exception as e:

@@ -102,6 +102,7 @@ export const normalizeModelStats = (payload) => {
     })),
     modelName: payload.modelName || 'Unknown',
     trainedOn: payload.trainedOn || 'Unknown Dataset',
+    activeStructure: payload.activeStructure || 'RF_IF',
   };
 };
 

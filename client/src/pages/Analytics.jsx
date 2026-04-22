@@ -1,14 +1,19 @@
-import React from 'react';
-import { fetchAnalytics } from '../api/apiClient';
+import { fetchAnalytics, fetchModelStats } from '../api/apiClient';
 import { useFetch } from '../hooks/useFetch';
 import MetricGrid from '../components/MetricGrid';
 import ComparisonCard from '../components/ComparisonCard';
 import LineChartCard from '../components/LineChartCard';
 import EmptyState from '../components/EmptyState';
-import { BarChart3, Info } from 'lucide-react';
+import { BarChart3, Info, Cpu } from 'lucide-react';
 
 const Analytics = () => {
-  const { data: analytics, loading, error } = useFetch(fetchAnalytics, []);
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const userId = user.userId || 'anonymous';
+
+  const { data: analytics, loading, error, refetch } = useFetch(() => fetchAnalytics(userId), [userId]);
+  const { data: modelStats } = useFetch(() => fetchModelStats(userId), [userId]);
+
+  const activeStructure = modelStats?.activeStructure === 'XGB_SVM' ? 'Enterprise (XGB+SVM)' : 'Standard (RF+IF)';
 
   if (error) {
     return (
@@ -34,9 +39,15 @@ const Analytics = () => {
           </p>
         </div>
         
-        <div className="flex items-center gap-2 bg-white/[0.03] border border-white/5 px-4 py-2 rounded-xl text-slate-500 text-xs font-semibold">
-           <Info size={14} className="text-cyan-500" />
-           Latest 24h Aggregation
+        <div className="flex flex-col md:flex-row items-center gap-4">
+          <div className="flex items-center gap-2 bg-cyan-500/10 border border-cyan-500/20 px-4 py-2 rounded-xl text-cyan-400 text-xs font-bold uppercase tracking-wider">
+             <Cpu size={14} />
+             {activeStructure}
+          </div>
+          <div className="flex items-center gap-2 bg-white/[0.03] border border-white/5 px-4 py-2 rounded-xl text-slate-500 text-xs font-semibold">
+             <Info size={14} className="text-cyan-500" />
+             Latest 24h Aggregation
+          </div>
         </div>
       </div>
 

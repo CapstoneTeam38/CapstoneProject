@@ -86,7 +86,7 @@ const CheckTransaction = () => {
                <div className="grid grid-cols-2 gap-4">
                  <div className="p-4 rounded-xl bg-white/[0.03] border border-white/5">
                     <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Inference Engine</div>
-                    <div className="text-xs font-semibold text-white">XGBoost-Forest</div>
+                    <div className="text-xs font-semibold text-white">{result.engine || "Standard-Forest"}</div>
                  </div>
                  <div className="p-4 rounded-xl bg-white/[0.03] border border-white/5">
                     <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Confidence Score</div>
