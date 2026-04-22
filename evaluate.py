@@ -12,7 +12,7 @@ from sklearn.model_selection import train_test_split
 def evaluate():
 
     print("Loading model...")
-    model = joblib.load("models/xgb_model.pkl")
+    model = joblib.load("ml-models/xgb_model_v2.pkl")
 
     print("Preparing data...")
     df = load_and_merge_ieee()

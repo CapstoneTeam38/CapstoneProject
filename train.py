@@ -9,7 +9,7 @@ import joblib
 import json
 import os
 
-os.makedirs("models", exist_ok=True)
+os.makedirs("ml-models", exist_ok=True)
 
 print("Loading dataset...")
 df = pd.read_csv("data/creditcard.csv")
@@ -24,7 +24,7 @@ y = df["Class"]
 
 # Save column means (used by app.py for default feature values)
 column_means = X.mean().tolist()
-with open("models/column_means.json", "w") as f:
+with open("ml-models/column_means.json", "w") as f:
     json.dump(column_means, f)
 print("Column means saved.")
 
@@ -96,9 +96,9 @@ iso_model.fit(normal_data)
 print("Isolation Forest trained.")
 
 # ── Save Everything ───────────────────────────────────────────────────────────
-joblib.dump(rf_model,  "models/random_forest_model.pkl")
-joblib.dump(iso_model, "models/isolation_forest_model.pkl")
-joblib.dump(threshold, "models/threshold.pkl")
+joblib.dump(rf_model,  "ml-models/random_forest_model.pkl")
+joblib.dump(iso_model, "ml-models/isolation_forest_model.pkl")
+joblib.dump(threshold, "ml-models/threshold.pkl")
 
-print("\nAll models saved to models/")
+print("\nAll models saved to ml-models/")
 print("Training complete.")

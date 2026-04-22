@@ -15,11 +15,11 @@ app = Flask(__name__)
 CORS(app)
 
 # ── Models ───────────────────────────────────────────────────────────────────
-rf_model  = joblib.load("models/random_forest_model.pkl")
-iso_model = joblib.load("models/isolation_forest_model.pkl")
-threshold = joblib.load("models/threshold.pkl")
+rf_model  = joblib.load("ml-models/random_forest_model.pkl")
+iso_model = joblib.load("ml-models/isolation_forest_model.pkl")
+threshold = joblib.load("ml-models/threshold.pkl")
 
-with open("models/column_means.json") as f:
+with open("ml-models/column_means.json") as f:
     column_means = json.load(f)
 
 FEATURE_NAMES = ["Time"] + [f"V{i}" for i in range(1, 29)] + ["Amount"]
