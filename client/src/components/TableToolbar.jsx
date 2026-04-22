@@ -2,14 +2,14 @@ import React from 'react';
 import { Download, Filter } from 'lucide-react';
 
 const selectBase =
-  'bg-white/[0.04] border border-white/10 rounded-lg px-3 py-2 text-sm text-slate-300 focus:outline-none focus:ring-1 focus:ring-cyan-500/50 transition-colors appearance-none cursor-pointer';
+  'bg-white/[0.04] border border-white/10 rounded-lg px-3 py-2 text-sm text-[var(--ng-muted)] focus:outline-none focus:ring-1 focus:ring-cyan-500/50 transition-colors appearance-none cursor-pointer';
 
 const TableToolbar = ({ filter, onFilterChange, limit, onLimitChange, onExport }) => {
   return (
     <div className="flex flex-wrap items-center gap-3 mb-5">
       {/* Filter select */}
       <div className="flex items-center gap-2">
-        <Filter size={14} className="text-slate-500" />
+        <Filter size={14} className="text-[var(--ng-muted)]" />
         <select
           id="filter-select"
           value={filter}
@@ -24,7 +24,7 @@ const TableToolbar = ({ filter, onFilterChange, limit, onLimitChange, onExport }
 
       {/* Rows per page */}
       <div className="flex items-center gap-2">
-        <span className="text-xs text-slate-500 font-medium">Rows</span>
+        <span className="text-xs text-[var(--ng-muted)] font-medium">Rows</span>
         <select
           id="limit-select"
           value={limit}
@@ -44,7 +44,7 @@ const TableToolbar = ({ filter, onFilterChange, limit, onLimitChange, onExport }
       <button
         id="csv-export-btn"
         onClick={onExport}
-        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/[0.04] border border-white/10 text-slate-300 hover:bg-white/[0.08] hover:text-white transition-colors text-sm font-medium"
+        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--ng-surface)] border border-[var(--ng-border)] text-[var(--ng-muted)] hover:bg-[var(--ng-hover-bg)] hover:text-[var(--ng-text)] transition-colors text-sm font-medium"
       >
         <Download size={14} />
         <span>Export CSV</span>

@@ -43,7 +43,7 @@ const PredictionForm = ({ onSubmit, loading }) => {
         <div className="space-y-2">
           <label 
             htmlFor="amount-input"
-            className="text-[10px] font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2"
+            className="text-[10px] font-bold uppercase tracking-widest text-[var(--ng-muted)] flex items-center gap-2"
           >
              Transaction Amount ($)
           </label>
@@ -56,7 +56,7 @@ const PredictionForm = ({ onSubmit, loading }) => {
             placeholder="e.g. 99.99"
             aria-invalid={errors.amount ? "true" : "false"}
             aria-describedby={errors.amount ? "amount-error" : undefined}
-            className={`w-full bg-white/[0.03] border ${errors.amount ? 'border-rose-500/50' : 'border-white/10'} rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500/50 focus:bg-white/[0.05] transition-all`}
+            className={`w-full bg-white/[0.03] border ${errors.amount ? 'border-rose-500/50' : 'border-white/10'} rounded-xl px-4 py-3 text-sm text-[var(--ng-text)] focus:outline-none focus:border-cyan-500/50 focus:bg-white/[0.05] transition-all`}
           />
           {errors.amount && <p id="amount-error" className="text-[10px] text-rose-400 font-medium">{errors.amount}</p>}
         </div>
@@ -65,7 +65,7 @@ const PredictionForm = ({ onSubmit, loading }) => {
         <div className="space-y-2">
           <label 
             htmlFor="time-input"
-            className="text-[10px] font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2"
+            className="text-[10px] font-bold uppercase tracking-widest text-[var(--ng-muted)] flex items-center gap-2"
           >
              Time Offset (Seconds)
           </label>
@@ -78,7 +78,7 @@ const PredictionForm = ({ onSubmit, loading }) => {
             placeholder="Seconds since epoch start"
             aria-invalid={errors.time ? "true" : "false"}
             aria-describedby={errors.time ? "time-error" : undefined}
-            className={`w-full bg-white/[0.03] border ${errors.time ? 'border-rose-500/50' : 'border-white/10'} rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500/50 focus:bg-white/[0.05] transition-all`}
+            className={`w-full bg-white/[0.03] border ${errors.time ? 'border-rose-500/50' : 'border-white/10'} rounded-xl px-4 py-3 text-sm text-[var(--ng-text)] focus:outline-none focus:border-cyan-500/50 focus:bg-white/[0.05] transition-all`}
           />
           {errors.time && <p id="time-error" className="text-[10px] text-rose-400 font-medium">{errors.time}</p>}
         </div>
@@ -87,7 +87,7 @@ const PredictionForm = ({ onSubmit, loading }) => {
         <div className="space-y-2">
           <label 
             htmlFor="card1-input"
-            className="text-[10px] font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2"
+            className="text-[10px] font-bold uppercase tracking-widest text-[var(--ng-muted)] flex items-center gap-2"
           >
              Payment Card Factor (card1)
           </label>
@@ -100,7 +100,7 @@ const PredictionForm = ({ onSubmit, loading }) => {
             placeholder="Numerical card ID"
             aria-invalid={errors.card1 ? "true" : "false"}
             aria-describedby={errors.card1 ? "card1-error" : undefined}
-            className={`w-full bg-white/[0.03] border ${errors.card1 ? 'border-rose-500/50' : 'border-white/10'} rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500/50 focus:bg-white/[0.05] transition-all`}
+            className={`w-full bg-white/[0.03] border ${errors.card1 ? 'border-rose-500/50' : 'border-white/10'} rounded-xl px-4 py-3 text-sm text-[var(--ng-text)] focus:outline-none focus:border-cyan-500/50 focus:bg-white/[0.05] transition-all`}
           />
           {errors.card1 && <p id="card1-error" className="text-[10px] text-rose-400 font-medium">{errors.card1}</p>}
         </div>

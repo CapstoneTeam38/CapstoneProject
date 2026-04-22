@@ -35,7 +35,7 @@ const ExplainabilityPanel = ({ shapValues = [], fraudProbability = 0 }) => {
     <div className="space-y-6 mt-6">
       <div className="flex items-center gap-2 mb-2">
         <Info size={16} className="text-cyan-400" />
-        <h3 className="text-xs font-bold uppercase tracking-widest text-white/90">AI Explainability Insights</h3>
+        <h3 className="text-xs font-bold uppercase tracking-widest text-[var(--ng-text)] opacity-90">AI Explainability Insights</h3>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -49,12 +49,12 @@ const ExplainabilityPanel = ({ shapValues = [], fraudProbability = 0 }) => {
             {positiveDrivers.length > 0 ? (
               positiveDrivers.map((v, i) => (
                 <div key={i} className="flex flex-col gap-1">
-                  <span className="text-xs font-semibold text-white/80">{getReadableLabel(v.feature)}</span>
-                  <p className="text-[11px] leading-relaxed text-slate-500">{getReasoning(v)}</p>
+                  <span className="text-xs font-semibold text-[var(--ng-text)] opacity-80">{getReadableLabel(v.feature)}</span>
+                  <p className="text-[11px] leading-relaxed text-[var(--ng-muted)]">{getReasoning(v)}</p>
                 </div>
               ))
             ) : (
-              <p className="text-xs text-slate-500 italic">No significant risk escalators identified.</p>
+              <p className="text-xs text-[var(--ng-muted)] italic">No significant risk escalators identified.</p>
             )}
           </div>
         </div>
@@ -69,12 +69,12 @@ const ExplainabilityPanel = ({ shapValues = [], fraudProbability = 0 }) => {
             {negativeDrivers.length > 0 ? (
               negativeDrivers.map((v, i) => (
                 <div key={i} className="flex flex-col gap-1">
-                  <span className="text-xs font-semibold text-white/80">{getReadableLabel(v.feature)}</span>
-                  <p className="text-[11px] leading-relaxed text-slate-500">{getReasoning(v)}</p>
+                  <span className="text-xs font-semibold text-[var(--ng-text)] opacity-80">{getReadableLabel(v.feature)}</span>
+                  <p className="text-[11px] leading-relaxed text-[var(--ng-muted)]">{getReasoning(v)}</p>
                 </div>
               ))
             ) : (
-              <p className="text-xs text-slate-500 italic">No significant safety markers identified.</p>
+              <p className="text-xs text-[var(--ng-muted)] italic">No significant safety markers identified.</p>
             )}
           </div>
         </div>
@@ -82,10 +82,10 @@ const ExplainabilityPanel = ({ shapValues = [], fraudProbability = 0 }) => {
 
       {/* Summary Conclusion */}
       <div className="p-4 bg-white/[0.02] border border-white/5 rounded-xl">
-        <p className="text-xs leading-relaxed text-slate-400">
+        <p className="text-xs leading-relaxed text-[var(--ng-muted)]">
           The AI model evaluated this transaction across 30 distinct feature vectors. 
-          The final probability of <span className="text-white font-bold">{Math.round(fraudProbability * 100)}%</span> is primarily driven by 
-          the intersection of <span className="text-white">{getReadableLabel(sortedValues[0]?.feature)}</span> and <span className="text-white">{getReadableLabel(sortedValues[1]?.feature)}</span>.
+          The final probability of <span className="text-[var(--ng-text)] font-bold">{Math.round(fraudProbability * 100)}%</span> is primarily driven by 
+          the intersection of <span className="text-[var(--ng-text)]">{getReadableLabel(sortedValues[0]?.feature)}</span> and <span className="text-[var(--ng-text)]">{getReadableLabel(sortedValues[1]?.feature)}</span>.
         </p>
       </div>
     </div>

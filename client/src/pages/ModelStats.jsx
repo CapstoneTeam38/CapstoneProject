@@ -7,11 +7,11 @@ import { Cpu, CheckCircle2, AlertCircle, BarChart, Info, Layers } from 'lucide-r
 const PerformanceTile = ({ label, value, description, colorClass }) => (
   <div className="glass-panel p-6 border-white/5 relative overflow-hidden group">
     <div className={`absolute top-0 right-0 w-24 h-24 ${colorClass} opacity-5 blur-[40px] -mr-12 -mt-12 rounded-full pointer-events-none group-hover:opacity-10 transition-opacity`} />
-    <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">{label}</div>
+    <div className="text-[10px] font-bold text-[var(--ng-muted)] uppercase tracking-widest mb-1">{label}</div>
     <div className={`text-3xl font-black mb-2 ${colorClass.replace('bg-', 'text-')}`}>
       {(value * 100).toFixed(2)}%
     </div>
-    <p className="text-[11px] text-slate-500 leading-relaxed">{description}</p>
+    <p className="text-[11px] text-[var(--ng-muted)] leading-relaxed">{description}</p>
   </div>
 );
 

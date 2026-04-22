@@ -59,9 +59,9 @@ const Login = () => {
 
         <div className="animate-[fadeUp_0.7s_ease_forwards] flex items-center gap-3 z-20">
           <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-500/30">
-            <ShieldCheck className="text-white w-5 h-5" />
+            <ShieldCheck className="text-[var(--ng-text)] w-5 h-5" />
           </div>
-          <span className="text-lg font-bold tracking-tight text-white uppercase tracking-widest">NeuralGuard</span>
+          <span className="text-lg font-bold tracking-tight text-[var(--ng-text)] uppercase tracking-widest">NeuralGuard</span>
         </div>
 
         <div className="z-20 space-y-6 flex flex-col justify-center flex-1 pr-20">
@@ -72,29 +72,29 @@ const Login = () => {
             </div>
           </div>
 
-          <h1 className="animate-[fadeUp_0.7s_0.3s_ease_forwards] opacity-0 text-7xl font-black text-white leading-[1.1] tracking-tighter" style={{ animationFillMode: 'forwards' }}>
+          <h1 className="animate-[fadeUp_0.7s_0.3s_ease_forwards] opacity-0 text-7xl font-black text-[var(--ng-text)] leading-[1.1] tracking-tighter" style={{ animationFillMode: 'forwards' }}>
             Secure the<br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-500">Neural Flow.</span>
           </h1>
 
-          <p className="animate-[fadeUp_0.7s_0.45s_ease_forwards] opacity-0 text-slate-400 text-lg leading-relaxed max-w-md" style={{ animationFillMode: 'forwards' }}>
-            Advanced fraud detection utilizing <span className="text-white">Isolation Forests</span> and <span className="text-white">SHAP</span> to analyze 284k+ transactions with 99.9% precision.
+          <p className="animate-[fadeUp_0.7s_0.45s_ease_forwards] opacity-0 text-[var(--ng-muted)] text-lg leading-relaxed max-w-md" style={{ animationFillMode: 'forwards' }}>
+            Advanced fraud detection utilizing <span className="text-[var(--ng-text)]">Isolation Forests</span> and <span className="text-[var(--ng-text)]">SHAP</span> to analyze 284k+ transactions with 99.9% precision.
           </p>
 
           <div className="animate-[fadeUp_0.7s_0.6s_ease_forwards] opacity-0 flex gap-12 pt-8" style={{ animationFillMode: 'forwards' }}>
             <div>
-              <p className="text-3xl font-bold text-white tracking-tighter">99.96%</p>
-              <p className="text-[10px] text-slate-400 uppercase tracking-[0.2em] mt-1">Accuracy</p>
+              <p className="text-3xl font-bold text-[var(--ng-text)] tracking-tighter">99.96%</p>
+              <p className="text-[10px] text-[var(--ng-muted)] uppercase tracking-[0.2em] mt-1">Accuracy</p>
             </div>
             <div>
-              <p className="text-3xl font-bold text-white tracking-tighter">0.17%</p>
-              <p className="text-[10px] text-slate-400 uppercase tracking-[0.2em] mt-1">Detection Rate</p>
+              <p className="text-3xl font-bold text-[var(--ng-text)] tracking-tighter">0.17%</p>
+              <p className="text-[10px] text-[var(--ng-muted)] uppercase tracking-[0.2em] mt-1">Detection Rate</p>
             </div>
           </div>
         </div>
 
         <div className="z-20 overflow-hidden border-t border-slate-800/40 pt-8">
-          <div className="flex animate-[ticker_25s_linear_infinite] w-max text-[9px] uppercase tracking-[0.3em] text-slate-600 gap-12">
+          <div className="flex animate-[ticker_25s_linear_infinite] w-max text-[9px] uppercase tracking-[0.3em] text-[var(--ng-muted)] gap-12">
             <span>● Random Forest</span><span>● Isolation Forest</span><span>● SHAP</span><span>● MongoDB Atlas</span><span>● Real-Time</span>
             <span>● Random Forest</span><span>● Isolation Forest</span><span>● SHAP</span><span>● MongoDB Atlas</span><span>● Real-Time</span>
           </div>
@@ -111,8 +111,8 @@ const Login = () => {
           <div className="w-full max-w-sm">
             <div className="bg-slate-900/75 backdrop-blur-[16px] border border-white/10 p-10 rounded-[2.5rem] shadow-2xl relative">
               <div className="mb-10">
-                <h2 className="text-3xl font-bold text-white tracking-tight">Login</h2>
-                <p className="text-slate-400 text-sm mt-2 font-medium">Identity Verification Required</p>
+                <h2 className="text-3xl font-bold text-[var(--ng-text)] tracking-tight">Login</h2>
+                <p className="text-[var(--ng-muted)] text-sm mt-2 font-medium">Identity Verification Required</p>
               </div>
 
               {error && (
@@ -123,24 +123,24 @@ const Login = () => {
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                  <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400 mb-2 block">Research Email</label>
+                  <label className="text-[10px] uppercase tracking-widest font-bold text-[var(--ng-muted)] mb-2 block">Research Email</label>
                   <input 
                     type="email" 
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-slate-950/50 border border-slate-800 rounded-2xl py-4 px-5 text-white focus:ring-1 focus:ring-cyan-500/50 outline-none transition-all placeholder-slate-700"
+                    className="w-full bg-slate-950/50 border border-slate-800 rounded-2xl py-4 px-5 text-[var(--ng-text)] focus:ring-1 focus:ring-cyan-500/50 outline-none transition-all placeholder-slate-700"
                     placeholder="name@research.ai" 
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400 mb-2 block">Security Key</label>
+                  <label className="text-[10px] uppercase tracking-widest font-bold text-[var(--ng-muted)] mb-2 block">Security Key</label>
                   <input 
                     type="password" 
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full bg-slate-950/50 border border-slate-800 rounded-2xl py-4 px-5 text-white focus:ring-1 focus:ring-cyan-500/50 outline-none transition-all"
+                    className="w-full bg-slate-950/50 border border-slate-800 rounded-2xl py-4 px-5 text-[var(--ng-text)] focus:ring-1 focus:ring-cyan-500/50 outline-none transition-all"
                     placeholder="••••••••" 
                   />
                 </div>
@@ -155,7 +155,7 @@ const Login = () => {
 
               <div className="mt-8 pt-8 border-t border-slate-800/50">
                 <a href="/api/auth/google"
-                   className="flex items-center justify-center gap-3 bg-white/5 border border-white/5 py-3.5 rounded-2xl hover:bg-white/10 transition-all text-xs font-bold text-slate-300 uppercase tracking-tighter">
+                   className="flex items-center justify-center gap-3 bg-white/5 border border-white/5 py-3.5 rounded-2xl hover:bg-white/10 transition-all text-xs font-bold text-[var(--ng-muted)] uppercase tracking-tighter">
                   <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-4 h-4" alt="Google" />
                   Google SSO
                 </a>

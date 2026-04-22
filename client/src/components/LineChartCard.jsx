@@ -15,8 +15,8 @@ const LineChartCard = ({ data = [] }) => {
     <div className="glass-panel p-6 border-white/5 h-[400px] flex flex-col">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h3 className="text-sm font-bold text-white uppercase tracking-wider">Fraud Density by Amount</h3>
-          <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-1">Volume Distribution across price buckets</p>
+          <h3 className="text-sm font-bold text-[var(--ng-text)] uppercase tracking-wider">Fraud Density by Amount</h3>
+          <p className="text-[10px] text-[var(--ng-muted)] uppercase tracking-widest mt-1">Volume Distribution across price buckets</p>
         </div>
       </div>
 
@@ -25,36 +25,36 @@ const LineChartCard = ({ data = [] }) => {
           <ComposedChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
             <defs>
               <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.3}/>
-                <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0}/>
+                <stop offset="5%" stopColor="var(--ng-accent)" stopOpacity={0.5}/>
+                <stop offset="95%" stopColor="var(--ng-accent)" stopOpacity={0.1}/>
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ffffff08" />
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--ng-border)" />
             <XAxis 
               dataKey="range" 
               axisLine={false} 
               tickLine={false} 
-              tick={{ fill: '#64748b', fontSize: 10 }}
+              tick={{ fill: 'var(--ng-muted)', fontSize: 10 }}
               dy={10}
             />
             <YAxis 
               yAxisId="left"
               axisLine={false} 
               tickLine={false} 
-              tick={{ fill: '#64748b', fontSize: 10 }}
+              tick={{ fill: 'var(--ng-muted)', fontSize: 10 }}
             />
             <YAxis 
               yAxisId="right"
               orientation="right"
               axisLine={false} 
               tickLine={false} 
-              tick={{ fill: '#f43f5e', fontSize: 10 }}
+              tick={{ fill: 'var(--ng-red)', fontSize: 10 }}
             />
             <Tooltip
-              contentStyle={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: '12px', fontSize: '11px', color: '#fff' }}
-              itemStyle={{ fontWeight: 'bold', color: '#fff' }}
-              labelStyle={{ color: '#94a3b8', marginBottom: '4px', fontWeight: 'bold' }}
-              cursor={{ fill: '#ffffff05' }}
+              contentStyle={{ background: 'var(--ng-surface)', border: '1px solid var(--ng-border)', borderRadius: '12px', fontSize: '11px', color: 'var(--ng-text)' }}
+              itemStyle={{ fontWeight: 'bold', color: 'var(--ng-text)' }}
+              labelStyle={{ color: 'var(--ng-muted)', marginBottom: '4px', fontWeight: 'bold' }}
+              cursor={{ fill: 'var(--ng-hover-bg)' }}
             />
             <Legend verticalAlign="top" align="right" height={36} iconType="circle" />
             
@@ -74,7 +74,7 @@ const LineChartCard = ({ data = [] }) => {
               name="Fraud Anomalies"
               stroke="#f43f5e" 
               strokeWidth={3}
-              dot={{ fill: '#f43f5e', strokeWidth: 2, r: 4 }}
+              dot={{ fill: 'var(--ng-red)', strokeWidth: 2, r: 4 }}
               activeDot={{ r: 6, strokeWidth: 0 }}
             />
           </ComposedChart>

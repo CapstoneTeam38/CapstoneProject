@@ -19,11 +19,11 @@ const CaseCard = ({ caseData, onReview }) => {
       <div className="flex items-start justify-between mb-6">
         <div className="flex items-center gap-3">
           <div className="p-2.5 rounded-xl bg-white/5 border border-white/10 group-hover:border-white/20 transition-colors">
-            <Hash size={16} className="text-slate-500" />
+            <Hash size={16} className="text-[var(--ng-muted)]" />
           </div>
           <div>
-            <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-0.5">Reference ID</div>
-            <div className="text-xs font-mono text-white font-bold truncate max-w-[120px] md:max-w-none">{id}</div>
+            <div className="text-[10px] font-bold text-[var(--ng-muted)] uppercase tracking-widest mb-0.5">Reference ID</div>
+            <div className="text-xs font-mono text-[var(--ng-text)] font-bold truncate max-w-[120px] md:max-w-none">{id}</div>
           </div>
         </div>
         <ReviewStatusPill reviewed={reviewed} label={reviewLabel} />
@@ -32,21 +32,21 @@ const CaseCard = ({ caseData, onReview }) => {
       {/* Main Details Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
         <div className="space-y-1">
-          <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+          <div className="flex items-center gap-1.5 text-[10px] font-bold text-[var(--ng-muted)] uppercase tracking-widest">
             <DollarSign size={10} /> Amount
           </div>
-          <div className="text-sm font-extrabold text-white">${amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
+          <div className="text-sm font-extrabold text-[var(--ng-text)]">${amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
         </div>
         
         <div className="space-y-1">
-          <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+          <div className="flex items-center gap-1.5 text-[10px] font-bold text-[var(--ng-muted)] uppercase tracking-widest">
             <Clock size={10} /> Time Offset
           </div>
-          <div className="text-sm font-bold text-slate-300">{time.toLocaleString()} s</div>
+          <div className="text-sm font-bold text-[var(--ng-muted)]">{time.toLocaleString()} s</div>
         </div>
 
         <div className="space-y-1">
-          <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+          <div className="flex items-center gap-1.5 text-[10px] font-bold text-[var(--ng-muted)] uppercase tracking-widest">
             <AlertTriangle size={10} /> Risk Factor
           </div>
           <div className="text-sm font-bold text-rose-400">{riskFactor}</div>
@@ -56,10 +56,10 @@ const CaseCard = ({ caseData, onReview }) => {
       {/* Existing Notes Section (if reviewed) */}
       {reviewed && notes && (
         <div className="p-4 rounded-xl bg-white/[0.02] border border-white/5 mb-6">
-          <div className="flex items-center gap-2 mb-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+          <div className="flex items-center gap-2 mb-2 text-[10px] font-bold text-[var(--ng-muted)] uppercase tracking-widest">
             <FileText size={10} /> Resolution Notes
           </div>
-          <p className="text-xs text-slate-400 italic leading-relaxed">"{notes}"</p>
+          <p className="text-xs text-[var(--ng-muted)] italic leading-relaxed">"{notes}"</p>
         </div>
       )}
 
@@ -80,7 +80,7 @@ const CaseCard = ({ caseData, onReview }) => {
           </button>
         </div>
       ) : (
-        <div className="text-center py-2.5 rounded-lg border border-white/5 bg-white/[0.01] text-[10px] font-bold text-slate-600 uppercase tracking-[0.2em]">
+        <div className="text-center py-2.5 rounded-lg border border-white/5 bg-white/[0.01] text-[10px] font-bold text-[var(--ng-muted)] uppercase tracking-[0.2em]">
            Case Investigation Finalized
         </div>
       )}

@@ -33,7 +33,7 @@ const RiskGauge = ({ probability = 0 }) => {
             fill="transparent"
             stroke="currentColor"
             strokeWidth="12"
-            className="text-white/5"
+            className="text-[var(--ng-text)]/5"
           />
           {/* Active Progress */}
           <circle
@@ -55,7 +55,7 @@ const RiskGauge = ({ probability = 0 }) => {
           <div className={`text-5xl font-black tracking-tighter ${textClass}`}>
             {percentage}%
           </div>
-          <div className="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-bold mt-1">
+          <div className="text-[10px] uppercase tracking-[0.2em] text-[var(--ng-muted)] font-bold mt-1">
             FRAUD PROBABILITY
           </div>
         </div>

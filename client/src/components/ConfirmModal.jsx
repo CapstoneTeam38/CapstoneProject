@@ -38,7 +38,7 @@ const ConfirmModal = ({ isOpen, onClose, onConfirm, actionType }) => {
           ref={closeButtonRef}
           onClick={onClose}
           aria-label="Close Modal"
-          className="absolute top-4 right-4 text-slate-500 hover:text-white transition-colors p-1 rounded-lg focus-visible:ring-2 focus-visible:ring-cyan-500"
+          className="absolute top-4 right-4 text-[var(--ng-muted)] hover:text-[var(--ng-text)] transition-colors p-1 rounded-lg focus-visible:ring-2 focus-visible:ring-cyan-500"
         >
           <X size={20} />
         </button>
@@ -47,10 +47,10 @@ const ConfirmModal = ({ isOpen, onClose, onConfirm, actionType }) => {
           <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-4 ${isFraud ? 'bg-rose-500/20 text-rose-500' : 'bg-emerald-500/20 text-emerald-500'}`}>
             {isFraud ? <ShieldAlert size={32} aria-hidden="true" /> : <ShieldCheck size={32} aria-hidden="true" />}
           </div>
-          <h2 id="modal-title" className="text-xl font-extrabold text-white">
+          <h2 id="modal-title" className="text-xl font-extrabold text-[var(--ng-text)]">
             {isFraud ? 'Confirm Fraudulent Activity' : 'Mark as False Positive'}
           </h2>
-          <p className="text-sm text-slate-400 mt-2 leading-relaxed">
+          <p className="text-sm text-[var(--ng-muted)] mt-2 leading-relaxed">
             {isFraud 
               ? 'This action will escalate the transaction and mark it as confirmed fraud in the system.' 
               : 'This action will dismiss the alert and return the transaction to the legitimate ledger.'}
@@ -59,7 +59,7 @@ const ConfirmModal = ({ isOpen, onClose, onConfirm, actionType }) => {
 
         <div className="space-y-4">
           <div className="space-y-2">
-            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2">
+            <label className="text-[10px] font-bold uppercase tracking-widest text-[var(--ng-muted)] flex items-center gap-2">
               <MessageSquare size={12} aria-hidden="true" /> Analyst Investigation Notes
             </label>
             <textarea
@@ -67,14 +67,14 @@ const ConfirmModal = ({ isOpen, onClose, onConfirm, actionType }) => {
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Provide evidence or reasoning for this resolution..."
-              className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-sm text-white h-32 focus:outline-none focus:border-cyan-500/50 resize-none transition-all placeholder:text-slate-700"
+              className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-sm text-[var(--ng-text)] h-32 focus:outline-none focus:border-cyan-500/50 resize-none transition-all placeholder:text-[var(--ng-muted)]"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4 pt-2">
             <button
               onClick={onClose}
-              className="w-full py-3 rounded-xl border border-white/5 bg-white/[0.02] text-sm font-bold text-slate-400 hover:text-white hover:bg-white/5 transition-all focus-visible:ring-2 focus-visible:ring-slate-500"
+              className="w-full py-3 rounded-xl border border-[var(--ng-border)] bg-[var(--ng-surface)] text-sm font-bold text-[var(--ng-muted)] hover:text-[var(--ng-text)] hover:bg-[var(--ng-hover-bg)] transition-all focus-visible:ring-2 focus-visible:ring-slate-500"
             >
               Cancel
             </button>

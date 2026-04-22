@@ -10,7 +10,7 @@ const COLUMNS = [
     key: 'id',
     label: 'Transaction ID',
     render: (val) => (
-      <span className="font-mono text-xs text-slate-400 truncate max-w-[140px] inline-block" title={val}>
+      <span className="font-mono text-xs text-[var(--ng-text)] font-semibold truncate max-w-[140px] inline-block" title={val}>
         {val}
       </span>
     ),
@@ -24,7 +24,7 @@ const COLUMNS = [
       const mins = Math.floor((val % 3600) / 60).toString().padStart(2, '0');
       const secs = Math.floor(val % 60).toString().padStart(2, '0');
       return (
-        <span className="text-[10px] font-mono text-cyan-400/80 bg-cyan-400/5 px-2 py-0.5 rounded border border-cyan-400/10">
+        <span style={{ fontSize: 10, fontFamily: "'JetBrains Mono', monospace", color: 'var(--ng-text)', fontWeight: 600 }}>
           T+{hrs}:{mins}:{secs}
         </span>
       );
@@ -33,19 +33,22 @@ const COLUMNS = [
   {
     key: 'amount',
     label: 'Risk Exposure',
-    render: (val) =>
-      `$${Number(val || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+    render: (val) => (
+      <span style={{ fontWeight: 700, color: 'var(--ng-text)' }}>
+        ${Number(val || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+      </span>
+    ),
     className: 'text-right',
   },
   {
     key: 'fraudProbability',
     label: 'Risk Probability',
     render: (val) => {
-      if (val == null) return <span className="text-slate-600">—</span>;
+      if (val == null) return <span className="text-[var(--ng-text)] opacity-50">—</span>;
       const pct = (val * 100).toFixed(1);
       // Alerts are inherently high risk, apply warning stylization natively
       return (
-        <div className="flex items-center justify-end gap-2 text-red-400 font-bold bg-red-400/[0.05] px-2 py-0.5 rounded border border-red-500/10 w-fit ml-auto">
+        <div className="flex items-center justify-end gap-2 text-[var(--ng-red)] font-bold bg-red-400/[0.05] px-2 py-0.5 rounded border border-red-500/10 w-fit ml-auto">
            {pct}% <AlertCircle size={12} className="opacity-80" />
         </div>
       );
@@ -57,9 +60,9 @@ const COLUMNS = [
     label: 'Investigation Action Required',
     render: (val) =>
       val ? (
-        <span className="text-xs font-medium px-2 py-1 bg-cyan-500/10 text-cyan-400 rounded">Reviewed</span>
+        <span className="text-xs font-medium px-2 py-1 bg-cyan-500/10 text-[var(--ng-accent)] rounded">Reviewed</span>
       ) : (
-        <span className="text-xs font-semibold px-2 py-1 bg-amber-500/10 text-amber-400 rounded animate-pulse">Pending Review</span>
+        <span className="text-xs font-semibold px-2 py-1 bg-amber-500/10 text-[var(--ng-amber)] rounded animate-pulse">Pending Review</span>
       ),
   },
 ];

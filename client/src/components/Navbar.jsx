@@ -28,11 +28,11 @@ const NAV_LINKS = [
 ];
 
 const linkBase =
-  'flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 transition-colors text-sm font-medium focus-visible:ring-2 focus-visible:ring-cyan-500 outline-none';
+  'flex items-center gap-3 px-4 py-3 rounded-xl transition-colors text-sm font-medium focus-visible:ring-2 focus-visible:ring-[var(--ng-accent)] outline-none text-[var(--ng-muted)]';
 const linkActive =
-  'text-white bg-white/[0.07] shadow-inner';
+  'text-[var(--ng-text)] bg-[var(--ng-border)] shadow-inner';
 const linkInactive =
-  'hover:text-white hover:bg-white/5';
+  'hover:text-[var(--ng-text)] hover:bg-[var(--ng-border)]';
 
 const SidebarContent = ({ onNavigate }) => (
   <div className="flex flex-col h-full" role="navigation" aria-label="Main Navigation">
@@ -68,7 +68,7 @@ const SidebarContent = ({ onNavigate }) => (
       <a
         href="http://localhost:5000/dashboard"
         aria-label="Back to Classic Dashboard"
-        className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-slate-500 hover:text-slate-300 hover:bg-white/5 transition-colors text-xs font-medium focus-visible:ring-2 focus-visible:ring-slate-500 outline-none"
+        className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-[var(--ng-muted)] hover:text-[var(--ng-text)] hover:bg-[var(--ng-border)] transition-colors text-xs font-medium focus-visible:ring-2 focus-visible:ring-slate-500 outline-none"
       >
         <ExternalLink size={14} aria-hidden="true" />
         <span>Classic Dashboard</span>
@@ -86,17 +86,17 @@ const Navbar = () => {
   return (
     <>
       {/* ── Desktop Sidebar ─────────────────────────────────────────── */}
-      <aside className="fixed inset-y-0 left-0 w-64 bg-[#020617]/80 backdrop-blur-xl border-r border-white/10 hidden md:flex flex-col z-50 shadow-2xl">
+      <aside className="fixed inset-y-0 left-0 w-64 backdrop-blur-xl border-r border-[var(--ng-border)] hidden md:flex flex-col z-50 shadow-2xl" style={{ backgroundColor: 'var(--ng-bg)' }}>
         <SidebarContent />
       </aside>
 
       {/* ── Mobile Top Bar ──────────────────────────────────────────── */}
-      <div className="fixed top-0 left-0 right-0 h-14 bg-[#020617]/90 backdrop-blur-xl border-b border-white/10 flex items-center justify-between px-4 md:hidden z-50">
+      <div className="fixed top-0 left-0 right-0 h-14 backdrop-blur-xl border-b border-[var(--ng-border)] flex items-center justify-between px-4 md:hidden z-50" style={{ backgroundColor: 'var(--ng-bg)' }}>
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center">
-            <ShieldCheck size={14} className="text-white" aria-hidden="true" />
+          <div className="w-7 h-7 bg-gradient-to-br from-[var(--ng-accent)] to-blue-600 rounded-lg flex items-center justify-center">
+            <ShieldCheck size={14} className="text-[var(--ng-text)]" aria-hidden="true" />
           </div>
-          <span className="text-sm font-extrabold tracking-widest uppercase text-white/90">
+          <span className="text-sm font-extrabold tracking-widest uppercase text-[var(--ng-text)]">
             NeuralGuard
           </span>
         </div>
@@ -104,7 +104,7 @@ const Navbar = () => {
           onClick={() => setMobileOpen(true)}
           aria-label="Open Navigation Menu"
           aria-expanded={mobileOpen}
-          className="text-slate-400 hover:text-white transition-colors p-2 focus-visible:ring-2 focus-visible:ring-cyan-500 outline-none rounded-lg"
+          className="text-[var(--ng-text)]/50 hover:text-[var(--ng-text)] transition-colors p-2 focus-visible:ring-2 focus-visible:ring-cyan-500 outline-none rounded-lg"
         >
           <Menu size={22} />
         </button>
@@ -114,25 +114,20 @@ const Navbar = () => {
       {mobileOpen && (
         <div className="fixed inset-0 z-[60] md:hidden">
           {/* Backdrop */}
-          <div
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-fade-in"
-            onClick={() => setMobileOpen(false)}
-            aria-hidden="true"
-          />
-
-          {/* Drawer */}
-          <aside 
-            className="absolute inset-y-0 left-0 w-72 bg-[#020617]/95 backdrop-blur-2xl border-r border-white/10 flex flex-col animate-slide-in shadow-2xl"
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden" onClick={() => setMobileOpen(false)} aria-hidden="true" />
+          <aside
+            className="fixed inset-y-0 left-0 w-64 backdrop-blur-xl border-r border-[var(--ng-border)] flex flex-col z-50 md:hidden animate-in slide-in-from-left shadow-2xl"
+            style={{ backgroundColor: 'var(--ng-bg)' }}
             role="dialog"
             aria-modal="true"
-            aria-label="Mobile Navigation Menu"
+            aria-label="Mobile Navigation"
           >
             {/* Close button */}
             <div className="flex justify-end p-3">
               <button
                 onClick={() => setMobileOpen(false)}
                 aria-label="Close Navigation Menu"
-                className="text-slate-400 hover:text-white transition-colors p-2 focus-visible:ring-2 focus-visible:ring-cyan-500 outline-none rounded-lg"
+                className="text-[var(--ng-text)]/50 hover:text-[var(--ng-text)] transition-colors p-2 focus-visible:ring-2 focus-visible:ring-cyan-500 outline-none rounded-lg"
               >
                 <X size={20} />
               </button>

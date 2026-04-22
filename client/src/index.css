@@ -5,7 +5,15 @@
 
 @layer utilities {
   .glass-panel {
-    @apply bg-white/[0.02] border border-white/10 backdrop-blur-md rounded-2xl;
+    background: var(--ng-surface);
+    border: 1px solid var(--ng-border);
+    backdrop-filter: blur(12px);
+    border-radius: 1rem;
+    transition: 0.2s;
+  }
+  .glass-panel:hover {
+    border-color: var(--ng-accent);
+    background: var(--ng-hover-bg);
   }
 }
 
@@ -15,8 +23,8 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #020617; /* Slate 950 for deeper feel */
+  color: var(--ng-text);
+  background-color: var(--ng-bg);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -58,6 +66,22 @@ a {
   --ng-text: #e8eaf2;
   --ng-muted: #5a6080;
   --ng-dim: #282d3f;
+  --ng-hover-bg: rgba(255, 255, 255, 0.04);
+}
+
+:root.light-theme {
+  --ng-bg: #f8fafc;
+  --ng-surface: #ffffff;
+  --ng-card: #f1f5f9;
+  --ng-border: #e2e8f0;
+  --ng-accent: #0096b8; /* Darker cyan for contrast on light background */
+  --ng-red: #e11d48;
+  --ng-green: #059669;
+  --ng-amber: #d97706;
+  --ng-text: #0f172a;
+  --ng-muted: #334155;
+  --ng-dim: #cbd5e1;
+  --ng-hover-bg: rgba(0, 0, 0, 0.04);
 }
 
 .font-syne  { font-family: 'Syne', sans-serif; }
@@ -73,7 +97,10 @@ a {
   overflow: hidden;
   transition: 0.2s;
 }
-.kpi-card:hover { border-color: var(--ng-dim); }
+.kpi-card:hover { 
+  border-color: var(--ng-accent); 
+  background: var(--ng-hover-bg);
+}
 .kpi-card::before {
   content: '';
   position: absolute;
@@ -104,7 +131,7 @@ a {
 /* ── Ticker ── */
 .ng-ticker {
   padding: 7px 24px;
-  background: #0a0c12;
+  background: var(--ng-card);
   border-bottom: 1px solid var(--ng-border);
   display: flex; align-items: center; gap: 16px;
   overflow: hidden;
@@ -157,8 +184,9 @@ a {
   border: 1px solid rgba(0,229,255,.15);
 }
 .ng-badge-info {
-  background: rgba(90,96,128,.12); color: var(--ng-muted);
+  background: var(--ng-dim); color: var(--ng-text);
   border: 1px solid var(--ng-border);
+  opacity: 0.8;
 }
 
 /* ── Feed ── */
@@ -179,7 +207,9 @@ a {
   gap: 9px; padding: 9px 10px;
   border-radius: 6px; border: 1px solid var(--ng-border);
   font-size: 11px; animation: ng-fadeIn 0.4s ease;
+  transition: background 0.2s;
 }
+.ng-feed-item:hover { background: var(--ng-hover-bg); }
 @keyframes ng-fadeIn {
   from { opacity: 0; transform: translateY(-5px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -220,10 +250,10 @@ a {
   border-bottom: 1px solid var(--ng-border);
 }
 .ng-table tbody tr {
-  border-bottom: 1px solid rgba(30,34,48,.6);
+  border-bottom: 1px solid var(--ng-border);
   transition: 0.15s;
 }
-.ng-table tbody tr:hover { background: rgba(255,255,255,.02); }
+.ng-table tbody tr:hover { background: var(--ng-hover-bg); }
 .ng-table tbody td {
   padding: 8px 9px;
   font-family: 'JetBrains Mono', monospace;
@@ -243,6 +273,11 @@ a {
   flex: 1; background: var(--ng-surface);
   border: 1px solid var(--ng-border);
   border-radius: 6px; padding: 8px; text-align: center;
+  transition: 0.2s;
+}
+.ng-stat-box:hover {
+  background: var(--ng-hover-bg);
+  border-color: var(--ng-accent);
 }
 .ng-stat-val {
   font-size: 14px; font-weight: 800;
@@ -341,11 +376,17 @@ a {
 
 /* ── Scan button ── */
 .ng-scan-btn {
-  width: 100%; margin-top: 12px; padding: 8px;
-  background: var(--ng-accent); border: none; border-radius: 6px;
-  color: #08090d; font-size: 11px; font-weight: 700;
-  cursor: pointer; font-family: 'Syne', sans-serif;
-  transition: 0.2s; display: block; text-align: center;
-  text-decoration: none;
+  display: block; width: 100%;
+  margin-top: 14px; padding: 12px;
+  background: var(--ng-accent);
+  border-radius: 8px; text-align: center;
+  color: white; font-weight: 700;
+  text-decoration: none; font-size: 13px;
+  transition: 0.2s;
 }
-.ng-scan-btn:hover { opacity: 0.85; }
+.ng-scan-btn:hover { 
+  background: var(--ng-accent);
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 229, 255, 0.2);
+}

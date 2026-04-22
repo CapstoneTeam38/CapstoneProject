@@ -10,7 +10,7 @@ const JsonDebugPanel = ({ data }) => {
     <div className="mt-8 border border-white/5 rounded-xl overflow-hidden bg-black/20">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-5 py-3 flex items-center justify-between text-slate-500 hover:text-slate-300 transition-colors bg-white/[0.02]"
+        className="w-full px-5 py-3 flex items-center justify-between text-[var(--ng-muted)] hover:text-[var(--ng-muted)] transition-colors bg-white/[0.02]"
       >
         <div className="flex items-center gap-2">
           <Terminal size={14} />

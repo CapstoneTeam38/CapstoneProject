@@ -24,49 +24,53 @@ const VolumeChart = () => (
         <ComposedChart data={chartData} margin={{ top: 5, right: 5, bottom: 0, left: -15 }}>
           <XAxis
             dataKey="hour"
-            tick={{ fill: '#5a6080', fontSize: 8 }}
-            axisLine={{ stroke: '#1e2230' }}
+            tick={{ fill: 'var(--ng-muted)', fontSize: 8 }}
+            axisLine={{ stroke: 'var(--ng-border)' }}
             tickLine={false}
             interval="preserveStartEnd"
           />
           <YAxis
             yAxisId="left"
-            tick={{ fill: '#5a6080', fontSize: 8 }}
+            tick={{ fill: 'var(--ng-muted)', fontSize: 8 }}
             axisLine={false}
             tickLine={false}
           />
           <YAxis
             yAxisId="right"
             orientation="right"
-            tick={{ fill: '#ff3b5c', fontSize: 8 }}
+            tick={{ fill: 'var(--ng-red)', fontSize: 8 }}
             axisLine={false}
             tickLine={false}
             tickFormatter={(v) => `${v}%`}
           />
           <Tooltip
             contentStyle={{
-              background: '#14161e',
-              border: '1px solid #1e2230',
+              background: 'var(--ng-surface)',
+              border: '1px solid var(--ng-border)',
               borderRadius: 6,
               fontSize: 10,
               fontFamily: "'JetBrains Mono', monospace",
+              color: 'var(--ng-text)',
             }}
-            labelStyle={{ color: '#5a6080' }}
+            itemStyle={{ color: 'var(--ng-text)', fontWeight: 'bold' }}
+            labelStyle={{ color: 'var(--ng-muted)', marginBottom: 4 }}
           />
           <Bar
             yAxisId="left"
             dataKey="volume"
-            fill="rgba(0,229,255,.12)"
-            stroke="rgba(0,229,255,.25)"
+            fill="var(--ng-accent)"
+            fillOpacity={0.3}
+            stroke="var(--ng-accent)"
+            strokeOpacity={0.6}
             radius={[2, 2, 0, 0]}
           />
           <Line
             yAxisId="right"
             dataKey="fraudRate"
-            stroke="#ff3b5c"
+            stroke="var(--ng-red)"
             strokeDasharray="4 3"
             strokeWidth={1.5}
-            dot={{ r: 2, fill: '#ff3b5c' }}
+            dot={{ r: 2, fill: 'var(--ng-red)' }}
             type="monotone"
           />
         </ComposedChart>

@@ -14,15 +14,15 @@ const StatCard = ({ title, value, icon: Icon, trend, colorClass = "from-cyan-500
     <div className="glass-panel p-6 flex items-start gap-4">
       {Icon && (
         <div className={`w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-br ${colorClass} shrink-0`}>
-          <Icon size={24} className="text-white" />
+          <Icon size={24} className="text-[var(--ng-text)]" />
         </div>
       )}
       <div className="flex-1">
-        <h3 className="text-slate-400 text-sm font-medium uppercase tracking-wider mb-1">{title}</h3>
+        <h3 className="text-[var(--ng-muted)] text-sm font-medium uppercase tracking-wider mb-1">{title}</h3>
         <div className="flex items-end gap-3">
-          <span className="text-3xl font-bold text-white leading-none tracking-tight">{formattedValue}</span>
+          <span className="text-3xl font-bold text-[var(--ng-text)] leading-none tracking-tight">{formattedValue}</span>
           {trend && (
-            <span className={`text-sm font-medium mb-0.5 ${trend.startsWith('-') || trend.includes('down') ? 'text-red-400' : 'text-emerald-400'}`}>
+            <span className={`text-sm font-medium mb-0.5 ${trend.startsWith('-') || trend.includes('down') ? 'text-[var(--ng-red)]' : 'text-[var(--ng-green)]'}`}>
               {trend}
             </span>
           )}

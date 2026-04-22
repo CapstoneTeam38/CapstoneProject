@@ -14,7 +14,7 @@ const GaugeChart = () => (
     </div>
 
     {/* Gauge */}
-    <div style={{ position: 'relative', height: 120, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ position: 'relative', height: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 10 }}>
       <ResponsiveContainer>
         <PieChart>
           <Pie
@@ -25,18 +25,18 @@ const GaugeChart = () => (
             dataKey="value"
             stroke="none"
           >
-            <Cell fill="#ffb830" />
-            <Cell fill="#1e2230" />
+            <Cell fill="var(--ng-amber)" />
+            <Cell fill="var(--ng-dim)" fillOpacity={0.5} />
           </Pie>
         </PieChart>
       </ResponsiveContainer>
     </div>
 
     <div style={{ textAlign: 'center' }}>
-      <div className="font-mono2" style={{ fontSize: 36, fontWeight: 800, color: 'var(--ng-amber)', marginTop: -30 }}>
+      <div className="font-mono2" style={{ fontSize: 32, fontWeight: 800, color: 'var(--ng-amber)', lineHeight: 1 }}>
         0.9529
       </div>
-      <div style={{ fontSize: 10, color: 'var(--ng-muted)', marginTop: 2 }}>
+      <div style={{ fontSize: 10, color: 'var(--ng-muted)', marginTop: 4, fontWeight: 600, letterSpacing: '0.5px' }}>
         ROC-AUC Score · 5-fold CV
       </div>
     </div>

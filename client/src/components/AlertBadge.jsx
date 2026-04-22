@@ -13,16 +13,16 @@ const AlertBadge = ({ count = 0, label = "Active Alerts" }) => {
             <span className="relative inline-flex w-2.5 h-2.5 bg-red-500 rounded-full"></span>
           </>
         ) : (
-          <ShieldAlert size={16} className="text-slate-500" />
+          <ShieldAlert size={16} className="text-[var(--ng-muted)]" />
         )}
       </div>
       <div className="flex flex-col">
-        <span className={`text-xs font-semibold uppercase tracking-wider ${hasAlerts ? 'text-red-400' : 'text-slate-500'}`}>
+        <span className={`text-xs font-semibold uppercase tracking-wider ${hasAlerts ? 'text-red-400' : 'text-[var(--ng-muted)]'}`}>
           {label}
         </span>
         {hasAlerts && (
-          <span className="text-sm font-bold text-white leading-none">
-            {count.toLocaleString()} <span className="font-medium text-slate-400 text-xs ml-0.5">Critical</span>
+          <span className="text-sm font-bold text-[var(--ng-text)] leading-none">
+            {count.toLocaleString()} <span className="font-medium text-[var(--ng-muted)] text-xs ml-0.5">Critical</span>
           </span>
         )}
       </div>

@@ -12,7 +12,7 @@ const COLUMNS = [
     key: 'id',
     label: 'Transaction ID',
     render: (val) => (
-      <span className="font-mono text-xs text-slate-400 truncate max-w-[140px] inline-block" title={val}>
+      <span className="font-mono text-xs text-[var(--ng-text)] font-semibold truncate max-w-[140px] inline-block" title={val}>
         {val}
       </span>
     ),
@@ -24,14 +24,17 @@ const COLUMNS = [
       const hrs = Math.floor(val / 3600).toString().padStart(2, '0');
       const mins = Math.floor((val % 3600) / 60).toString().padStart(2, '0');
       const secs = Math.floor(val % 60).toString().padStart(2, '0');
-      return <span style={{ fontSize: 10, fontFamily: "'JetBrains Mono', monospace", color: 'var(--ng-muted)' }}>T+{hrs}:{mins}:{secs}</span>;
+      return <span style={{ fontSize: 10, fontFamily: "'JetBrains Mono', monospace", color: 'var(--ng-text)', fontWeight: 600 }}>T+{hrs}:{mins}:{secs}</span>;
     },
   },
   {
     key: 'amount',
     label: 'Amount',
-    render: (val) =>
-      `$${Number(val || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+    render: (val) => (
+      <span style={{ fontWeight: 700, color: 'var(--ng-text)' }}>
+        ${Number(val || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+      </span>
+    ),
   },
   {
     key: 'isFraud',
@@ -53,7 +56,7 @@ const COLUMNS = [
           <div style={{ width: 80, height: 4, background: 'var(--ng-dim)', borderRadius: 2 }}>
             <div style={{ width: `${risk}%`, height: '100%', background: row.isFraud ? 'var(--ng-red)' : 'var(--ng-accent)', borderRadius: 2 }} />
           </div>
-          <span style={{ fontSize: 11, color: 'var(--ng-muted)' }}>{risk}%</span>
+          <span style={{ fontSize: 11, color: 'var(--ng-text)', fontWeight: 700 }}>{risk}%</span>
         </div>
       );
     },

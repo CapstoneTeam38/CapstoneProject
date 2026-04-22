@@ -95,7 +95,10 @@ export const normalizeModelStats = (payload) => {
       rocAuc: parseNum(metrics.roc_auc),
       threshold: parseNum(metrics.threshold),
     },
-    confusionMatrix: metrics.confusion_matrix || [[0, 0], [0, 0]],
+    confusionMatrix: metrics.confusion_matrix 
+      ? [[metrics.confusion_matrix.TN || 0, metrics.confusion_matrix.FP || 0],
+         [metrics.confusion_matrix.FN || 0, metrics.confusion_matrix.TP || 0]]
+      : [[0, 0], [0, 0]],
     featureImportance: (payload.featureImportance || []).map((f) => ({
       feature: f.feature,
       importance: parseNum(f.importance),
