@@ -91,16 +91,6 @@ router.get('/alerts', ensureAuth, async (req, res) => {
     }
 });
 
-// ── Stats (no ensureAuth so dashboard.js fetch works) ────────────────────────
-router.get('/api/stats', async (req, res) => {
-    try {
-        const response = await axios.get(`${FLASK}/api/stats`);
-        res.json(response.data);
-    } catch (err) {
-        console.error('Stats error:', err.message);
-        res.status(500).json({ error: 'Flask offline' });
-    }
-});
 
 // ── New Pages ─────────────────────────────────────────────────────────────────
 router.get('/analytics', ensureAuth, async (req, res) => {

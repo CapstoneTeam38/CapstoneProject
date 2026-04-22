@@ -16,7 +16,7 @@ const PerformanceTile = ({ label, value, description, colorClass }) => (
 );
 
 const ModelStats = () => {
-  const { data: stats, loading, error } = useFetch(fetchModelStats, null);
+  const { data: stats, loading, error, refetch } = useFetch(fetchModelStats, null);
 
   if (error) {
     return (
@@ -99,19 +99,19 @@ const ModelStats = () => {
                 {/* Visual Grid representing binary classification outcomes */}
                 <div className="p-6 bg-emerald-500/[0.03] border border-emerald-500/10 rounded-tl-xl text-center">
                   <div className="text-[9px] font-bold text-emerald-500 uppercase mb-1">True Negative</div>
-                  <div className="text-lg font-black text-white">{stats.metrics.confusion_matrix[0][0].toLocaleString()}</div>
+                  <div className="text-lg font-black text-white">{stats.confusionMatrix[0][0].toLocaleString()}</div>
                 </div>
                 <div className="p-6 bg-rose-500/[0.03] border border-rose-500/10 rounded-tr-xl text-center">
                   <div className="text-[9px] font-bold text-rose-500 uppercase mb-1">False Positive</div>
-                  <div className="text-lg font-black text-white">{stats.metrics.confusion_matrix[0][1].toLocaleString()}</div>
+                  <div className="text-lg font-black text-white">{stats.confusionMatrix[0][1].toLocaleString()}</div>
                 </div>
                 <div className="p-6 bg-rose-500/[0.03] border border-rose-500/10 rounded-bl-xl text-center">
                   <div className="text-[9px] font-bold text-rose-500 uppercase mb-1">False Negative</div>
-                  <div className="text-lg font-black text-white">{stats.metrics.confusion_matrix[1][0].toLocaleString()}</div>
+                  <div className="text-lg font-black text-white">{stats.confusionMatrix[1][0].toLocaleString()}</div>
                 </div>
                 <div className="p-6 bg-emerald-500/[0.03] border border-emerald-500/10 rounded-br-xl text-center">
                   <div className="text-[9px] font-bold text-emerald-500 uppercase mb-1">True Positive</div>
-                  <div className="text-lg font-black text-white">{stats.metrics.confusion_matrix[1][1].toLocaleString()}</div>
+                  <div className="text-lg font-black text-white">{stats.confusionMatrix[1][1].toLocaleString()}</div>
                 </div>
               </div>
               <div className="flex gap-2 p-4 rounded-xl bg-white/[0.02] border border-white/5 text-[11px] text-slate-500 italic">

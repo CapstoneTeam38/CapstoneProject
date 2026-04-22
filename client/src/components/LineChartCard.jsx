@@ -51,8 +51,9 @@ const LineChartCard = ({ data = [] }) => {
               tick={{ fill: '#f43f5e', fontSize: 10 }}
             />
             <Tooltip
-              contentStyle={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: '12px', fontSize: '11px' }}
-              itemStyle={{ fontWeight: 'bold' }}
+              contentStyle={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: '12px', fontSize: '11px', color: '#fff' }}
+              itemStyle={{ fontWeight: 'bold', color: '#fff' }}
+              labelStyle={{ color: '#94a3b8', marginBottom: '4px', fontWeight: 'bold' }}
               cursor={{ fill: '#ffffff05' }}
             />
             <Legend verticalAlign="top" align="right" height={36} iconType="circle" />

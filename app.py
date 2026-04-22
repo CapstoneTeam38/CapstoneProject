@@ -72,35 +72,51 @@ def predict():
     })
 
 
+def get_user_data_source():
+    user_id = request.args.get('userId')
+    if user_id:
+        user_col = db["user_transactions"]
+        if user_col.count_documents({"userId": user_id}, limit=1) > 0:
+            return user_col, {"userId": user_id}
+    return transactions_col, {}
+
 # FIX 1: /history — include fraud transactions + proper fraud_probability
 @app.route("/history")
 def history():
-    preds = list(predictions_col.find({}, {"_id": 0})
-                                .sort("timestamp", -1).limit(25))
+    col, base_filter = get_user_data_source()
+    
+    if base_filter:
+        # Dynamic user dataset
+        docs = list(col.find({**base_filter, "is_fraud": 1})
+                       .sort("fraud_probability", -1).limit(50))
+        for row in docs:
+            row["_id"] = str(row["_id"])
+            amt = row.pop("Amount", 0)
+            row["amount"] = float(amt) if amt else 0.0
+            row["fraud_probability"] = float(row.get("fraud_probability", row.get("is_fraud", 0.0)))
+            row["timestamp"] = row.get("uploaded_at", None)
+            row["Time"] = row.get("Time", 0)
+        return jsonify(docs)
+    else:
+        # Static Kaggle Mix
+        preds = list(predictions_col.find({}).sort("timestamp", -1).limit(25))
+        for p in preds:
+            p["_id"] = str(p["_id"])
 
-    # Get mix of fraud AND legit from kaggle
-    fraud_rows = list(transactions_col.find(
-        {"is_fraud": 1},
-        {"_id": 0, "loaded_at": 0, "source": 0}
-    ).sort("Amount", -1).limit(10))
+        fraud_rows = list(transactions_col.find({"is_fraud": 1}, {"loaded_at": 0, "source": 0}).sort("Amount", -1).limit(10))
+        legit_rows = list(transactions_col.find({"is_fraud": 0}, {"loaded_at": 0, "source": 0}).sort("Time", -1).limit(15))
+        kaggle = fraud_rows + legit_rows
 
-    legit_rows = list(transactions_col.find(
-        {"is_fraud": 0},
-        {"_id": 0, "loaded_at": 0, "source": 0}
-    ).sort("Time", -1).limit(15))
+        for row in kaggle:
+            row["_id"]               = str(row["_id"])
+            amt = row.pop("Amount", 0)
+            row["amount"]            = float(amt) if amt else 0.0
+            row["fraud_probability"] = 0.95 if row.get("is_fraud") == 1 else 0.02
+            row["timestamp"]         = None
+            row["Time"]              = row.get("Time", 0)
 
-    kaggle = fraud_rows + legit_rows
-
-    for row in kaggle:
-        amt = row.pop("Amount", 0)
-        row["amount"]            = float(amt) if amt else 0.0
-        # FIX: fraud=0.95 probability, legit=0.02
-        row["fraud_probability"] = 0.95 if row.get("is_fraud") == 1 else 0.02
-        row["timestamp"]         = None
-        row["Time"]              = row.get("Time", 0)
-
-    combined = preds + kaggle
-    return jsonify(combined[:50])
+        combined = preds + kaggle
+        return jsonify(combined[:50])
 
 
 # ════════════════════════════════════════════════════════════════════════════
@@ -109,20 +125,26 @@ def history():
 
 @app.route("/api/stats")
 def stats():
-    total_kaggle = transactions_col.count_documents({})
-    fraud_kaggle = transactions_col.count_documents({"is_fraud": 1})
-    total_live   = predictions_col.count_documents({})
-    fraud_live   = predictions_col.count_documents({"is_fraud": 1})
-    total  = total_kaggle + total_live
-    frauds = fraud_kaggle + fraud_live
-    risk   = round(frauds / total * 100, 2) if total > 0 else 0
+    col, base_filter = get_user_data_source()
+    if base_filter:
+        total = col.count_documents(base_filter)
+        frauds = col.count_documents({**base_filter, "is_fraud": 1})
+    else:
+        total_kaggle = transactions_col.count_documents({})
+        fraud_kaggle = transactions_col.count_documents({"is_fraud": 1})
+        total_live   = predictions_col.count_documents({})
+        fraud_live   = predictions_col.count_documents({"is_fraud": 1})
+        total  = total_kaggle + total_live
+        frauds = fraud_kaggle + fraud_live
+
+    risk = round(frauds / total * 100, 2) if total > 0 else 0
     return jsonify({
         "totalTransactions": total,
-        "totalKaggle":       total_kaggle,
-        "totalLive":         total_live,
+        "totalKaggle":       total if base_filter else transactions_col.count_documents({}),
+        "totalLive":         total if base_filter else predictions_col.count_documents({}),
         "fraudsDetected":    frauds,
-        "fraudKaggle":       fraud_kaggle,
-        "fraudLive":         fraud_live,
+        "fraudKaggle":       frauds if base_filter else transactions_col.count_documents({"is_fraud": 1}),
+        "fraudLive":         frauds if base_filter else predictions_col.count_documents({"is_fraud": 1}),
         "globalRiskScore":   risk,
         "legitimateCount":   total - frauds
     })
@@ -134,7 +156,11 @@ def stats():
 
 @app.route("/api/analytics")
 def analytics():
-    pipeline_amount = [
+    col, base_filter = get_user_data_source()
+    
+    match_stage = [{"$match": base_filter}] if base_filter else []
+    
+    pipeline_amount = match_stage + [
         {"$bucket": {
             "groupBy":    "$Amount",
             "boundaries": [0, 50, 100, 500, 1000, 5000, 10000, 99999],
@@ -145,21 +171,24 @@ def analytics():
             }
         }}
     ]
-    raw_dist    = list(transactions_col.aggregate(pipeline_amount))
-    # Convert _id to string so JSON serializes correctly
+    raw_dist    = list(col.aggregate(pipeline_amount))
     amount_dist = [{"_id": str(b["_id"]), "count": b["count"], "fraudCount": b["fraudCount"]}
                    for b in raw_dist]
 
-    fraud_count = transactions_col.count_documents({"is_fraud": 1})
-    legit_count = transactions_col.count_documents({"is_fraud": 0})
+    fraud_query = {**base_filter, "is_fraud": 1}
+    legit_query = {**base_filter, "is_fraud": 0}
+    fraud_count = col.count_documents(fraud_query)
+    legit_count = col.count_documents(legit_query)
     total       = fraud_count + legit_count
 
     top_frauds  = list(
-        transactions_col.find({"is_fraud": 1}, {"_id": 0, "Amount": 1, "V14": 1, "Time": 1})
+        col.find({**base_filter, "is_fraud": 1}, {"Amount": 1, "V14": 1, "Time": 1})
                         .sort("Amount", -1).limit(10)
     )
+    for f in top_frauds:
+        f["_id"] = str(f["_id"])
 
-    avg_pipeline = [
+    avg_pipeline = match_stage + [
         {"$group": {
             "_id":    "$is_fraud",
             "avgAmt": {"$avg": "$Amount"},
@@ -167,7 +196,7 @@ def analytics():
             "count":  {"$sum": 1}
         }}
     ]
-    avg_data = list(transactions_col.aggregate(avg_pipeline))
+    avg_data = list(col.aggregate(avg_pipeline))
 
     return jsonify({
         "amountDistribution": amount_dist,
@@ -271,11 +300,12 @@ def shap_explain():
 
 @app.route("/api/cases")
 def get_cases():
+    col, base_filter = get_user_data_source()
     cases = list(
-        transactions_col.find(
-            {"is_fraud": 1},
+        col.find(
+            {**base_filter, "is_fraud": 1},
             {"_id": 1, "Amount": 1, "Time": 1, "V14": 1,
-             "reviewed": 1, "review_label": 1, "notes": 1}
+             "fraud_probability": 1, "reviewed": 1, "review_label": 1, "notes": 1}
         ).sort("Amount", -1).limit(30)
     )
     for c in cases:
@@ -285,8 +315,9 @@ def get_cases():
 
 @app.route("/api/cases/<case_id>/review", methods=["POST"])
 def review_case(case_id):
+    col, base_filter = get_user_data_source()
     data = request.json
-    transactions_col.update_one(
+    col.update_one(
         {"_id": ObjectId(case_id)},
         {"$set": {
             "reviewed":     True,
@@ -299,24 +330,28 @@ def review_case(case_id):
 
 @app.route("/api/transactions-page")
 def transactions_page():
+    col, base_filter = get_user_data_source()
     page   = int(request.args.get("page",   1))
     limit  = int(request.args.get("limit",  100))
     fltr   = request.args.get("filter", "all")
     skip   = (page - 1) * limit
 
-    query = {}
+    query = {**base_filter}
     if fltr == "fraud":
-        query = {"is_fraud": 1}
+        query["is_fraud"] = 1
     elif fltr == "legit":
-        query = {"is_fraud": 0}
+        query["is_fraud"] = 0
 
-    total       = transactions_col.count_documents(query)
-    fraud_total = transactions_col.count_documents({"is_fraud": 1})
+    total       = col.count_documents(query)
+    fraud_total = col.count_documents({**base_filter, "is_fraud": 1})
 
-    rows = list(transactions_col.find(
+    rows = list(col.find(
         query,
-        {"_id": 0, "loaded_at": 0, "source": 0}
+        {"loaded_at": 0, "source": 0}
     ).sort("Time", -1).skip(skip).limit(limit))
+
+    for r in rows:
+        r["_id"] = str(r["_id"])
 
     return jsonify({
         "transactions": rows,
@@ -337,58 +372,71 @@ def upload_dataset():
         file    = request.files['file']
         user_id = request.form.get('userId', 'anonymous')
 
-        df = pd.read_csv(file)
-        df.columns = [c.strip() for c in df.columns]
-
-        # Map common column names
-        if 'Class' in df.columns:
-            df.rename(columns={'Class': 'is_fraud'}, inplace=True)
-        if 'Amount' not in df.columns and 'amount' in df.columns:
-            df.rename(columns={'amount': 'Amount'}, inplace=True)
-
-        if 'Amount' not in df.columns:
-            return jsonify({"error": "CSV must have an 'Amount' column"}), 400
-
-        # Build feature matrix
-        feature_cols = ['Time'] + [f'V{i}' for i in range(1, 29)] + ['Amount']
-        X = []
-        for _, row in df.iterrows():
-            features = column_means.copy()
-            for j, col in enumerate(feature_cols):
-                if col in df.columns:
-                    features[j] = float(row[col])
-            X.append(features)
-
-        X = np.array(X)
-        probas   = rf_model.predict_proba(X)[:, 1]
-        is_fraud = (probas >= threshold).astype(int)
-
-        # Store in Atlas tagged with userId
+        # Clear existing transactions for this user
         user_col = db["user_transactions"]
         user_col.delete_many({"userId": user_id})
 
-        docs = []
-        for i, row in df.iterrows():
-            doc = row.to_dict()
-            doc['userId']            = user_id
-            doc['fraud_probability'] = round(float(probas[i]), 4)
-            doc['is_fraud']          = int(is_fraud[i])
-            doc['uploaded_at']       = datetime.now(timezone.utc)
-            docs.append(doc)
+        total_rows = 0
+        total_frauds = 0
+        
+        feature_cols = ['Time'] + [f'V{i}' for i in range(1, 29)] + ['Amount']
+        
+        # Process in chunks of 50,000 rows to keep memory usage low and prevent Mongo timeouts
+        for chunk_idx, df_chunk in enumerate(pd.read_csv(file, chunksize=50000)):
+            df_chunk.columns = [c.strip() for c in df_chunk.columns]
 
-        user_col.insert_many(docs)
+            # Map common column names
+            if 'Class' in df_chunk.columns:
+                df_chunk.rename(columns={'Class': 'is_fraud'}, inplace=True)
+            if 'Amount' not in df_chunk.columns and 'amount' in df_chunk.columns:
+                df_chunk.rename(columns={'amount': 'Amount'}, inplace=True)
 
-        total  = len(docs)
-        frauds = int(is_fraud.sum())
+            if 'Amount' not in df_chunk.columns:
+                return jsonify({"error": "CSV must have an 'Amount' column"}), 400
+
+            # Vectorized feature construction
+            # Create a 2D array filled with the means
+            X_chunk = np.tile(column_means, (len(df_chunk), 1))
+            
+            # Identify which feature columns from the model exist in the uploaded chunk
+            existing_cols = [col for col in feature_cols if col in df_chunk.columns]
+            col_indices = [feature_cols.index(col) for col in existing_cols]
+            
+            # If we have existing columns, overwrite the defaults in X_chunk efficiently
+            if existing_cols:
+                # df_chunk[existing_cols].values matches the shape of X_chunk columns at col_indices
+                X_chunk[:, col_indices] = df_chunk[existing_cols].values.astype(float)
+            
+            # Batch probability prediction
+            probas = rf_model.predict_proba(X_chunk)[:, 1]
+            is_fraud_arr = (probas >= threshold).astype(int)
+            
+            total_rows += len(df_chunk)
+            total_frauds += int(is_fraud_arr.sum())
+            
+            # Create dicts for mongo bulk insert
+            # Adding required fields directly to the chunk dataframe is faster than iterating dicts manually
+            df_chunk['userId'] = user_id
+            df_chunk['fraud_probability'] = np.round(probas.astype(float), 4)
+            df_chunk['is_fraud'] = is_fraud_arr
+            df_chunk['uploaded_at'] = datetime.now(timezone.utc)
+            
+            # Convert to dict and insert batch
+            docs = df_chunk.to_dict(orient='records')
+            if docs:
+                user_col.insert_many(docs)
 
         return jsonify({
-            "totalRows":      total,
-            "fraudsDetected": frauds,
-            "fraudRate":      round(frauds / total * 100, 2) if total > 0 else 0,
+            "totalRows":      total_rows,
+            "fraudsDetected": total_frauds,
+            "fraudRate":      round(total_frauds / total_rows * 100, 2) if total_rows > 0 else 0,
             "userId":         user_id
         })
 
     except Exception as e:
+        import traceback
+        print("Error uploading dataset:")
+        traceback.print_exc()
         return jsonify({"error": str(e)}), 500
 
 

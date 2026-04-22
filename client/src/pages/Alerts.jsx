@@ -19,8 +19,15 @@ const COLUMNS = [
     key: 'time',
     label: 'Time Detected',
     render: (val) => {
-      const d = new Date(val);
-      return isNaN(d) ? String(val) : d.toLocaleString([], { dateStyle: 'short', timeStyle: 'medium' });
+      // The Kaggle dataset uses "seconds from first transaction"
+      const hrs = Math.floor(val / 3600).toString().padStart(2, '0');
+      const mins = Math.floor((val % 3600) / 60).toString().padStart(2, '0');
+      const secs = Math.floor(val % 60).toString().padStart(2, '0');
+      return (
+        <span className="text-[10px] font-mono text-cyan-400/80 bg-cyan-400/5 px-2 py-0.5 rounded border border-cyan-400/10">
+          T+{hrs}:{mins}:{secs}
+        </span>
+      );
     },
   },
   {
@@ -63,7 +70,7 @@ const Alerts = () => {
 
   // Fetch only anomalies natively. We fetch a broader subset locally (e.g. 100)
   // to ensure aggressive real-time sorting hits true high-priority records
-  const { data: alertData, loading, error } = useFetch(
+  const { data: alertData, loading, error, refetch } = useFetch(
     () => fetchPaginatedTransactions({ page: 1, limit: 100, filter: 'fraud' }),
     []
   );

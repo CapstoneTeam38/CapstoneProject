@@ -12,7 +12,7 @@ const parseNum = (val, defaultVal = 0) => {
 export const normalizeTransaction = (data) => {
   if (!data) return null;
   return {
-    id: data._id || data.id || `tx-${Date.now()}`,
+    id: data._id || data.id || `tx-${Math.random().toString(36).substr(2, 9)}`,
     time: parseNum(data.Time || data.time),
     amount: parseNum(data.Amount || data.amount),
     v14: parseNum(data.V14 || data.v14),

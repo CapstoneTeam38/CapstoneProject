@@ -19,7 +19,6 @@ export const apiClient = axios.create({
   },
 });
 
-// Centralized error interceptor
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -29,6 +28,12 @@ apiClient.interceptors.response.use(
       data: error.response?.data,
       message: error.message,
     });
+    
+    // Auto-logout if 401 Unauthorized
+    if (error.response?.status === 401 && window.location.pathname !== '/login') {
+      window.location.href = '/login';
+    }
+    
     return Promise.reject(error);
   }
 );
@@ -77,4 +82,14 @@ export const fetchShapExplanation = async (features) => {
 export const fetchRecentHistory = async () => {
   const { data } = await apiClient.get('/history');
   return normalizeCases(data);
+};
+
+export const uploadDatasetFile = async (file, userId = 'anonymous') => {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('userId', userId);
+  const { data } = await apiClient.post('/upload-dataset', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return data;
 };

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Activity, ShieldAlert, List } from 'lucide-react';
+import { Activity, ShieldAlert, List, AlertCircle, CreditCard, Zap } from 'lucide-react';
 import { fetchStats, fetchPaginatedTransactions } from '../api/apiClient';
 import { useFetch } from '../hooks/useFetch';
 import StatCard from '../components/StatCard';

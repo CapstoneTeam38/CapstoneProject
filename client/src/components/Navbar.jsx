@@ -11,6 +11,7 @@ import {
   Menu,
   X,
   ExternalLink,
+  UploadCloud,
 } from 'lucide-react';
 import BrandMark from './BrandMark';
 import ThemeToggle from './ThemeToggle';
@@ -23,6 +24,7 @@ const NAV_LINKS = [
   { to: '/cases',       icon: ShieldCheck,     label: 'Case Review' },
   { to: '/analytics',   icon: Activity,        label: 'Analytics' },
   { to: '/model-stats', icon: BarChart2,       label: 'Model Stats' },
+  { to: '/upload',      icon: UploadCloud,     label: 'Upload Data' },
 ];
 
 const linkBase =

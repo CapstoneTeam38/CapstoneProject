@@ -20,8 +20,15 @@ const COLUMNS = [
     key: 'time',
     label: 'Time',
     render: (val) => {
-      const d = new Date(val);
-      return isNaN(d) ? String(val) : d.toLocaleString([], { dateStyle: 'short', timeStyle: 'medium' });
+      // The Kaggle dataset uses "seconds from first transaction"
+      const hrs = Math.floor(val / 3600).toString().padStart(2, '0');
+      const mins = Math.floor((val % 3600) / 60).toString().padStart(2, '0');
+      const secs = Math.floor(val % 60).toString().padStart(2, '0');
+      return (
+        <span className="text-[10px] font-mono text-cyan-400/80 bg-cyan-400/5 px-2 py-0.5 rounded border border-cyan-400/10">
+          T+{hrs}:{mins}:{secs}
+        </span>
+      );
     },
   },
   {
@@ -109,7 +116,7 @@ const TransactionHistory = () => {
     [page, limit, filter]
   );
 
-  const { data, loading, error } = useFetch(fetcher, [page, limit, filter]);
+  const { data, loading, error, refetch } = useFetch(fetcher, [page, limit, filter]);
 
   const transactions = data?.transactions || [];
   const totalPages = data?.totalPages || 1;
