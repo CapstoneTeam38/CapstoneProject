@@ -1,4 +1,4 @@
-###jekinsfile for neuralguard project
+//Jenkinsfile for neuralguard project
 
 
 
