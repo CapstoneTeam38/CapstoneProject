@@ -14,6 +14,15 @@ pipeline {
             }
         }
 
+        // ✅ ADD THIS (VERY IMPORTANT)
+        stage('Setup Env') {
+            steps {
+                dir('backend') {
+                    writeFile file: '.env', text: 'MONGO_URI=mongodb+srv://akanksha:Capstone@cluster0.ww1daav.mongodb.net/fraud_platform?retryWrites=true&w=majority'
+                }
+            }
+        }
+
         // ✅ Node dependencies (INSIDE client folder)
         stage('Install Node Dependencies') {
             steps {
@@ -66,7 +75,6 @@ pipeline {
         }
     }
 
-    // ✅ EMAIL (already correct, just kept clean)
     post {
         success {
             emailext(
