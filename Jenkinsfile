@@ -1,3 +1,7 @@
+###jekinsfile for neuralguard project
+
+
+
 pipeline {
     agent any
 
