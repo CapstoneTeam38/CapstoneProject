@@ -2,432 +2,491 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload Dataset | NeuralGuard AI</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap"
-        rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background: radial-gradient(circle at top right, #1e1b4b 0%, #050507 40%);
-            background-color: #050507;
-            color: #e2e8f0;
-        }
-
-        .glass-panel {
-            background: rgba(18, 18, 24, 0.7);
-            backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .neon-purple-glow {
-            box-shadow: 0 0 20px rgba(192, 38, 211, 0.1);
-        }
-
-        ::-webkit-scrollbar {
-            display: none;
-        }
-
-        #drop-zone {
-            border: 2px dashed rgba(192, 38, 211, 0.3);
-            transition: all 0.2s ease;
-        }
-
-        #drop-zone.drag-over {
-            border-color: #d946ef;
-            background: rgba(217, 70, 239, 0.06);
-            box-shadow: 0 0 30px rgba(217, 70, 239, 0.15);
-        }
-
-        @keyframes shimmer {
-            0% {
-                background-position: -200% center;
-            }
-
-            100% {
-                background-position: 200% center;
-            }
-        }
-
-        #progress-fill {
-            background: linear-gradient(90deg, #9333ea, #d946ef, #6366f1, #d946ef, #9333ea);
-            background-size: 200% auto;
-            animation: shimmer 2s linear infinite;
-            transition: width 0.4s ease;
-        }
-
-        @keyframes popIn {
-            from {
-                opacity: 0;
-                transform: translateY(12px) scale(0.97);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        .stat-card {
-            animation: popIn 0.4s ease forwards;
-        }
-    </style>
+    <meta charset="UTF-8" />
+    <title>Upload Data | NeuralGuard AI</title>
+    <link rel="stylesheet" href="/css/app.css" />
+    <!-- PapaParse no longer needed — kept for compatibility, can be removed -->
+    <script src="/js/neuralguard-state.js"></script>
 </head>
 
-<body class="min-h-screen p-6">
-    <div class="flex gap-6 h-[calc(100vh-3rem)] max-w-[1600px] mx-auto">
-
-        <!-- Sidebar -->
-        <aside class="w-72 glass-panel rounded-[2.5rem] flex flex-col p-8 neon-purple-glow">
-            <div class="flex items-center gap-3 mb-14">
-                <div
-                    class="w-10 h-10 bg-gradient-to-br from-fuchsia-600 to-indigo-600 rounded-xl shadow-[0_0_15px_rgba(192,38,211,0.5)]">
-                </div>
-                <h1 class="text-lg font-bold tracking-tight">NEURALGUARD AI</h1>
-            </div>
-            <nav class="flex-1">
-                <ul class="space-y-4">
-                    <li onclick="location.href='/dashboard'"
-                        class="flex items-center gap-3 text-slate-500 hover:text-slate-200 p-4 rounded-2xl transition cursor-pointer hover:bg-white/5">
-                        Dashboard
-                    </li>
-                    <li onclick="location.href='/alerts'"
-                        class="flex items-center gap-3 text-slate-500 hover:text-slate-200 p-4 rounded-2xl transition cursor-pointer hover:bg-white/5">
-                        Alerts
-                    </li>
-                    <li onclick="location.href='/transactions'"
-                        class="flex items-center gap-3 text-slate-500 hover:text-slate-200 p-4 rounded-2xl transition cursor-pointer hover:bg-white/5">
-                        Transactions
-                    </li>
-                    <li onclick="location.href='/predictions'"
-                        class="flex items-center gap-3 text-slate-500 hover:text-slate-200 p-4 rounded-2xl transition cursor-pointer hover:bg-white/5">
-                        ML Prediction
-                    </li>
-                    <li
-                        class="flex items-center gap-3 bg-white/5 text-fuchsia-400 p-4 rounded-2xl border border-white/5 cursor-pointer">
-                        <span class="w-2 h-2 bg-fuchsia-500 rounded-full shadow-[0_0_8px_#d946ef]"></span> Upload Data
-                    </li>
-                </ul>
-            </nav>
-
-            <div class="mt-auto pt-6 border-t border-white/5">
-                <div class="bg-indigo-500/10 p-4 rounded-2xl border border-indigo-500/20">
-                    <p class="text-[10px] uppercase text-indigo-400 font-bold mb-2 tracking-widest">Model Health</p>
-                    <div class="w-full bg-white/5 h-1 rounded-full overflow-hidden">
-                        <div class="bg-indigo-500 h-full w-[92%]"></div>
-                    </div>
-                </div>
-            </div>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="flex-1 flex flex-col gap-6 overflow-y-auto pr-2">
-            <header class="flex justify-between items-center mb-2">
-                <div>
-                    <h2 class="text-4xl font-bold tracking-tight">Upload Dataset</h2>
-                    <p class="text-slate-500 text-sm mt-1 flex items-center gap-2">
-                        <span class="w-2 h-2 bg-cyan-500 rounded-full"></span>
-                        Upload your own CSV — your data stays isolated to your account
-                    </p>
-                </div>
-                <div class="text-right">
-                    <p class="text-slate-500 text-xs">Signed in as</p>
-                    <p class="text-slate-300 text-sm font-semibold">
-                        <%= user.name || user.email %>
-                    </p>
-                </div>
-            </header>
-
-            <!-- SCREEN 1: Upload Form -->
-            <div id="screen-upload" class="flex flex-col gap-6">
-
-                <div class="glass-panel p-6 rounded-[2rem] border-l-4 border-cyan-500/40">
-                    <p class="text-[10px] uppercase text-cyan-400 font-bold tracking-widest mb-3">CSV Requirements</p>
-                    <ul class="text-slate-400 text-sm space-y-1">
-                        <li>• <span class="text-white font-medium">Required:</span> An <code
-                                class="text-fuchsia-400">Amount</code> column</li>
-                        <li>• <span class="text-white font-medium">Optional:</span> <code
-                                class="text-fuchsia-400">Time</code>, <code class="text-fuchsia-400">V1</code>–<code
-                                class="text-fuchsia-400">V28</code>, <code class="text-fuchsia-400">Class</code> / <code
-                                class="text-fuchsia-400">is_fraud</code></li>
-                        <li>• Missing columns are filled with training-set averages automatically</li>
-                        <li>• Max file size: 100 MB &nbsp;|&nbsp; Any number of rows</li>
-                    </ul>
-                </div>
-
-                <div class="glass-panel rounded-[2rem] p-8 flex flex-col items-center justify-center gap-6 min-h-[320px]"
-                    id="drop-zone">
-                    <div
-                        class="w-20 h-20 rounded-full bg-fuchsia-500/10 border border-fuchsia-500/20 flex items-center justify-center">
-                        <svg class="w-8 h-8 text-fuchsia-400" fill="none" stroke="currentColor" stroke-width="1.5"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
-                        </svg>
-                    </div>
-
-                    <div class="text-center">
-                        <p class="text-lg font-semibold text-slate-200 mb-1">Drag &amp; drop your CSV here</p>
-                        <p class="text-slate-500 text-sm">or click to browse files</p>
-                    </div>
-
-                    <input type="file" id="file-input" accept=".csv" class="hidden">
-
-                    <button onclick="document.getElementById('file-input').click()"
-                        class="px-8 py-3 bg-gradient-to-r from-fuchsia-600 to-indigo-600 rounded-2xl font-bold text-sm hover:opacity-90 transition shadow-[0_0_20px_rgba(192,38,211,0.25)]">
-                        Choose CSV File
-                    </button>
-
-                    <p id="file-name" class="text-slate-500 text-sm hidden"></p>
-                </div>
-
-                <div id="upload-action" class="hidden flex justify-end">
-                    <button onclick="startUpload()"
-                        class="px-10 py-4 bg-gradient-to-r from-fuchsia-600 to-indigo-600 rounded-2xl font-bold hover:opacity-90 transition shadow-[0_0_20px_rgba(192,38,211,0.3)]">
-                        Run Fraud Analysis
-                    </button>
-                </div>
-            </div>
-
-            <!-- SCREEN 2: Progress -->
-            <div id="screen-progress"
-                class="hidden glass-panel rounded-[2rem] p-10 flex flex-col items-center gap-8 min-h-[340px] justify-center">
-                <div
-                    class="w-16 h-16 rounded-full bg-fuchsia-500/10 border border-fuchsia-500/20 flex items-center justify-center">
-                    <svg class="w-7 h-7 text-fuchsia-400 animate-spin" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
-                        </circle>
-                        <path class="opacity-75" fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                        </path>
-                    </svg>
-                </div>
-
-                <div class="text-center">
-                    <p class="text-xl font-bold mb-1">Uploading &amp; Analysing...</p>
-                    <p class="text-slate-500 text-sm">Running Random Forest on every transaction</p>
-                </div>
-
-                <div class="w-full max-w-lg">
-                    <div class="flex justify-between text-xs text-slate-500 mb-2">
-                        <span id="progress-step">Uploading file</span>
-                        <span id="progress-pct">0%</span>
-                    </div>
-                    <div class="w-full bg-white/5 h-2.5 rounded-full overflow-hidden">
-                        <div id="progress-fill" class="h-full w-0 rounded-full"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SCREEN 3: Success -->
-            <div id="screen-success" class="hidden flex flex-col gap-6">
-                <div class="glass-panel rounded-[2rem] p-8 flex items-center gap-6">
-                    <div
-                        class="w-14 h-14 rounded-full bg-green-500/15 border border-green-500/30 flex items-center justify-center flex-shrink-0">
-                        <svg class="w-7 h-7 text-green-400" fill="none" stroke="currentColor" stroke-width="2"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                        </svg>
-                    </div>
+<body>
+    <div class="app-layout">
+        <%- include('_sidebar', { active: 'upload' , user: user }) %>
+            <div class="main">
+                <div class="topbar">
                     <div>
-                        <h3 class="text-2xl font-bold">Analysis Complete</h3>
-                        <p class="text-slate-400 text-sm mt-0.5">Your dataset has been scored. All pages now show your
-                            data.</p>
+                        <div class="topbar-title">Upload data</div>
+                        <div class="topbar-sub">Streamed to ML engine · all rows analysed · fraud synced to cloud</div>
+                    </div>
+                    <div class="topbar-right">
+                        <span style="font-size:12px;color:var(--text3)">Signed in as <strong style="color:var(--text)">
+                                <%= user.name||user.email %>
+                            </strong></span>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-3 gap-6">
-                    <div class="glass-panel p-6 rounded-[2rem] stat-card" style="animation-delay:0.05s">
-                        <p class="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-4">Total Rows</p>
-                        <h3 id="stat-total" class="text-3xl font-bold">—</h3>
-                        <p class="text-slate-500 text-xs mt-1">transactions processed</p>
-                    </div>
-                    <div class="glass-panel p-6 rounded-[2rem] stat-card" style="animation-delay:0.12s">
-                        <p class="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-4">Frauds Detected
-                        </p>
-                        <h3 id="stat-frauds" class="text-3xl font-bold text-red-400">—</h3>
-                        <p class="text-slate-500 text-xs mt-1">flagged by the model</p>
-                    </div>
-                    <div class="glass-panel p-6 rounded-[2rem] stat-card" style="animation-delay:0.2s">
-                        <p class="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-4">Fraud Rate</p>
-                        <h3 id="stat-rate" class="text-3xl font-bold text-fuchsia-400">—</h3>
-                        <div class="w-full bg-white/5 h-1.5 rounded-full mt-5">
-                            <div id="stat-rate-bar"
-                                class="bg-gradient-to-r from-fuchsia-500 to-indigo-500 h-full rounded-full shadow-[0_0_10px_#d946ef] transition-all duration-700"
-                                style="width:0%"></div>
+                <div class="page-content">
+
+                    <div class="card" style="border-left:2px solid var(--blue);margin-bottom:20px">
+                        <div
+                            style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--blue);margin-bottom:12px">
+                            How it works</div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
+                            <div style="display:flex;gap:10px;align-items:flex-start">
+                                <div
+                                    style="width:24px;height:24px;border-radius:6px;background:rgba(55,138,221,0.15);color:var(--blue);font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                                    1</div>
+                                <div style="font-size:12px;color:var(--text2)"><strong
+                                        style="color:var(--text)">Streamed to
+                                        server</strong><br />File uploaded directly — no browser memory limits</div>
+                            </div>
+                            <div style="display:flex;gap:10px;align-items:flex-start">
+                                <div
+                                    style="width:24px;height:24px;border-radius:6px;background:rgba(55,138,221,0.15);color:var(--blue);font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                                    2</div>
+                                <div style="font-size:12px;color:var(--text2)"><strong style="color:var(--text)">4-model
+                                        ensemble
+                                        runs</strong><br />RF + XGBoost + LightGBM + Isolation Forest score every row
+                                </div>
+                            </div>
+                            <div style="display:flex;gap:10px;align-items:flex-start">
+                                <div
+                                    style="width:24px;height:24px;border-radius:6px;background:rgba(55,138,221,0.15);color:var(--blue);font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                                    3</div>
+                                <div style="font-size:12px;color:var(--text2)"><strong style="color:var(--text)">Results
+                                        synced to
+                                        cloud</strong><br />Predictions saved to your account for dashboard</div>
+                            </div>
+                        </div>
+                        <div
+                            style="margin-top:12px;padding-top:12px;border-top:0.5px solid var(--border);font-size:11px;color:var(--text3)">
+                            Required: <code style="color:var(--purple)">Time</code>, <code
+                                style="color:var(--purple)">V1–V28</code>, <code
+                                style="color:var(--purple)">Amount</code>
+                            &nbsp;·&nbsp;
+                            Up to 500 MB supported &nbsp;·&nbsp; 500k+ rows handled without sampling
                         </div>
                     </div>
-                </div>
 
-                <div class="flex gap-4">
-                    <button onclick="location.href='/dashboard'"
-                        class="flex-1 py-4 bg-gradient-to-r from-fuchsia-600 to-indigo-600 rounded-2xl font-bold hover:opacity-90 transition text-center">
-                        View Dashboard
-                    </button>
-                    <button onclick="location.href='/transactions'"
-                        class="flex-1 py-4 glass-panel rounded-2xl font-bold hover:bg-white/10 transition text-center">
-                        Browse Transactions
-                    </button>
-                    <button onclick="resetUpload()"
-                        class="px-8 py-4 glass-panel rounded-2xl font-bold text-slate-400 hover:text-white hover:bg-white/10 transition">
-                        Upload Another
-                    </button>
+                    <!-- Upload screen -->
+                    <div id="screen-upload">
+                        <div class="card">
+                            <div class="drop-zone" id="drop-zone"
+                                onclick="document.getElementById('file-input').click()">
+                                <div
+                                    style="width:52px;height:52px;border-radius:14px;background:rgba(55,138,221,0.1);border:0.5px solid rgba(55,138,221,0.25);display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
+                                    <svg width="24" height="24" fill="none" stroke="var(--blue)" stroke-width="1.5"
+                                        viewBox="0 0 24 24">
+                                        <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                    </svg>
+                                </div>
+                                <div style="font-size:15px;font-weight:500;color:var(--text);margin-bottom:6px">Drop
+                                    your CSV here</div>
+                                <div style="font-size:13px;color:var(--text3)">or click to browse &nbsp;·&nbsp; up to
+                                    500 MB
+                                    &nbsp;·&nbsp; no row limit</div>
+                                <input type="file" id="file-input" accept=".csv" style="display:none" />
+                            </div>
+                            <div id="file-info"
+                                style="display:none;margin-top:16px;padding:14px;background:var(--bg3);border-radius:8px;border:0.5px solid var(--border);flex-direction:row;align-items:center;justify-content:space-between;gap:12px">
+                                <div>
+                                    <div style="font-size:13px;font-weight:500;color:var(--text)" id="file-name-lbl">
+                                    </div>
+                                    <div style="font-size:11px;color:var(--text3);margin-top:2px" id="file-meta-lbl">
+                                    </div>
+                                </div>
+                                <button onclick="startAnalysis()" class="btn btn-primary">Run fraud analysis →</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Progress screen -->
+                    <div id="screen-progress" style="display:none">
+                        <div class="card" style="padding:48px 32px">
+                            <div
+                                style="display:flex;align-items:flex-start;justify-content:center;gap:0;margin-bottom:40px">
+                                <div class="step-item active" id="step-1">
+                                    <div class="step-dot" id="dot-1">1</div>
+                                    <div class="step-label">Uploading</div>
+                                </div>
+                                <div class="step-line" id="line-1"></div>
+                                <div class="step-item" id="step-2">
+                                    <div class="step-dot" id="dot-2">2</div>
+                                    <div class="step-label">Parsing CSV</div>
+                                </div>
+                                <div class="step-line" id="line-2"></div>
+                                <div class="step-item" id="step-3">
+                                    <div class="step-dot" id="dot-3">3</div>
+                                    <div class="step-label">Running ML</div>
+                                </div>
+                                <div class="step-line" id="line-3"></div>
+                                <div class="step-item" id="step-4">
+                                    <div class="step-dot" id="dot-4">4</div>
+                                    <div class="step-label">Syncing cloud</div>
+                                </div>
+                            </div>
+
+                            <div style="text-align:center;margin-bottom:28px">
+                                <div style="font-size:16px;font-weight:500;color:var(--text);margin-bottom:6px"
+                                    id="prog-msg">Uploading
+                                    your CSV...</div>
+                                <div style="font-size:12px;color:var(--text3)" id="prog-sub">Streaming file to server
+                                </div>
+                            </div>
+
+                            <div style="max-width:500px;margin:0 auto">
+                                <div
+                                    style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-bottom:8px">
+                                    <span id="prog-step-lbl">Starting...</span>
+                                    <span id="prog-pct-lbl">0%</span>
+                                </div>
+                                <div class="progress-wrap" style="height:6px">
+                                    <div class="progress-fill blue" id="prog-bar"
+                                        style="width:0%;transition:width 0.6s ease"></div>
+                                </div>
+                                <div style="text-align:center;margin-top:10px;font-size:11px;color:var(--text3)"
+                                    id="prog-rows"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Success screen -->
+                    <div id="screen-success" style="display:none">
+                        <div class="card"
+                            style="margin-bottom:16px;display:flex;align-items:center;gap:16px;padding:20px 24px">
+                            <div
+                                style="width:44px;height:44px;border-radius:50%;background:rgba(99,153,34,0.15);border:0.5px solid rgba(99,153,34,0.3);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                                <svg width="20" height="20" fill="none" stroke="var(--green)" stroke-width="2"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                                </svg>
+                            </div>
+                            <div>
+                                <div style="font-size:16px;font-weight:500;color:var(--text)">Analysis complete</div>
+                                <div style="font-size:13px;color:var(--text3);margin-top:2px" id="success-sub">All
+                                    transactions scored.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
+                            <div class="kpi-card">
+                                <div class="kpi-label">Total analysed</div>
+                                <div class="kpi-value blue" id="s-total">—</div>
+                            </div>
+                            <div class="kpi-card">
+                                <div class="kpi-label">Frauds detected</div>
+                                <div class="kpi-value red" id="s-fraud">—</div>
+                            </div>
+                            <div class="kpi-card">
+                                <div class="kpi-label">Fraud rate</div>
+                                <div class="kpi-value amber" id="s-rate">—</div>
+                            </div>
+                            <div class="kpi-card">
+                                <div class="kpi-label">Avg fraud amount</div>
+                                <div class="kpi-value" id="s-avg">—</div>
+                            </div>
+                        </div>
+                        <div style="display:flex;gap:10px;margin-top:16px">
+                            <a href="/alerts" class="btn btn-primary">View fraud alerts →</a>
+                            <a href="/transactions" class="btn btn-ghost">Browse transactions</a>
+                            <button onclick="resetUpload()" class="btn btn-ghost">Upload another</button>
+                        </div>
+                    </div>
+
+                    <!-- Error screen -->
+                    <div id="screen-error" style="display:none">
+                        <div class="card"
+                            style="border-left:2px solid var(--red);display:flex;align-items:center;gap:16px">
+                            <svg width="20" height="20" fill="none" stroke="var(--red)" stroke-width="1.5"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M12 9v3.75m9.303 3.376c.866 1.5-.217 3.374-1.948 3.374H4.645c-1.73 0-2.813-1.874-1.948-3.374l7.5-12.875c.866-1.5 3.032-1.5 3.898 0l7.303 12.875zM12 15.75h.007v.008H12v-.008z" />
+                            </svg>
+                            <div style="flex:1">
+                                <div style="font-size:13px;font-weight:500;color:var(--red)">Analysis failed</div>
+                                <div style="font-size:12px;color:var(--text3);margin-top:2px" id="err-msg"></div>
+                            </div>
+                            <button onclick="resetUpload()" class="btn btn-ghost btn-sm">Try again</button>
+                        </div>
+                    </div>
+
                 </div>
             </div>
-
-            <!-- SCREEN 4: Error -->
-            <div id="screen-error"
-                class="hidden glass-panel rounded-[2rem] p-8 flex items-center gap-6 border-l-4 border-red-500/50">
-                <div
-                    class="w-12 h-12 rounded-full bg-red-500/10 border border-red-500/30 flex items-center justify-center flex-shrink-0">
-                    <svg class="w-6 h-6 text-red-400" fill="none" stroke="currentColor" stroke-width="2"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
-                    </svg>
-                </div>
-                <div class="flex-1">
-                    <p class="font-bold text-red-400">Upload Failed</p>
-                    <p id="error-msg" class="text-slate-400 text-sm mt-0.5"></p>
-                </div>
-                <button onclick="resetUpload()"
-                    class="px-6 py-2 bg-red-500/10 border border-red-500/30 text-red-400 rounded-xl font-bold hover:bg-red-500/20 transition">
-                    Try Again
-                </button>
-            </div>
-
-        </main>
     </div>
 
+    <style>
+        .step-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .step-dot {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: var(--bg3);
+            border: 0.5px solid var(--border2);
+            color: var(--text3);
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .step-label {
+            font-size: 11px;
+            color: var(--text3);
+            white-space: nowrap;
+            transition: color 0.3s;
+            text-align: center;
+        }
+
+        .step-line {
+            width: 80px;
+            height: 1px;
+            background: var(--border);
+            margin-bottom: 20px;
+            transition: background 0.4s;
+            flex-shrink: 0;
+        }
+
+        .step-item.active .step-dot {
+            background: var(--blue-dark);
+            border-color: var(--blue);
+            color: #fff;
+            box-shadow: 0 0 12px rgba(55, 138, 221, 0.3);
+        }
+
+        .step-item.active .step-label {
+            color: var(--blue);
+        }
+
+        .step-item.done .step-dot {
+            background: rgba(99, 153, 34, 0.8);
+            border-color: var(--green);
+            color: #fff;
+        }
+
+        .step-item.done .step-label {
+            color: var(--green);
+        }
+
+        .step-line.done {
+            background: var(--green);
+        }
+    </style>
+
     <script>
-        let selectedFile = null;
+        var selectedFile = null;
+        var USER_ID = '<%= user._id %>';
 
-        const dropZone = document.getElementById('drop-zone');
-
-        dropZone.addEventListener('dragover', e => {
-            e.preventDefault();
-            dropZone.classList.add('drag-over');
+        var dz = document.getElementById('drop-zone');
+        dz.addEventListener('dragover', function (e) { e.preventDefault(); dz.classList.add('over'); });
+        dz.addEventListener('dragleave', function () { dz.classList.remove('over'); });
+        dz.addEventListener('drop', function (e) {
+            e.preventDefault(); dz.classList.remove('over');
+            var f = e.dataTransfer.files[0];
+            if (f && f.name.endsWith('.csv')) setFile(f);
+            else showError('Please drop a .csv file');
         });
-
-        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
-
-        dropZone.addEventListener('drop', e => {
-            e.preventDefault();
-            dropZone.classList.remove('drag-over');
-            const file = e.dataTransfer.files[0];
-            if (file && file.name.endsWith('.csv')) {
-                setFile(file);
-            } else {
-                showError('Please drop a .csv file.');
-            }
-        });
-
-        document.getElementById('file-input').addEventListener('change', e => {
+        document.getElementById('file-input').addEventListener('change', function (e) {
             if (e.target.files[0]) setFile(e.target.files[0]);
         });
 
-        function setFile(file) {
-            selectedFile = file;
-            const nameEl = document.getElementById('file-name');
-            nameEl.textContent = `${file.name}  (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
-            nameEl.classList.remove('hidden');
-            document.getElementById('upload-action').classList.remove('hidden');
+        function setFile(f) {
+            selectedFile = f;
+            document.getElementById('file-name-lbl').textContent = f.name;
+            document.getElementById('file-meta-lbl').textContent =
+                (f.size / 1024 / 1024).toFixed(2) + ' MB · will stream directly to ML engine';
+            document.getElementById('file-info').style.display = 'flex';
         }
 
-        async function startUpload() {
+        /**
+         * NEW FLOW: browser uploads raw CSV as multipart form-data.
+         * Node saves it to disk, Flask reads with PyArrow, predicts with
+         * 4-model ensemble, returns one payload. No chunking. No row cap.
+         * No browser-side CSV parsing. Handles 500k+ rows without OOM.
+         */
+        async function startAnalysis() {
             if (!selectedFile) return;
 
-            show('screen-progress');
             hide('screen-upload');
+            show('screen-progress');
+            setStep(1);
+            setProg(2, 'Uploading CSV...', 'Streaming file to server');
 
-            const formData = new FormData();
-            formData.append('csvFile', selectedFile);
+            var sizeMB = (selectedFile.size / 1024 / 1024).toFixed(1);
+            document.getElementById('prog-rows').textContent = sizeMB + ' MB uploading';
 
-            setProgress(5, 'Uploading file…');
+            // Use XHR so we get upload progress events (fetch doesn't expose them)
+            var xhr = new XMLHttpRequest();
+            var fd = new FormData();
+            fd.append('file', selectedFile);
+            fd.append('userId', USER_ID);
 
-            const xhr = new XMLHttpRequest();
-
-            xhr.upload.addEventListener('progress', e => {
+            // ---- Upload progress (step 1: 0% → 40%) ----
+            xhr.upload.addEventListener('progress', function (e) {
                 if (e.lengthComputable) {
-                    const pct = Math.round(e.loaded / e.total * 70);
-                    setProgress(pct, 'Uploading file…');
+                    var uploadPct = Math.round((e.loaded / e.total) * 100);
+                    var overallPct = Math.min(40, Math.round(uploadPct * 0.4));
+                    setProg(overallPct,
+                        'Uploading CSV (' + uploadPct + '%)...',
+                        (e.loaded / 1e6).toFixed(1) + ' MB of ' + sizeMB + ' MB sent');
                 }
             });
 
-            xhr.addEventListener('load', () => {
-                if (xhr.status >= 200 && xhr.status < 300) {
-                    setProgress(90, 'Storing results…');
-                    setTimeout(() => {
-                        setProgress(100, 'Done!');
-                        setTimeout(() => {
-                            try {
-                                const data = JSON.parse(xhr.responseText);
-                                showSuccess(data);
-                            } catch {
-                                showError('Unexpected server response.');
-                            }
-                        }, 400);
-                    }, 500);
-                } else {
-                    try {
-                        const data = JSON.parse(xhr.responseText);
-                        showError(data.error || 'Server error');
-                    } catch {
-                        showError(`Server returned status ${xhr.status}`);
+            // ---- Upload complete — Flask now processing (step 2 → 3) ----
+            xhr.upload.addEventListener('load', function () {
+                setStep(2);
+                setProg(45, 'Parsing CSV on server...', 'PyArrow reading file from disk');
+                // Simulate progress during server-side work (no real progress events
+                // available once upload is done — we don't know how far Flask has got)
+                var fakeProgressInterval = setInterval(function () {
+                    var bar = parseInt(document.getElementById('prog-bar').style.width);
+                    if (bar < 85) setProg(bar + 3,
+                        bar < 55 ? 'Parsing CSV on server...' :
+                            bar < 75 ? 'Running 4-model ensemble...' :
+                                'Detecting fraud patterns...',
+                        bar < 55 ? 'PyArrow reading file from disk' :
+                            bar < 75 ? 'RF + XGBoost + LightGBM + Isolation Forest' :
+                                'Scoring every transaction');
+                    if (bar >= 55 && bar < 58) setStep(3);
+                }, 400);
+                xhr._fakeInterval = fakeProgressInterval;
+            });
+
+            // ---- Response received ----
+            xhr.addEventListener('load', function () {
+                if (xhr._fakeInterval) clearInterval(xhr._fakeInterval);
+
+                if (xhr.status !== 200) {
+                    var errData;
+                    try { errData = JSON.parse(xhr.responseText); }
+                    catch (e) { errData = { error: 'HTTP ' + xhr.status }; }
+
+                    if (errData.missing_columns) {
+                        showError('CSV missing columns: ' + errData.missing_columns.join(', ') +
+                            '. Expected: ' + (errData.expected || []).join(', '));
+                    } else {
+                        showError(errData.error || 'Server error');
                     }
+                    return;
                 }
+
+                var payload;
+                try { payload = JSON.parse(xhr.responseText); }
+                catch (e) { showError('Invalid response from server'); return; }
+
+                setStep(4);
+                setProg(95, 'Syncing results to cloud...', 'Saving to MongoDB Atlas');
+
+                setTimeout(function () {
+                    setProg(100, 'Complete!', '');
+
+                    // Adapt Flask payload to the shape showSuccess() expects.
+                    // Flask returns:
+                    //   payload.summary.{valid_rows_processed, fraud_detected,
+                    //                    global_risk_score, avg_fraud_amount, ...}
+                    //   payload.timings_ms.total
+                    var s = payload.summary;
+                    var totalRows = s.valid_rows_processed;
+                    var adapted = {
+                        totalRows: totalRows,
+                        fraudsDetected: s.fraud_detected,
+                        fraudRate: s.global_risk_score.toFixed(2),
+                        avgFraudAmount: s.avg_fraud_amount,
+                        userId: USER_ID,
+                        wasSampled: false,
+                        skipped: s.skipped_null_rows,
+                        timingMs: payload.timings_ms ? payload.timings_ms.total : 0
+                    };
+                    showSuccess(adapted, totalRows);
+                }, 300);
             });
 
-            xhr.addEventListener('error', () => showError('Network error — is the server running?'));
-            xhr.addEventListener('timeout', () => showError('Request timed out. Try a smaller file.'));
-            xhr.timeout = 300000;
+            xhr.addEventListener('error', function () {
+                if (xhr._fakeInterval) clearInterval(xhr._fakeInterval);
+                showError('Network error during upload. Is the server running?');
+            });
 
-            xhr.open('POST', '/upload');
-            xhr.send(formData);
+            xhr.addEventListener('timeout', function () {
+                if (xhr._fakeInterval) clearInterval(xhr._fakeInterval);
+                showError('Upload timed out. File may be too large.');
+            });
+
+            // 10 minutes — plenty for 500k rows
+            xhr.timeout = 10 * 60 * 1000;
+            xhr.open('POST', '/api/upload-csv');
+            xhr.send(fd);
         }
 
-        function setProgress(pct, label) {
-            document.getElementById('progress-fill').style.width = pct + '%';
-            document.getElementById('progress-pct').textContent = pct + '%';
-            if (label) document.getElementById('progress-step').textContent = label;
+        function setStep(n) {
+            for (var i = 1; i <= 4; i++) {
+                var el = document.getElementById('step-' + i);
+                var line = document.getElementById('line-' + i);
+                if (!el) continue;
+                if (i < n) { el.className = 'step-item done'; if (line) line.className = 'step-line done'; }
+                else if (i === n) { el.className = 'step-item active'; if (line) line.className = 'step-line'; }
+                else { el.className = 'step-item'; if (line) line.className = 'step-line'; }
+            }
         }
 
-        function showSuccess(data) {
+        function setProg(pct, msg, sub) {
+            document.getElementById('prog-bar').style.width = pct + '%';
+            document.getElementById('prog-pct-lbl').textContent = pct + '%';
+            document.getElementById('prog-step-lbl').textContent = msg || '';
+            if (msg !== undefined) document.getElementById('prog-msg').textContent = msg;
+            if (sub !== undefined) document.getElementById('prog-sub').textContent = sub;
+        }
+
+        function showSuccess(data, totalRows) {
+            console.log('Setting userId:', data.userId, 'USER_ID:', USER_ID);
+            NeuralGuard.setUserData(data.userId || USER_ID, {
+                totalRows: data.totalRows || totalRows,
+                fraudsDetected: data.fraudsDetected || 0,
+                fraudRate: data.fraudRate || 0
+            });
             hide('screen-progress');
             show('screen-success');
-            document.getElementById('stat-total').textContent = (data.totalRows || 0).toLocaleString();
-            document.getElementById('stat-frauds').textContent = (data.fraudsDetected || 0).toLocaleString();
-            document.getElementById('stat-rate').textContent = (data.fraudRate || 0) + '%';
-            setTimeout(() => {
-                document.getElementById('stat-rate-bar').style.width =
-                    Math.min(data.fraudRate || 0, 100) + '%';
-            }, 100);
+            document.getElementById('s-total').textContent = (data.totalRows || totalRows).toLocaleString();
+            document.getElementById('s-fraud').textContent = (data.fraudsDetected || 0).toLocaleString();
+            document.getElementById('s-rate').textContent = (data.fraudRate || 0) + '%';
+            document.getElementById('s-avg').textContent =
+                data.avgFraudAmount ? '$' + parseFloat(data.avgFraudAmount).toLocaleString() : '—';
+
+            var subParts = [
+                (data.fraudsDetected || 0).toLocaleString() + ' fraud cases detected',
+                (data.totalRows || totalRows).toLocaleString() + ' transactions analysed'
+            ];
+            if (data.skipped) subParts.push(data.skipped.toLocaleString() + ' rows skipped (nulls)');
+            if (data.timingMs) subParts.push('processed in ' + (data.timingMs / 1000).toFixed(1) + 's');
+            document.getElementById('success-sub').textContent = subParts.join(' · ') + '.';
         }
 
         function showError(msg) {
             hide('screen-progress');
             hide('screen-upload');
-            document.getElementById('error-msg').textContent = msg;
+            document.getElementById('err-msg').textContent = msg;
             show('screen-error');
         }
 
         function resetUpload() {
             selectedFile = null;
             document.getElementById('file-input').value = '';
-            document.getElementById('file-name').textContent = '';
-            document.getElementById('file-name').classList.add('hidden');
-            document.getElementById('upload-action').classList.add('hidden');
-            setProgress(0, 'Uploading file…');
-            hide('screen-progress');
-            hide('screen-success');
-            hide('screen-error');
+            document.getElementById('file-info').style.display = 'none';
+            setProg(0, 'Uploading CSV...', 'Streaming file to server');
+            document.getElementById('prog-rows').textContent = '';
+            hide('screen-progress'); hide('screen-success'); hide('screen-error');
             show('screen-upload');
         }
 
-        function show(id) { document.getElementById(id).classList.remove('hidden'); }
-        function hide(id) { document.getElementById(id).classList.add('hidden'); }
+        function show(id) { var el = document.getElementById(id); if (el) el.style.display = 'block'; }
+        function hide(id) { var el = document.getElementById(id); if (el) el.style.display = 'none'; }
+        function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
     </script>
 </body>
 
