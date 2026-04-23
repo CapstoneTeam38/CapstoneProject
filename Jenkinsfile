@@ -15,10 +15,12 @@ pipeline {
         }
 
         stage('Create Env File') {
-            steps {
-                bat 'echo MONGO_URI=mongodb+srv://akanksha:Capstone@cluster0.ww1daav.mongodb.net/fraud_platform?retryWrites=true&w=majority > backend\\.env'
-            }
-        }
+    steps {
+        bat """
+        echo MONGO_URI=mongodb+srv://akanksha:Capstone@cluster0.ww1daav.mongodb.net/fraud_platform?retryWrites=true^&w=majority > backend\\.env
+        """
+    }
+}
 
         stage('Docker Compose Build & Up') {
             steps {
