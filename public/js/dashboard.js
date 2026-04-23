@@ -1,5 +1,6 @@
 let fraudChart;
 
+<<<<<<< HEAD
 // ---------------------------
 // Risk Level Logic
 // ---------------------------
@@ -23,6 +24,12 @@ function initChart() {
     // Create a tall gradient for a deeper look
     const gradient = ctx.createLinearGradient(0, 0, 0, 500);
     gradient.addColorStop(0, 'rgba(217, 70, 239, 0.4)'); // Magenta-ish
+=======
+function initChart() {
+    const ctx = document.getElementById('fraudChart').getContext('2d');
+    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, 'rgba(217, 70, 239, 0.3)');
+>>>>>>> 656b814532bcbe80b788089bfc6156c35dd6d4e8
     gradient.addColorStop(1, 'rgba(217, 70, 239, 0)');
 
     fraudChart = new Chart(ctx, {
@@ -101,6 +108,7 @@ async function updateDashboard() {
         const response = await fetch('/api/stats');
         const data = await response.json();
 
+<<<<<<< HEAD
         // Update Counter Stats
         document.getElementById('total-transactions').innerText = data.totalTransactions.toLocaleString();
         document.getElementById('frauds-detected').innerText = data.fraudsDetected.toLocaleString();
@@ -139,12 +147,40 @@ if (fraudChart && data.chartLabels?.length > 0) {
     fraudChart.data.datasets[0].data = cappedValues;
     fraudChart.update('none');
 }
+=======
+        // Update KPI cards
+        document.getElementById('total-transactions').innerText =
+            data.totalTransactions ? data.totalTransactions.toLocaleString() : '0';
+        document.getElementById('frauds-detected').innerText =
+            data.fraudsDetected ? data.fraudsDetected.toLocaleString() : '0';
+        document.getElementById('risk-score').innerText =
+            `${data.globalRiskScore || 0}%`;
+        document.getElementById('risk-bar').style.width =
+            `${Math.min(data.globalRiskScore || 0, 100)}%`;
+
+        // Update chart — use live rolling data points
+        if (fraudChart) {
+            const now = new Date().toLocaleTimeString();
+            if (fraudChart.data.labels.length > 20) {
+                fraudChart.data.labels.shift();
+                fraudChart.data.datasets[0].data.shift();
+            }
+            fraudChart.data.labels.push(now);
+            fraudChart.data.datasets[0].data.push(data.fraudsDetected || 0);
+            fraudChart.update('none');
+        }
+
+        // Add new nav links if not already present
+
+>>>>>>> 656b814532bcbe80b788089bfc6156c35dd6d4e8
 
     } catch (err) {
         console.error('Dashboard sync error:', err);
+        document.getElementById('total-transactions').innerText = 'Flask offline';
     }
 }
 
+<<<<<<< HEAD
 // ---------------------------
 // Execution
 // ---------------------------
@@ -153,5 +189,11 @@ document.addEventListener('DOMContentLoaded', () => {
     updateDashboard();
 
     // Refresh every 3 seconds for a responsive feel
+=======
+
+document.addEventListener('DOMContentLoaded', () => {
+    initChart();
+    updateDashboard();
+>>>>>>> 656b814532bcbe80b788089bfc6156c35dd6d4e8
     setInterval(updateDashboard, 3000);
 });
