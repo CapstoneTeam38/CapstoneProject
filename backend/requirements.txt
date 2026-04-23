@@ -7,3 +7,4 @@ numpy
 pandas
 scikit-learn
 shap
+xgboost==1.7.6

@@ -14,24 +14,34 @@ pipeline {
             }
         }
 
+        // ✅ Node dependencies (INSIDE client folder)
         stage('Install Node Dependencies') {
             steps {
-                bat 'npm install'
+                dir('client') {
+                    bat 'npm install'
+                }
             }
         }
 
+        // ✅ Python dependencies (INSIDE backend)
         stage('Install Python Dependencies') {
             steps {
-                bat 'pip install -r backend/requirements.txt'
+                dir('backend') {
+                    bat 'pip install -r requirements.txt'
+                }
             }
         }
 
+        // ✅ Run Python test
         stage('Run Python Tests') {
             steps {
-                bat 'python backend/test_flask.py'
+                dir('backend') {
+                    bat 'python app.py'
+                }
             }
         }
 
+        // ✅ Docker build Flask (backend)
         stage('Docker Build - Flask') {
             steps {
                 echo 'Building Flask Docker Image...'
@@ -39,13 +49,15 @@ pipeline {
             }
         }
 
+        // ✅ Docker build Node (client)
         stage('Docker Build - Node') {
             steps {
                 echo 'Building Node Docker Image...'
-                bat "docker build -t %IMAGE_NODE% ."
+                bat "docker build -t %IMAGE_NODE% ./client"
             }
         }
 
+        // ✅ Docker Compose (root)
         stage('Docker Compose Up') {
             steps {
                 echo 'Starting all services...'
@@ -54,6 +66,7 @@ pipeline {
         }
     }
 
+    // ✅ EMAIL (already correct, just kept clean)
     post {
         success {
             emailext(
