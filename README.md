@@ -29,7 +29,7 @@ Backend:
 - Python (Flask)
 
 Frontend:
-- EJS
+- React
 - Chart.js
 
 Database:
@@ -48,6 +48,7 @@ Database:
 - Dataset:
   - IEEE Fraud Detection Dataset
   - Credit Card Dataset
+  - Paysim dataset
 
 ---
 
