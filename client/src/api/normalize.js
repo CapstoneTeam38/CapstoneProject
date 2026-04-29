@@ -45,6 +45,7 @@ export const normalizePaginatedTransactions = (payload) => {
  */
 export const normalizeStats = (payload) => {
   if (!payload) return null;
+  const mm = payload.modelMetrics || {};
   return {
     totalTransactions: parseNum(payload.totalTransactions),
     fraudsDetected: parseNum(payload.fraudsDetected),
@@ -52,6 +53,13 @@ export const normalizeStats = (payload) => {
     legitimateCount: parseNum(payload.legitimateCount),
     totalLive: parseNum(payload.totalLive),
     fraudLive: parseNum(payload.fraudLive),
+    modelMetrics: {
+      accuracy: parseNum(mm.accuracy),
+      precision: parseNum(mm.precision),
+      recall: parseNum(mm.recall),
+      f1: parseNum(mm.f1),
+      rocAuc: parseNum(mm.roc_auc),
+    },
   };
 };
 
@@ -95,13 +103,14 @@ export const normalizeModelStats = (payload) => {
       rocAuc: parseNum(metrics.roc_auc),
       threshold: parseNum(metrics.threshold),
     },
-    confusionMatrix: metrics.confusion_matrix 
-      ? [[metrics.confusion_matrix.TN || 0, metrics.confusion_matrix.FP || 0],
-         [metrics.confusion_matrix.FN || 0, metrics.confusion_matrix.TP || 0]]
-      : [[0, 0], [0, 0]],
-    featureImportance: (payload.featureImportance || []).map((f) => ({
-      feature: f.feature,
-      importance: parseNum(f.importance),
+    allModels: (payload.allModels || []).map(m => ({
+      name: m.name,
+      accuracy: parseNum(m.accuracy),
+      precision: parseNum(m.precision),
+      recall: parseNum(m.recall),
+      f1: parseNum(m.f1),
+      rocAuc: parseNum(m.roc_auc),
+      isActive: Boolean(m.active)
     })),
     modelName: payload.modelName || 'Unknown',
     trainedOn: payload.trainedOn || 'Unknown Dataset',

@@ -53,7 +53,7 @@ const Login = () => {
   return (
     <div className="flex h-screen w-full fixed inset-0 z-50 bg-[#020617] text-[#f8fafc] font-['Inter'] overflow-hidden">
       <div className="hidden lg:flex lg:w-[55%] flex-col justify-between p-16 relative overflow-hidden bg-[#020617]">
-        <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 z-0 translate-x-[35%]">
           <spline-viewer url="https://prod.spline.design/kBalJIBRP2lou3NE/scene.splinecode" style={{ width: '100%', height: '100%' }}></spline-viewer>
         </div>
 

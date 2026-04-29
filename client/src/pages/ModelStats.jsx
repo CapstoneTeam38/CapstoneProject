@@ -92,53 +92,52 @@ const ModelStats = () => {
               />
             </div>
   
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 16 }}>
-              {/* Confusion Matrix Section */}
-              <div className="ng-card" style={{ display: 'flex', flexDirection: 'column' }}>
-                <div className="ng-card-header">
-                   <div className="ng-card-title">Confusion Matrix</div>
-                </div>
-                <div className="cm-grid" style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                  <div className="cm-cell tn" style={{ background: 'var(--ng-surface)', borderRadius: 6, padding: 16, textAlign: 'center', border: '1px solid var(--ng-border)' }}>
-                    <div className="font-mono2" style={{ fontSize: 20, fontWeight: 700, color: 'var(--ng-accent)' }}>{stats.confusionMatrix[0][0].toLocaleString()}</div>
-                    <div style={{ fontSize: 9, color: 'var(--ng-muted)', textTransform: 'uppercase', marginTop: 4 }}>True Negative</div>
-                  </div>
-                  <div className="cm-cell fp" style={{ background: 'var(--ng-surface)', borderRadius: 6, padding: 16, textAlign: 'center', border: '1px solid var(--ng-border)' }}>
-                    <div className="font-mono2" style={{ fontSize: 20, fontWeight: 700, color: 'var(--ng-red)' }}>{stats.confusionMatrix[0][1].toLocaleString()}</div>
-                    <div style={{ fontSize: 9, color: 'var(--ng-muted)', textTransform: 'uppercase', marginTop: 4 }}>False Positive</div>
-                  </div>
-                  <div className="cm-cell fn" style={{ background: 'var(--ng-surface)', borderRadius: 6, padding: 16, textAlign: 'center', border: '1px solid var(--ng-border)' }}>
-                    <div className="font-mono2" style={{ fontSize: 20, fontWeight: 700, color: 'var(--ng-amber)' }}>{stats.confusionMatrix[1][0].toLocaleString()}</div>
-                    <div style={{ fontSize: 9, color: 'var(--ng-muted)', textTransform: 'uppercase', marginTop: 4 }}>False Negative</div>
-                  </div>
-                  <div className="cm-cell tp" style={{ background: 'var(--ng-surface)', borderRadius: 6, padding: 16, textAlign: 'center', border: '1px solid var(--ng-border)' }}>
-                    <div className="font-mono2" style={{ fontSize: 20, fontWeight: 700, color: 'var(--ng-green)' }}>{stats.confusionMatrix[1][1].toLocaleString()}</div>
-                    <div style={{ fontSize: 9, color: 'var(--ng-muted)', textTransform: 'uppercase', marginTop: 4 }}>True Positive</div>
-                  </div>
-                </div>
-                <div style={{ marginTop: 12, fontSize: 10, color: 'var(--ng-muted)', fontStyle: 'italic' }}>
-                   Raw test set distribution used during final model validation.
-                </div>
+            {/* Model Comparison Table */}
+            <div className="ng-card">
+              <div className="ng-card-header">
+                <div className="ng-card-title">Model Comparison Audit</div>
               </div>
-  
-              {/* Feature Importance Rankings */}
-              <div className="ng-card">
-                 <div className="ng-card-header">
-                   <div className="ng-card-title">Top Influence Vectors</div>
-                 </div>
-                 <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                   {stats.featureImportance.map((feat, i) => (
-                     <div key={i} className="shap-row" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                       <div style={{ width: 80, fontSize: 10, color: 'var(--ng-muted)', textAlign: 'right' }}>{feat.feature}</div>
-                       <div style={{ flex: 1, background: 'var(--ng-dim)', borderRadius: 3, height: 6 }}>
-                          <div style={{ height: '100%', background: 'var(--ng-accent)', borderRadius: 3, width: `${feat.importance * 100}%` }} />
-                       </div>
-                       <div className="font-mono2" style={{ fontSize: 10, color: 'var(--ng-text)', width: 50, textAlign: 'right' }}>
-                          {(feat.importance * 100).toFixed(1)}%
-                       </div>
-                     </div>
-                   ))}
-                 </div>
+              <div style={{ overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                  <thead>
+                    <tr style={{ borderBottom: '1px solid var(--ng-border)', textAlign: 'left' }}>
+                      <th style={{ padding: '12px 16px', color: 'var(--ng-muted)', fontWeight: 600, fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 }}>Model Engine</th>
+                      <th style={{ padding: '12px 16px', color: 'var(--ng-muted)', fontWeight: 600, fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 }}>Accuracy</th>
+                      <th style={{ padding: '12px 16px', color: 'var(--ng-muted)', fontWeight: 600, fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 }}>Precision</th>
+                      <th style={{ padding: '12px 16px', color: 'var(--ng-muted)', fontWeight: 600, fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 }}>Recall</th>
+                      <th style={{ padding: '12px 16px', color: 'var(--ng-muted)', fontWeight: 600, fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 }}>F1 Score</th>
+                      <th style={{ padding: '12px 16px', color: 'var(--ng-muted)', fontWeight: 600, fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 }}>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {stats.allModels.map((model, idx) => (
+                      <tr key={idx} style={{ borderBottom: '1px solid var(--ng-border)', background: model.isActive ? 'rgba(6, 182, 212, 0.03)' : 'transparent' }}>
+                        <td style={{ padding: '16px', color: 'var(--ng-text)', fontWeight: 600 }}>{model.name}</td>
+                        <td style={{ padding: '16px', fontNumbers: 'var(--ng-font-mono)' }}>{(model.accuracy * 100).toFixed(2)}%</td>
+                        <td style={{ padding: '16px', fontNumbers: 'var(--ng-font-mono)' }}>{(model.precision * 100).toFixed(2)}%</td>
+                        <td style={{ padding: '16px', fontNumbers: 'var(--ng-font-mono)' }}>{(model.recall * 100).toFixed(2)}%</td>
+                        <td style={{ padding: '16px', fontNumbers: 'var(--ng-font-mono)' }}>{(model.f1 * 100).toFixed(2)}%</td>
+                        <td style={{ padding: '16px' }}>
+                          {model.isActive ? (
+                            <span className="ng-badge ng-badge-success" style={{ fontSize: 9 }}>ACTIVE</span>
+                          ) : (
+                            <span className="ng-badge ng-badge-info" style={{ fontSize: 9, opacity: 0.6 }}>STANDBY</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div style={{ marginTop: 16, display: 'flex', gap: 16, alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--ng-accent)', opacity: 0.3 }} />
+                  <span style={{ fontSize: 10, color: 'var(--ng-muted)' }}>Real-time production metrics</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <Info size={12} className="text-cyan-500" />
+                  <span style={{ fontSize: 10, color: 'var(--ng-muted)' }}>Metrics derived from latest cross-validation</span>
+                </div>
               </div>
             </div>
   

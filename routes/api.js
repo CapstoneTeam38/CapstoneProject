@@ -73,6 +73,18 @@ router.post('/logout', (req, res, next) => {
     });
 });
 
+// --- Google OAuth ---
+router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+router.get('/auth/google/callback', passport.authenticate('google', {
+    failureRedirect: 'http://localhost:5173/login',
+    failureFlash: true
+}), (req, res) => {
+    // Successful authentication, redirect to React dashboard
+    res.redirect('http://localhost:5173/dashboard');
+});
+
+
 // ------------------------------------
 
 router.get('/stats', async (req, res) => {

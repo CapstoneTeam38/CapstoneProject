@@ -227,6 +227,9 @@ def stats():
         frauds = fraud_kaggle + fraud_live
 
     risk = round(frauds / total * 100, 2) if total > 0 else 0
+    
+    model_data = get_model_stats_data(request.args.get('userId', 'anonymous'))
+
     return jsonify({
         "totalTransactions": total,
         "totalKaggle":       total if base_filter else transactions_col.count_documents({}),
@@ -235,7 +238,8 @@ def stats():
         "fraudKaggle":       frauds if base_filter else transactions_col.count_documents({"is_fraud": 1}),
         "fraudLive":         frauds if base_filter else predictions_col.count_documents({"is_fraud": 1}),
         "globalRiskScore":   risk,
-        "legitimateCount":   total - frauds
+        "legitimateCount":   total - frauds,
+        "modelMetrics":      model_data["metrics"]
     })
 
 
@@ -302,67 +306,69 @@ def analytics():
 #  MODEL STATS
 # ════════════════════════════════════════════════════════════════════════════
 
-@app.route("/api/model-stats")
-def model_stats():
-    user_id = request.args.get('userId', 'anonymous')
-    
-    # Try to find upload metadata: first for this userId, then the most recent one
+def get_model_stats_data(user_id):
+    # Try to find upload metadata
     meta = db["upload_metadata"].find_one({"userId": user_id})
     if not meta:
-        # Fallback: get the MOST RECENT upload from any user
         meta = db["upload_metadata"].find_one(sort=[("uploaded_at", -1)])
     
     if meta:
         structure = meta.get("structure", "RF_IF")
     else:
-        # Final fallback: count ALL rows in user_transactions (any userId)
         count = db["user_transactions"].count_documents({})
         structure = get_analysis_structure(count)
     
-    if structure == "RF_IF":
-        model_name = "Random Forest + Isolation Forest"
-        threshold_val = float(rf_threshold)
-        importances = rf_model.feature_importances_
-        features = XGB_FULL_FEATURES
-        trained_on = "Retrained Ensemble (202 features)"
-    else:
-        model_name = "XGBoost + One-Class SVM"
-        threshold_val = float(xgb_threshold)
-        # XGBoost feature importances (uses top 80)
-        importances = xgb_model.feature_importances_
-        features = XGB_TOP_FEATURES
-        trained_on = "IEEE-CIS Fraud Dataset (XGBoost Engine)"
+    # Model 1 Metrics (Hardcoded/Baseline)
+    m1 = {
+        "name": "Random Forest + Isolation Forest",
+        "accuracy": 0.9996,
+        "precision": 0.9405,
+        "recall": 0.8061,
+        "f1": 0.8681,
+        "roc_auc": 0.9529,
+        "active": structure == "RF_IF"
+    }
 
+    # Model 2 Metrics (From metrics.json or fallback)
     metrics_path = "backend/models/metrics.json"
     if os.path.exists(metrics_path):
         with open(metrics_path) as f:
-            metrics = json.load(f)
+            m2_data = json.load(f)
     else:
-        metrics = {
-            "accuracy": 0.9996,
-            "precision": 0.9405,
-            "recall": 0.8061,
-            "f1": 0.8681,
-            "roc_auc": 0.9529,
-            "threshold": threshold_val,
-            "cv_mean": 0.9508,
-            "cv_std": 0.0021,
-            "confusion_matrix": [[56859, 5], [19, 79]],
-        }
+        m2_data = {"accuracy": 0.9751, "precision": 0.5115, "recall": 0.6523, "f1": 0.5734, "roc_auc": 0.9314}
     
-    feat_imp = sorted(
-        [{"feature": features[i], "importance": round(float(importances[i]), 4)}
-         for i in range(len(importances))],
-        key=lambda x: x["importance"], reverse=True
-    )[:10]
+    m2 = {
+        "name": "XGBoost + One-Class SVM",
+        "accuracy": m2_data.get("accuracy", 0.9751),
+        "precision": m2_data.get("precision", 0.5115),
+        "recall": m2_data.get("recall", 0.6523),
+        "f1": m2_data.get("f1", 0.5734),
+        "roc_auc": m2_data.get("roc_auc", 0.9314),
+        "active": structure == "XGB_SVM"
+    }
 
-    return jsonify({
-        "metrics": metrics,
-        "featureImportance": feat_imp,
-        "modelName": model_name,
-        "trainedOn": trained_on,
+    # Current active metrics
+    active_metrics = m1 if structure == "RF_IF" else m2
+    
+    return {
+        "metrics": {
+            "accuracy": active_metrics["accuracy"],
+            "precision": active_metrics["precision"],
+            "recall": active_metrics["recall"],
+            "f1": active_metrics["f1"],
+            "roc_auc": active_metrics["roc_auc"],
+            "threshold": float(rf_threshold if structure == "RF_IF" else xgb_threshold)
+        },
+        "allModels": [m1, m2],
+        "modelName": active_metrics["name"],
+        "trainedOn": "Retrained Ensemble" if structure == "RF_IF" else "IEEE-CIS Fraud Dataset",
         "activeStructure": structure
-    })
+    }
+
+@app.route("/api/model-stats")
+def model_stats():
+    user_id = request.args.get('userId', 'anonymous')
+    return jsonify(get_model_stats_data(user_id))
 
 
 # ════════════════════════════════════════════════════════════════════════════
